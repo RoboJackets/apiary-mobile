@@ -11,11 +11,11 @@ dependencies {
 }
 
 android {
-    compileSdk(30)
+    compileSdk = 30
     defaultConfig {
         applicationId = "org.robojackets.apiary.android"
-        minSdk(21)
-        targetSdk(30)
+        minSdk = 21
+        targetSdk = 30
         versionCode = 1
         versionName = "1.0"
     }

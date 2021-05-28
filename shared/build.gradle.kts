@@ -20,7 +20,7 @@ kotlin {
     iosTarget("ios") {}
 
     cocoapods {
-        summary = "Shared code for Apiary Mobile"
+        summary = "Shared business logic"
         homepage = "https://github.com/robojackets/apiary-mobile"
         ios.deploymentTarget = "14.1"
         frameworkName = "shared"
@@ -48,10 +48,10 @@ kotlin {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdk = 30
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdkVersion(21)
-        targetSdkVersion(30)
+        minSdk = 21
+        targetSdk = 30
     }
 }
