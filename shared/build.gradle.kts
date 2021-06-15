@@ -8,6 +8,17 @@ plugins {
 
 version = "1.0"
 
+android {
+    configurations {
+        create("testApi")
+        create("testDebugApi")
+        create("testReleaseApi")
+        create("androidTestApi")
+        create("androidTestDebugApi")
+        create("androidTestReleaseApi")
+    }
+}
+
 kotlin {
     android()
 
