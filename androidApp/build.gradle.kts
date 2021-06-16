@@ -10,7 +10,9 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.3.0")
     implementation("androidx.constraintlayout:constraintlayout:2.0.4")
 
+    // Compose
     implementation("androidx.compose.ui:ui:1.0.0-beta08")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-beta08")
     // Tooling support (Previews, etc.)
     implementation("androidx.compose.ui:ui-tooling:1.0.0-beta08")
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
@@ -27,6 +29,8 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.3.0-beta01")
     // UI Tests
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.0-beta08")
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.4.0-alpha02")
 }
 
 android {
