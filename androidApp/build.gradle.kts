@@ -31,6 +31,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.0-beta08")
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha02")
+    // Ktor
+    implementation("io.ktor:ktor-client-android:1.6.0")
 }
 
 android {
