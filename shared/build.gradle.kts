@@ -55,7 +55,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-core:1.6.0")
                 implementation("io.ktor:ktor-client-serialization:1.6.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0-native-mt")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.2.1")
             }
         }
         val commonTest by getting {

@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.ui.graphics.toArgb
 import org.robojackets.apiary.android.ui.ApiaryAndroid
 import org.robojackets.apiary.android.ui.theme.Apiary_MobileTheme
 
@@ -13,6 +14,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Apiary_MobileTheme {
+                window.statusBarColor = MaterialTheme.colors.primaryVariant.toArgb()
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     ApiaryAndroid()

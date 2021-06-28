@@ -11,28 +11,31 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.0.4")
 
     // Compose
-    implementation("androidx.compose.ui:ui:1.0.0-beta08")
+    implementation("androidx.compose.ui:ui:1.0.0-beta09")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-beta08")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.12.0")
     // Tooling support (Previews, etc.)
-    implementation("androidx.compose.ui:ui-tooling:1.0.0-beta08")
+    implementation("androidx.compose.ui:ui-tooling:1.0.0-beta09")
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-    implementation("androidx.compose.foundation:foundation:1.0.0-beta08")
+    implementation("androidx.compose.foundation:foundation:1.0.0-beta09")
     // Material Design
-    implementation("androidx.compose.material:material:1.0.0-beta08")
+    implementation("androidx.compose.material:material:1.0.0-beta09")
     // Material design icons
-    implementation("androidx.compose.material:material-icons-core:1.0.0-beta08")
-    implementation("androidx.compose.material:material-icons-extended:1.0.0-beta08")
+    implementation("androidx.compose.material:material-icons-core:1.0.0-beta09")
+    implementation("androidx.compose.material:material-icons-extended:1.0.0-beta09")
     // Integration with observables
-    implementation("androidx.compose.runtime:runtime-livedata:1.0.0-beta08")
-    implementation("androidx.compose.runtime:runtime-rxjava2:1.0.0-beta08")
+    implementation("androidx.compose.runtime:runtime-livedata:1.0.0-beta09")
+    implementation("androidx.compose.runtime:runtime-rxjava2:1.0.0-beta09")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("androidx.activity:activity-compose:1.3.0-beta01")
+    implementation("androidx.activity:activity-compose:1.3.0-beta02")
     // UI Tests
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.0-beta08")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.0-beta09")
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.4.0-alpha02")
+    implementation("androidx.navigation:navigation-compose:2.4.0-alpha03")
     // Ktor
     implementation("io.ktor:ktor-client-android:1.6.0")
+    // OAuth2
+    implementation("net.openid:appauth:0.9.0")
 }
 
 android {

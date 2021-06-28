@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 data class RocketLaunch(
     @SerialName("flight_number")
     val flightNumber: Int,
+    @SerialName("mission_id")
+    val missionId: List<String>,
     @SerialName("mission_name")
     val missionName: String,
     @SerialName("launch_year")

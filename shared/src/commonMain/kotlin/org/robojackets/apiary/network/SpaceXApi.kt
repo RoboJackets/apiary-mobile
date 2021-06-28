@@ -9,7 +9,9 @@ import org.robojackets.apiary.entity.RocketLaunch
 class SpaceXApi {
     private val httpClient = HttpClient {
         install(JsonFeature) {
-            serializer = KotlinxSerializer()
+            serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
+                ignoreUnknownKeys = true
+            })
         }
     }
 

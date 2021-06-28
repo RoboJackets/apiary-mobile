@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/evans/Documents/GitHub/apiary-mobile/androidApp/src/main/res/drawable/ic_robobuzz_white_outline.xml" value="0.264" />
+        <entry key="..\:/Users/evans/Documents/GitHub/apiary-mobile/androidApp/src/main/res/drawable/robobuzz.xml" value="0.264" />
         <entry key="..\:/Users/evans/Documents/GitHub/apiary-mobile/androidApp/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
       </map>
     </option>
