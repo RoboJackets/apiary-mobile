@@ -7,5 +7,7 @@ pluginManagement {
 }
 
 rootProject.name = "Apiary_Mobile"
-include(":androidApp")
-include(":shared")
+include(":app")
+include(":navigation")
+include(":auth")
+include(":attendance")
