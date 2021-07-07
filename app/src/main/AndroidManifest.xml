@@ -5,6 +5,7 @@
 
     <application
         android:allowBackup="false"
+        tools:replace="android:allowBackup,android:theme"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:icon="@mipmap/ic_launcher"
