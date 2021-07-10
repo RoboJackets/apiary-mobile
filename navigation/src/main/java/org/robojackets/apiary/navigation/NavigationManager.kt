@@ -1,10 +1,9 @@
 package org.robojackets.apiary.navigation
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.robojackets.apiary.navigation.NavigationDirections.Authentication
 
 class NavigationManager {
-    var commands = MutableStateFlow(Authentication)
+    var commands = MutableStateFlow<NavigationCommand?>(null)
 
     fun navigate(
         directions: NavigationCommand

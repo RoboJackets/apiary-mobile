@@ -1,5 +1,6 @@
 package org.robojackets.apiary.attendance
 
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -10,7 +11,7 @@ import org.robojackets.apiary.attendance.model.AttendanceViewModel
 private fun Attendance(
     viewState: AttendanceState
 ) {
-
+    Text("Attendance")
 }
 
 @Composable

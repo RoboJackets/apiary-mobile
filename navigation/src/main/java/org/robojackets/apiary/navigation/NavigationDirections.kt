@@ -10,6 +10,6 @@ object NavigationDirections {
 
     val Attendance = object : NavigationCommand {
         override val arguments = emptyList<NamedNavArgument>()
-        override val destination = "dashboard"
+        override val destination = "attendance"
     }
 }

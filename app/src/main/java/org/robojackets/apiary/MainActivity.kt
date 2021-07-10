@@ -1,6 +1,7 @@
 package org.robojackets.apiary
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.MaterialTheme
@@ -32,11 +33,6 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     val navController = rememberNavController()
-                    navigationManager.commands.collectAsState().value.also { command ->
-                        if (command.destination.isNotEmpty()) {
-                            navController.navigate(command.destination)
-                        }
-                    }
                     NavHost(
                         navController = navController,
                         startDestination = NavigationDirections.Authentication.destination
@@ -46,6 +42,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(NavigationDirections.Attendance.destination) {
                             AttendanceScreen(hiltViewModel())
+                        }
+                    }
+                    navigationManager.commands.collectAsState().value.also { command ->
+                        Log.i("MainActivity", "navigationManager command!")
+                        if (command?.destination?.isNotEmpty() == true) {
+                            navController.navigate(command.destination)
                         }
                     }
                 }
