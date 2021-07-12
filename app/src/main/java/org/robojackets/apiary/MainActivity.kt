@@ -1,7 +1,6 @@
 package org.robojackets.apiary
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.MaterialTheme
@@ -30,6 +29,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             Apiary_MobileTheme {
                 window.statusBarColor = MaterialTheme.colors.primaryVariant.toArgb()
+
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     val navController = rememberNavController()
@@ -45,7 +45,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     navigationManager.commands.collectAsState().value.also { command ->
-                        Log.i("MainActivity", "navigationManager command!")
                         if (command?.destination?.isNotEmpty() == true) {
                             navController.navigate(command.destination)
                         }

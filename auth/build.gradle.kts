@@ -17,6 +17,8 @@ dependencies {
     // Compose
     implementation("androidx.compose.ui:ui:1.0.0-rc01")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-beta08")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.12.0")
+
     // Tooling support (Previews, etc.)
     implementation("androidx.compose.ui:ui-tooling:1.0.0-rc01")
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
@@ -37,6 +39,9 @@ dependencies {
     // Hilt
     implementation("com.google.dagger:hilt-android:2.35")
     kapt("com.google.dagger:hilt-android-compiler:2.35")
+
+    // OAuth2
+    implementation("net.openid:appauth:0.9.0")
 }
 
 android {

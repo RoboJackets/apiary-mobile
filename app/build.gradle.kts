@@ -41,8 +41,6 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.0-rc01")
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.3.5")
-    // OAuth2
-    implementation("net.openid:appauth:0.9.0")
     // Hilt
     implementation("com.google.dagger:hilt-android:2.35")
     kapt("com.google.dagger:hilt-android-compiler:2.35")

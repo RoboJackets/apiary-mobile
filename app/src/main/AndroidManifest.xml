@@ -9,13 +9,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
         android:name="org.robojackets.apiary.ApiaryMobileApplication"
         >
         <activity
             android:name="org.robojackets.apiary.MainActivity"
             android:exported="true"
-            android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar"
+
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
