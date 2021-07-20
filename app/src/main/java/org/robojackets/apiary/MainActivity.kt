@@ -14,15 +14,18 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import org.robojackets.apiary.attendance.AttendanceScreen
 import org.robojackets.apiary.auth.AuthenticationScreen
+import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
 import org.robojackets.apiary.navigation.NavigationDirections
 import org.robojackets.apiary.navigation.NavigationManager
-import org.robojackets.apiary.ui.theme.Apiary_MobileTheme
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var navigationManager: NavigationManager
+
+    @Inject
+    lateinit var application: ApiaryMobileApplication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

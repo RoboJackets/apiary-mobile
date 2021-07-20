@@ -13,7 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val navigationManager: NavigationManager
+    private val navigationManager: NavigationManager,
 ): ViewModel() {
     private val _state = MutableStateFlow(AuthenticationState())
 

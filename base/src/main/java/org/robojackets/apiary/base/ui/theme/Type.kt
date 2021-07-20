@@ -1,4 +1,4 @@
-package org.robojackets.apiary.ui.theme
+package org.robojackets.apiary.base.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

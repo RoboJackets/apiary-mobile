@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import org.robojackets.apiary.ApiaryMobileApplication
 import org.robojackets.apiary.navigation.NavigationManager
 import javax.inject.Singleton
 
@@ -13,4 +14,8 @@ class AppModule {
     @Singleton
     @Provides
     fun providesNavigationManager() = NavigationManager()
+
+    @Singleton
+    @Provides
+    fun providesApiaryMobileApplication() = ApiaryMobileApplication()
 }

@@ -5,7 +5,4 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class ApiaryMobileApplication : Application() {
-    companion object {
-
-    }
 }
