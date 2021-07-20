@@ -6,13 +6,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
@@ -23,7 +28,7 @@ import org.robojackets.apiary.auth.oauth2.AuthManager
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.ui.theme.BottomSheetShape
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 private fun Authentication(
     viewState: AuthenticationState,
@@ -42,16 +47,19 @@ private fun Authentication(
 
     val context = LocalContext.current
     val settings = GlobalSettings(context)
+    val apiBaseUrl = remember { mutableStateOf(settings.apiBaseUrl) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val loginResult = remember { mutableStateOf<String>("") }
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
-        loginResult.value = "got auth code"
-        Log.d(TAG, "Authorization Code obtained, result: $it")
-        val authManager = AuthManager(context)
-        authManager.authService.performTokenRequest(
-            AuthorizationResponse.fromIntent(it.data!!)!!.createTokenExchangeRequest()
-        ) { response, ex ->
-            Log.d(TAG, "Inside performTokenRequest callback, response: $response, ex: $ex")
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+            loginResult.value = "got auth code"
+            Log.d(TAG, "Authorization Code obtained, result: $it")
+            val authManager = AuthManager(context)
+            authManager.authService.performTokenRequest(
+                AuthorizationResponse.fromIntent(it.data!!)!!.createTokenExchangeRequest()
+            ) { response, ex ->
+                Log.d(TAG, "Inside performTokenRequest callback, response: $response, ex: $ex")
             if (response != null) {
                 loginResult.value = response.accessToken?.length.toString()
             } else {
@@ -65,16 +73,48 @@ private fun Authentication(
         sheetShape = BottomSheetShape,
         sheetPeekHeight = 0.dp,
         sheetContent = {
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(.5f)) {
-            Text("Change server",
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(16.dp),
-                style = MaterialTheme.typography.h5
-            )
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = 56.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Text(
+                    "Change server",
+                    modifier = Modifier
+                        .padding(16.dp),
+                    style = MaterialTheme.typography.h5
+                )
+
+                val unsavedServerUrl = rememberSaveable { mutableStateOf(apiBaseUrl.value) }
+
+                val saveUpdatedServerUrl: (() -> Unit) = {
+                    keyboardController?.hide()
+                    apiBaseUrl.value = unsavedServerUrl.value
+                    settings.apiBaseUrl = unsavedServerUrl.value
+                    scope.launch {
+                        scaffoldState.bottomSheetState.collapse()
+                    }
+                }
+
+                OutlinedTextField(
+                    modifier = Modifier.padding(32.dp),
+                    value = unsavedServerUrl.value,
+                    label = { Text("New server URL") },
+                    onValueChange = { unsavedServerUrl.value = it },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = { saveUpdatedServerUrl() }
+                    )
+                )
+
+                Button(
+                    modifier = Modifier.padding(16.dp),
+                    onClick = saveUpdatedServerUrl,
+                ) {
+                    Text("Save changes")
+                }
         }
     }) {
         Column(
@@ -127,7 +167,7 @@ private fun Authentication(
                     }) {
                         Text("Change server")
                     }
-                    Text("Server: ${settings.apiBaseUrl}")
+                    Text("Server: ${apiBaseUrl.value}")
                 }
                 Text("Made with ♥ by RoboJackets")
             }
@@ -139,10 +179,10 @@ private fun Authentication(
 fun AuthenticationScreen(
     viewModel: AuthenticationViewModel,
 ) {
-    val state by viewModel.state.collectAsState()
+    val viewState by viewModel.state.collectAsState()
 
     Authentication(
-        state
+        viewState
     ) {
         viewModel.navigateToAttendance()
     }

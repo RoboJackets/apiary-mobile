@@ -11,3 +11,4 @@ class GlobalSettings(context: Context) : SimpleKrate(context) {
 
     var apiBaseUrl by stringPref("API_BASE_URL", DEFAULT_API_BASE_URL)
 }
+
