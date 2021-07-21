@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.robojackets.apiary.base.AppEnvironment
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.navigation.NavigationDirections
 import org.robojackets.apiary.navigation.NavigationManager
@@ -15,11 +16,12 @@ import javax.inject.Inject
 class AuthenticationViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val navigationManager: NavigationManager,
+    private val globalSettings: GlobalSettings,
 ) : ViewModel() {
     private val _state = MutableStateFlow(AuthenticationState())
 
     private val loading = MutableStateFlow(false)
-    private val apiBaseUrl = MutableStateFlow(GlobalSettings.DEFAULT_API_BASE_URL)
+    private val appEnv = MutableStateFlow(globalSettings.appEnv)
 
     val state: StateFlow<AuthenticationState>
         get() = _state
@@ -29,12 +31,12 @@ class AuthenticationViewModel @Inject constructor(
             combine(
                 listOf(
                     loading,
-                    apiBaseUrl
+                    appEnv
                 )
             ) { flows ->
                 AuthenticationState(
                     loading = flows[0] as Boolean,
-                    apiBaseUrl = flows[1] as String,
+                    appEnv = flows[1] as AppEnvironment,
                 )
             }
                 .catch { throwable -> throw throwable }
@@ -45,9 +47,14 @@ class AuthenticationViewModel @Inject constructor(
     fun navigateToAttendance() {
         navigationManager.navigate(NavigationDirections.Attendance)
     }
+
+    fun setAppEnv(envName: String) {
+        globalSettings.appEnvName = envName
+        appEnv.value = AppEnvironment.valueOf(envName)
+    }
 }
 
 data class AuthenticationState(
     val loading: Boolean = false,
-    val apiBaseUrl: String = GlobalSettings.DEFAULT_API_BASE_URL,
+    val appEnv: AppEnvironment = AppEnvironment.Production,
 )

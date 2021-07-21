@@ -6,18 +6,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
@@ -25,17 +23,25 @@ import net.openid.appauth.AuthorizationResponse
 import org.robojackets.apiary.auth.model.AuthenticationState
 import org.robojackets.apiary.auth.model.AuthenticationViewModel
 import org.robojackets.apiary.auth.oauth2.AuthManager
-import org.robojackets.apiary.base.GlobalSettings
+import org.robojackets.apiary.base.AppEnvironment
 import org.robojackets.apiary.base.ui.theme.BottomSheetShape
 
 @OptIn(ExperimentalMaterialApi::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 private fun Authentication(
     viewState: AuthenticationState,
+    onAppEnvChange: (newEnv: AppEnvironment) -> Unit,
     onClick: () -> Unit,
 ) {
     val TAG = "Authentication"
-    val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed))
+
+    // You have to remember two things here for some reason
+    // In any case, thanks to https://proandroiddev.com/getting-your-bottomsheetscaffold-working-on-jetpack-compose-beta-03-aa829b0c9b6c
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberBottomSheetState(
+            initialValue = BottomSheetValue.Collapsed
+        )
+    )
     val scope = rememberCoroutineScope()
 
     val systemUiController = rememberSystemUiController()
@@ -46,9 +52,6 @@ private fun Authentication(
     }
 
     val context = LocalContext.current
-    val settings = GlobalSettings(context)
-    val apiBaseUrl = remember { mutableStateOf(settings.apiBaseUrl) }
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     val loginResult = remember { mutableStateOf<String>("") }
     val launcher =
@@ -87,31 +90,47 @@ private fun Authentication(
                     style = MaterialTheme.typography.h5
                 )
 
-                val unsavedServerUrl = rememberSaveable { mutableStateOf(apiBaseUrl.value) }
+                var unsavedAppEnvSelection by remember { mutableStateOf(viewState.appEnv) }
 
-                val saveUpdatedServerUrl: (() -> Unit) = {
-                    keyboardController?.hide()
-                    apiBaseUrl.value = unsavedServerUrl.value
-                    settings.apiBaseUrl = unsavedServerUrl.value
+                val saveNewAppEnvChoice: (() -> Unit) = {
+                    onAppEnvChange(unsavedAppEnvSelection)
                     scope.launch {
                         scaffoldState.bottomSheetState.collapse()
                     }
                 }
 
-                OutlinedTextField(
-                    modifier = Modifier.padding(32.dp),
-                    value = unsavedServerUrl.value,
-                    label = { Text("New server URL") },
-                    onValueChange = { unsavedServerUrl.value = it },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(
-                        onDone = { saveUpdatedServerUrl() }
-                    )
-                )
+                val appEnvChoices = AppEnvironment.values()
+
+                Column(Modifier.selectableGroup()) {
+                    appEnvChoices.forEach {
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                                .selectable(
+                                    selected = (it == unsavedAppEnvSelection),
+                                    onClick = { unsavedAppEnvSelection = it },
+                                    role = Role.RadioButton
+                                )
+                                .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = (it == unsavedAppEnvSelection),
+                                onClick = null,
+                            )
+                            Text(
+                                text = "${it.name} (${it.apiBaseUrl})",
+                                style = MaterialTheme.typography.body1.merge(),
+                                modifier = Modifier.padding(start = 16.dp)
+                            )
+                        }
+                    }
+                }
 
                 Button(
                     modifier = Modifier.padding(16.dp),
-                    onClick = saveUpdatedServerUrl,
+                    onClick = saveNewAppEnvChoice,
                 ) {
                     Text("Save changes")
                 }
@@ -167,7 +186,7 @@ private fun Authentication(
                     }) {
                         Text("Change server")
                     }
-                    Text("Server: ${apiBaseUrl.value}")
+                    Text("Server: ${viewState.appEnv.name} (${viewState.appEnv.apiBaseUrl})")
                 }
                 Text("Made with ♥ by RoboJackets")
             }
@@ -182,7 +201,8 @@ fun AuthenticationScreen(
     val viewState by viewModel.state.collectAsState()
 
     Authentication(
-        viewState
+        viewState,
+        onAppEnvChange = { viewModel.setAppEnv(it.name) }
     ) {
         viewModel.navigateToAttendance()
     }
