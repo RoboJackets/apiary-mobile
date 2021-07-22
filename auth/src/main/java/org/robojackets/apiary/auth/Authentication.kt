@@ -31,11 +31,11 @@ import org.robojackets.apiary.base.ui.theme.BottomSheetShape
 private fun Authentication(
     viewState: AuthenticationState,
     onAppEnvChange: (newEnv: AppEnvironment) -> Unit,
-    onClick: () -> Unit,
+    viewModel: AuthenticationViewModel,
 ) {
     val TAG = "Authentication"
 
-    // You have to remember two things here for some reason
+    // You have to `remember` two things here for some reason
     // In any case, thanks to https://proandroiddev.com/getting-your-bottomsheetscaffold-working-on-jetpack-compose-beta-03-aa829b0c9b6c
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberBottomSheetState(
@@ -63,11 +63,12 @@ private fun Authentication(
                 AuthorizationResponse.fromIntent(it.data!!)!!.createTokenExchangeRequest()
             ) { response, ex ->
                 Log.d(TAG, "Inside performTokenRequest callback, response: $response, ex: $ex")
-            if (response != null) {
-                loginResult.value = response.accessToken?.length.toString()
-            } else {
-                loginResult.value = ex.toString()
-            }
+                if (response != null) {
+                    loginResult.value = response.accessToken?.length.toString()
+                    viewModel.navigateToAttendance()
+                } else {
+                    loginResult.value = ex.toString()
+                }
         }
     }
 
@@ -202,8 +203,7 @@ fun AuthenticationScreen(
 
     Authentication(
         viewState,
-        onAppEnvChange = { viewModel.setAppEnv(it.name) }
-    ) {
-        viewModel.navigateToAttendance()
-    }
+        onAppEnvChange = { viewModel.setAppEnv(it.name) },
+        viewModel,
+    )
 }

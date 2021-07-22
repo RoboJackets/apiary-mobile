@@ -46,6 +46,7 @@ class AuthenticationViewModel @Inject constructor(
 
     fun navigateToAttendance() {
         navigationManager.navigate(NavigationDirections.Attendance)
+        return
     }
 
     fun setAppEnv(envName: String) {

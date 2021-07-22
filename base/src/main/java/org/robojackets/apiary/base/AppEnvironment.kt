@@ -9,7 +9,7 @@ enum class AppEnvironment(
 ) {
     Test(
         apiBaseUrl = Uri.parse("https://apiary-test.robojackets.org"),
-        clientId = "93c98c66-dffa-4ad2-bcd7-fed4f767e08e",
+        clientId = "93f7c104-ed5d-4b88-86a4-3605d95e0e1f",
         production = false,
     ),
     Production (
