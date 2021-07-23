@@ -10,8 +10,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AttendanceViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle
-): ViewModel() {
+    @Suppress("UnusedPrivateMember") private val savedStateHandle: SavedStateHandle
+) : ViewModel() {
     private val _state = MutableStateFlow(AttendanceState())
 
     private val loading = MutableStateFlow(false)

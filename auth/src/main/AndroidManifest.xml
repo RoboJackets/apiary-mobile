@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="org.robojackets.apiary.auth">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.robojackets.apiary.auth">
 
-    <application />
+    <application>
+        <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:exported="true"
+            tools:node="replace">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="org.robojackets.apiary" />
+            </intent-filter>
+        </activity>
+    </application>
 </manifest>

@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    @Suppress("UnusedPrivateMember") private val savedStateHandle: SavedStateHandle,
     private val navigationManager: NavigationManager,
     private val globalSettings: GlobalSettings,
 ) : ViewModel() {

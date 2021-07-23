@@ -9,7 +9,7 @@ import org.robojackets.apiary.attendance.model.AttendanceViewModel
 
 @Composable
 private fun Attendance(
-    viewState: AttendanceState
+    @Suppress("UnusedPrivateMember") viewState: AttendanceState
 ) {
     Text("Attendance")
 }

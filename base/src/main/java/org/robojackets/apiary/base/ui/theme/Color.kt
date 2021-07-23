@@ -1,3 +1,4 @@
+@file:Suppress("MagicNumber")
 package org.robojackets.apiary.base.ui.theme
 
 import androidx.compose.ui.graphics.Color

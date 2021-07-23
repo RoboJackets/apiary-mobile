@@ -42,7 +42,7 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.35")
 
     // OAuth2
-    implementation("net.openid:appauth:0.9.0")
+    api("net.openid:appauth:0.9.0")
 
     implementation("androidx.preference:preference-ktx:1.1.1")
 }

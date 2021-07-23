@@ -13,28 +13,24 @@ import javax.inject.Inject
 
 @ViewModelScoped
 class AuthManager @Inject constructor(
-    @ApplicationContext context: Context
+    @ApplicationContext context: Context,
+    val authService: AuthorizationService
 ) {
-    private var REDIRECT_URI: Uri
-    var serviceConfig: AuthorizationServiceConfiguration
-    var authService: AuthorizationService
     val settings = GlobalSettings(context)
-    private val CLIENT_ID = settings.appEnv.clientId
+    private val redirectUri = Uri.parse("org.robojackets.apiary://oauth")
 
-    init {
-        val AUTHORIZATION_ENDPOINT =
-            Uri.parse("${settings.appEnv.apiBaseUrl}/oauth/authorize")
-        val TOKEN_ENDPOINT = Uri.parse("${settings.appEnv.apiBaseUrl}/oauth/token")
+    fun getAuthRequest(): AuthorizationRequest {
+        val clientId = settings.appEnv.clientId
 
-        REDIRECT_URI = Uri.parse("org.robojackets.apiary://oauth")
-        serviceConfig = AuthorizationServiceConfiguration(AUTHORIZATION_ENDPOINT, TOKEN_ENDPOINT)
-        authService = AuthorizationService(context)
+        val authorizationEndpoint = Uri.parse("${settings.appEnv.apiBaseUrl}/oauth/authorize")
+        val tokenEndpoint: Uri = Uri.parse("${settings.appEnv.apiBaseUrl}/oauth/token")
+
+        val serviceConfig = AuthorizationServiceConfiguration(authorizationEndpoint, tokenEndpoint)
+        return AuthorizationRequest.Builder(
+            serviceConfig,
+            clientId,
+            ResponseTypeValues.CODE,
+            redirectUri
+        ).build()
     }
-
-    val authRequest = AuthorizationRequest.Builder(
-        serviceConfig,
-        CLIENT_ID,
-        ResponseTypeValues.CODE,
-        REDIRECT_URI
-    ).build()
 }

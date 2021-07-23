@@ -13,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -27,13 +26,15 @@ import org.robojackets.apiary.base.AppEnvironment
 import org.robojackets.apiary.base.ui.theme.BottomSheetShape
 
 @OptIn(ExperimentalMaterialApi::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
+@Suppress("LongMethod", "MagicNumber")
 @Composable
 private fun Authentication(
     viewState: AuthenticationState,
+    authManager: AuthManager,
     onAppEnvChange: (newEnv: AppEnvironment) -> Unit,
     viewModel: AuthenticationViewModel,
 ) {
-    val TAG = "Authentication"
+    val tag = "Authentication"
 
     // You have to `remember` two things here for some reason
     // In any case, thanks to https://proandroiddev.com/getting-your-bottomsheetscaffold-working-on-jetpack-compose-beta-03-aa829b0c9b6c
@@ -51,18 +52,15 @@ private fun Authentication(
         )
     }
 
-    val context = LocalContext.current
-
     val loginResult = remember { mutableStateOf<String>("") }
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
             loginResult.value = "got auth code"
-            Log.d(TAG, "Authorization Code obtained, result: $it")
-            val authManager = AuthManager(context)
+            Log.d(tag, "Authorization Code obtained, result: $it")
             authManager.authService.performTokenRequest(
                 AuthorizationResponse.fromIntent(it.data!!)!!.createTokenExchangeRequest()
             ) { response, ex ->
-                Log.d(TAG, "Inside performTokenRequest callback, response: $response, ex: $ex")
+                Log.d(tag, "Inside performTokenRequest callback, response: $response, ex: $ex")
                 if (response != null) {
                     loginResult.value = response.accessToken?.length.toString()
                     viewModel.navigateToAttendance()
@@ -162,8 +160,7 @@ private fun Authentication(
                 } else {
                     Button(
                         onClick = {
-                            val authManager = AuthManager(context)
-                            val authRequest = authManager.authRequest
+                            val authRequest = authManager.getAuthRequest()
                             launcher.launch(
                                 authManager.authService.getAuthorizationRequestIntent(
                                     authRequest
@@ -198,11 +195,12 @@ private fun Authentication(
 @Composable
 fun AuthenticationScreen(
     viewModel: AuthenticationViewModel,
+    authManager: AuthManager
 ) {
     val viewState by viewModel.state.collectAsState()
-
     Authentication(
         viewState,
+        authManager,
         onAppEnvChange = { viewModel.setAppEnv(it.name) },
         viewModel,
     )

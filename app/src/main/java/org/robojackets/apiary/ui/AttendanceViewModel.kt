@@ -3,7 +3,7 @@ package org.robojackets.apiary.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 
-class AttendanceViewModel: ViewModel() {
+class AttendanceViewModel : ViewModel() {
     companion object {
         const val TAG = "AttendanceViewModel"
 //    }
@@ -27,6 +27,6 @@ class AttendanceViewModel: ViewModel() {
     }
 }
 
-//data class AttendanceScreenState(
+// data class AttendanceScreenState(
 //
-//)
+// )
