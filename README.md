@@ -31,6 +31,12 @@ Since public OAuth2 (with PKCE) is used for authentication, there is no OAuth2 c
 If the included client ID for an environment does not work, you can create a new OAuth2 client
 in Nova in MyRoboJackets (requires the admin role).
 
+### Dependency injection
+
+[Hilt](https://developer.android.com/training/dependency-injection/hilt-android) is used for
+dependency injection.  The [Hilt and Dagger annotations cheat sheet](https://developer.android.com/training/dependency-injection/hilt-cheatsheet)
+is a helpful resource.
+
 ### Code linting
 
 Detekt is used for linting Kotlin code.  The recommended command to run it is
