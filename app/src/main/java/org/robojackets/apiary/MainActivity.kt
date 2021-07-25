@@ -28,6 +28,7 @@ import org.robojackets.apiary.android.R
 import org.robojackets.apiary.attendance.AttendanceScreen
 import org.robojackets.apiary.auth.AuthenticationScreen
 import org.robojackets.apiary.auth.oauth2.AuthManager
+import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
 import org.robojackets.apiary.base.ui.theme.SettingsScreen
 import org.robojackets.apiary.navigation.NavigationCommand
@@ -58,6 +59,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var authManager: AuthManager
+
+    @Inject
+    lateinit var settings: GlobalSettings
 
     // Based on https://stackoverflow.com/a/66838316
     @Composable
@@ -168,10 +172,12 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun AppNavigation(navController: NavHostController) {
+        val startDestination = if (settings.accessToken.isBlank()) NavigationDirections.Authentication.destination
+            else NavigationDirections.Attendance.destination
 
         NavHost(
             navController = navController,
-            startDestination = NavigationDirections.Authentication.destination
+            startDestination = startDestination
         ) {
             composable(NavigationDirections.Authentication.destination) {
                 AuthenticationScreen(hiltViewModel(), authManager)
