@@ -4,6 +4,7 @@ plugins {
     id("kotlin-android")
     kotlin("kapt")
     id("dagger.hilt.android.plugin")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 dependencies {
@@ -38,6 +39,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
     implementation("androidx.activity:activity-compose:1.3.0-rc02")
 
+    implementation(files("../libs/nxpnfcandroidlib-release.aar"))
+    implementation("com.google.firebase:firebase-core:17.2.2") // Required when including TapLinx (line above) manually
+
     // UI Tests
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.0-rc02")
     // Navigation
@@ -48,6 +52,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0-alpha03")
 
     implementation("androidx.preference:preference-ktx:1.1.1")
+    // NFC
 
 }
 

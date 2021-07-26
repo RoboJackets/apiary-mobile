@@ -1,5 +1,6 @@
 package org.robojackets.apiary
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,14 +21,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.nxp.nfclib.NxpNfcLib
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
-import org.robojackets.apiary.android.R
+import kotlinx.coroutines.flow.*
 import org.robojackets.apiary.attendance.AttendanceScreen
 import org.robojackets.apiary.auth.AuthenticationScreen
 import org.robojackets.apiary.auth.oauth2.AuthManager
+import org.robojackets.apiary.base.CardScanEvent
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
 import org.robojackets.apiary.base.ui.theme.SettingsScreen
@@ -35,6 +35,7 @@ import org.robojackets.apiary.navigation.NavigationCommand
 import org.robojackets.apiary.navigation.NavigationDirections
 import org.robojackets.apiary.navigation.NavigationManager
 import javax.inject.Inject
+
 
 sealed class Screen(
     val navigationCommand: NavigationCommand,
@@ -51,6 +52,10 @@ sealed class Screen(
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    companion object {
+        const val TAG = "MainActivity"
+    }
+
     @Inject
     lateinit var navigationManager: NavigationManager
 
@@ -63,11 +68,25 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var settings: GlobalSettings
 
+    private var nfcLib: NxpNfcLib? = null
+
+
+    private val _cardScanFlow = MutableStateFlow<CardScanEvent?>(null)
+    private val cardScanFlow: StateFlow<CardScanEvent?>
+        get() = _cardScanFlow
+
+//    lateinit var taplinxInstance: Nxp
     // Based on https://stackoverflow.com/a/66838316
     @Composable
     fun currentRoute(navController: NavHostController): String? {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         return navBackStackEntry?.destination?.route
+    }
+
+    private fun initMifareLib() {
+        nfcLib = NxpNfcLib.getInstance()
+
+        nfcLib?.registerActivity(this, BuildConfig.taplinxKey, BuildConfig.taplinxOfflineKey)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,8 +97,10 @@ class MainActivity : ComponentActivity() {
             Screen.Settings,
         )
 
-        setContent {
+        initMifareLib()
 
+
+        setContent {
             Apiary_MobileTheme {
                 window.statusBarColor = MaterialTheme.colors.primaryVariant.toArgb()
                 val navController = rememberNavController()
@@ -183,12 +204,45 @@ class MainActivity : ComponentActivity() {
                 AuthenticationScreen(hiltViewModel(), authManager)
             }
             composable(NavigationDirections.Attendance.destination) {
-                AttendanceScreen(hiltViewModel())
+                AttendanceScreen(hiltViewModel(), cardScanFlow, nfcLib)
             }
             composable(NavigationDirections.Settings.destination) {
                 SettingsScreen()
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+//        Log.d(TAG, "---------")
+//        Log.d(TAG, "onNewIntent")
+//        Log.d(TAG, "Card type: ${nfcLib?.getCardType(intent)}")
+//
+//        val desFireEV1 = DESFireFactory.getInstance().getDESFire(nfcLib?.customModules)
+//        val buzz_application = 0xBBBBCD
+//        val buzz_file = 0x01
+//        var buzzData = ByteArray(48)
+//        var buzzString: String? = null
+//
+//        desFireEV1.selectApplication(buzz_application)
+//        buzzData = desFireEV1.readData(buzz_file, 0, buzzData.size)
+//        buzzString = String(buzzData, StandardCharsets.UTF_8)
+//        val buzzStringParts = buzzString.split("=").toTypedArray()
+//        val gtid = buzzStringParts[0]
+//
+//        Log.d(TAG, "gtid: $gtid")
+//
+//        _cardScanFlow.value = CardScanEvent(gtid)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        nfcLib?.startForeGroundDispatch()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        nfcLib?.stopForeGroundDispatch()
     }
 
     override fun onDestroy() {

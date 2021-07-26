@@ -4,6 +4,27 @@ The companion mobile app for MyRoboJackets
 
 ## Local development
 
+### Dependencies
+
+Most dependencies are provided via Gradle.
+
+NFC functionality uses the NXP MIFARE TapLinx Android SDK.  You must provide a license key and offline
+license key from the TapLinx Developer Center on https://www.mifare.net/en/products/tools/taplinx/.
+
+Additionally, important licensing information about the TapLinx library is included in the [`libs`](libs)
+directory, including the [license](libs/LA_OPT_NXP_Software_License.txt) 
+and [Software Content Register](libs/Taplinx_Android_SDK_SCR.txt).
+
+**Note:** For RoboJackets developers, reach out in #apiary-mobile in Slack to obtain our keys.
+
+Once you have the two keys, append the following two lines to your Gradle [`local.properies`](local.properties)
+file.  Do **not** commit this file to version control.
+
+```groovy
+taplinxKey=KEY_HERE
+taplinxOfflineKey=OFFLINE_KEY_HERE
+```
+
 ### Repository structure
 
 There are 5 modules encompassing features and utilities.
