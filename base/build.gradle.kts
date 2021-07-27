@@ -39,6 +39,15 @@ dependencies {
 
     implementation("androidx.preference:preference-ktx:1.1.1")
     api("hu.autsoft:krate:1.1.0")
+
+    // NFC
+    implementation(files("../libs/nxpnfcandroidlib-release.aar"))
+    implementation("com.google.firebase:firebase-core:17.2.2") // Required when including TapLinx (line above) manually
+
+}
+
+hilt {
+    enableExperimentalClasspathAggregation = true
 }
 
 android {
@@ -67,5 +76,8 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.0.0-rc02"
+    }
+    hilt {
+        enableExperimentalClasspathAggregation = true
     }
 }

@@ -7,6 +7,10 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
+hilt {
+    enableExperimentalClasspathAggregation = true
+}
+
 dependencies {
     implementation(project(mapOf("path" to ":base")))
     implementation(project(mapOf("path" to ":navigation")))
@@ -77,5 +81,8 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.0.0-rc02"
+    }
+    hilt {
+        enableExperimentalClasspathAggregation = true
     }
 }

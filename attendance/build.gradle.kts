@@ -70,4 +70,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.0.0-rc02"
     }
+    hilt {
+        enableExperimentalClasspathAggregation = true
+    }
 }

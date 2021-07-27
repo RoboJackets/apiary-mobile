@@ -10,11 +10,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AttendanceViewModel @Inject constructor(
-    @Suppress("UnusedPrivateMember") private val savedStateHandle: SavedStateHandle
+    @Suppress("UnusedPrivateMember") private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _state = MutableStateFlow(AttendanceState())
 
-    private val loading = MutableStateFlow(false)
+    private val lastGtid = MutableStateFlow("")
 
     val state: StateFlow<AttendanceState>
         get() = _state
@@ -22,7 +22,7 @@ class AttendanceViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             combine(listOf(
-                loading,
+                lastGtid,
             )) {
                 flows -> AttendanceState(
                     flows[0]
@@ -32,8 +32,12 @@ class AttendanceViewModel @Inject constructor(
                 .collect { _state.value = it }
         }
     }
+
+    fun updateGtid(gtid: String) {
+        lastGtid.value = gtid
+    }
 }
 
 data class AttendanceState(
-    val loading: Boolean = false
+    val lastGtid: String = ""
 )

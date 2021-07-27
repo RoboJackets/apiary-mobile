@@ -56,6 +56,10 @@ dependencies {
 
 }
 
+hilt {
+    enableExperimentalClasspathAggregation = true
+}
+
 android {
     compileSdk = 30
     defaultConfig {
@@ -85,5 +89,8 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.0.0-rc02"
+    }
+    hilt {
+        enableExperimentalClasspathAggregation = true
     }
 }
