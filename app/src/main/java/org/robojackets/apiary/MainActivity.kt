@@ -4,14 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -112,6 +117,11 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     Scaffold(
+                        topBar = {
+                                 TopAppBar(
+                                     title = { Text(text = "MyRoboJackets", style = MaterialTheme.typography.h5, fontWeight = FontWeight.W800)},
+                                 )
+                        },
                         bottomBar = {
                             if (currentRoute(navController) != NavigationDirections.Authentication
                                     .destination) {
@@ -139,7 +149,16 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     ) { innerPadding ->
-                        AppNavigation(navController)
+                        Box(modifier = Modifier.padding(innerPadding)) {
+                            AppNavigation(
+                                navController, modifier = Modifier.padding(
+                                    start = 12.dp,
+                                    top = 12.dp,
+                                    end = 12.dp,
+                                    bottom = 12.dp
+                                )
+                            )
+                        }
                     }
                 }
             }
@@ -186,13 +205,14 @@ class MainActivity : ComponentActivity() {
         }
 
     @Composable
-    private fun AppNavigation(navController: NavHostController) {
+    private fun AppNavigation(navController: NavHostController, modifier: Modifier) {
         val startDestination = if (settings.accessToken.isBlank()) NavigationDirections.Authentication.destination
             else NavigationDirections.Attendance.destination
 
         NavHost(
             navController = navController,
-            startDestination = startDestination
+            startDestination = startDestination,
+            modifier = modifier,
         ) {
             composable(NavigationDirections.Authentication.destination) {
                 AuthenticationScreen(hiltViewModel(), authManager)
