@@ -19,6 +19,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.3.1")
     implementation("androidx.constraintlayout:constraintlayout:2.0.4")
     implementation("androidx.activity:activity-compose:1.3.0-rc02")
+    androidTestImplementation("junit:junit:4.13.2")
 
     // Compose
     implementation("androidx.compose.ui:ui:1.0.0-rc02")
@@ -50,6 +51,8 @@ dependencies {
     api("net.openid:appauth:0.9.0")
 
     implementation("androidx.preference:preference-ktx:1.1.1")
+
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 }
 
 android {
@@ -75,6 +78,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "1.8"

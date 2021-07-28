@@ -14,6 +14,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.3.1")
     implementation("androidx.constraintlayout:constraintlayout:2.0.4")
     implementation("androidx.activity:activity-compose:1.3.0-rc02")
+    androidTestImplementation("junit:junit:4.13.2")
 
     // Compose
     implementation("androidx.compose.ui:ui:1.0.0-rc02")
@@ -41,6 +42,7 @@ dependencies {
     implementation(files("../libs/nxpnfcandroidlib-release.aar"))
     implementation("com.google.firebase:firebase-core:17.2.2") // Required when including TapLinx (line above) manually
 
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 }
 
 android {
@@ -63,6 +65,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "1.8"
