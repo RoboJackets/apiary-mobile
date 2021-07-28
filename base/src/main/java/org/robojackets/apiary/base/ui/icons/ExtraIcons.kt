@@ -1,0 +1,23 @@
+package org.robojackets.apiary.base.ui.icons
+
+import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.LocalContentColor
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import org.robojackets.apiary.base.R
+
+@Composable
+fun ContactlessIcon(
+    modifier: Modifier,
+    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_contactless_24),
+        contentDescription = "NFC symbol",
+        modifier = modifier,
+        tint = tint
+    )
+}

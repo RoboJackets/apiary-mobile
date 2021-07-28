@@ -2,10 +2,16 @@ package org.robojackets.apiary.base.ui.nfc
 
 import android.nfc.NfcAdapter
 import android.util.Log
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.nxp.nfclib.NxpNfcLib
 import com.nxp.nfclib.desfire.DESFireFactory
+import org.robojackets.apiary.base.ui.ActionPrompt
+import org.robojackets.apiary.base.ui.icons.ContactlessIcon
+import org.robojackets.apiary.base.ui.theme.danger
 import java.nio.charset.StandardCharsets
 
 @Composable
@@ -44,4 +50,22 @@ fun BuzzCardPrompt(
         }
     }
 
+    NfcReadError()
+}
+
+@Composable
+fun BuzzCardReadyForTap() {
+    ActionPrompt(
+        icon = { ContactlessIcon(Modifier.size(114.dp)) },
+        title = "Tap a BuzzCard",
+    )
+}
+
+@Composable
+fun NfcReadError(message: String = "Make sure to hold the BuzzCard in place for a few seconds") {
+    ActionPrompt(
+        icon = { ContactlessIcon(Modifier.size(114.dp), tint = danger) },
+        title = "Card read error",
+        subtitle = message
+    )
 }
