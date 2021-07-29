@@ -3,6 +3,8 @@ package org.robojackets.apiary.base.ui.icons
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,5 +21,18 @@ fun ContactlessIcon(
         contentDescription = "NFC symbol",
         modifier = modifier,
         tint = tint
+    )
+}
+
+@Composable
+fun WarningIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+) {
+    Icon(
+        Icons.Default.Warning,
+        tint = tint,
+        modifier = modifier,
+        contentDescription = "warning"
     )
 }

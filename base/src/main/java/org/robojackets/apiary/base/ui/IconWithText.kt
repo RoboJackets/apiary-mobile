@@ -1,0 +1,24 @@
+package org.robojackets.apiary.base.ui
+
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun IconWithText(
+    icon: @Composable () -> Unit,
+    text: String,
+    textAlign: TextAlign = TextAlign.Center
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        icon()
+        Text(text = text, modifier= Modifier.padding(start = 4.dp), textAlign = textAlign)
+    }
+}

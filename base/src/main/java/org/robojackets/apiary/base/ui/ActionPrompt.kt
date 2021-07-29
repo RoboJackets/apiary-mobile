@@ -10,6 +10,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.robojackets.apiary.base.ui.icons.ContactlessIcon
+import org.robojackets.apiary.base.ui.icons.WarningIcon
 import org.robojackets.apiary.base.ui.theme.danger
 
 @Composable
@@ -17,6 +18,7 @@ fun ActionPrompt(
     icon: @Composable () -> Unit,
     title: String,
     subtitle: String = "",
+    customContent: @Composable () -> Unit = { },
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -31,11 +33,15 @@ fun ActionPrompt(
             textAlign = TextAlign.Center,
         )
 
+        customContent()
+
         Text(
             text = subtitle,
             style = MaterialTheme.typography.subtitle1,
             textAlign = TextAlign.Center,
         )
+
+
     }
 }
 
@@ -57,3 +63,17 @@ fun ActionPromptCardReadError() {
         subtitle = "Make sure to hold the BuzzCard in place for a few seconds"
     )
 }
+
+@Preview
+@Composable
+fun ActionPromptCardReadErrorWrongType() {
+    ActionPrompt(
+        icon = { ContactlessIcon(Modifier.size(114.dp), tint = danger) },
+        title = "Card read error",
+        subtitle = "Try tapping again"
+    ) {
+        IconWithText(icon = { WarningIcon(tint = danger) },
+            text = "We only support BuzzCards 😉")
+    }
+}
+
