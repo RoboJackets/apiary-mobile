@@ -13,6 +13,7 @@ import org.robojackets.apiary.attendance.model.AttendanceScreenState.ReadyForTap
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
 import javax.inject.Inject
 
+@Suppress("MagicNumber")
 @HiltViewModel
 class AttendanceViewModel @Inject constructor(
     @Suppress("UnusedPrivateMember") private val savedStateHandle: SavedStateHandle,

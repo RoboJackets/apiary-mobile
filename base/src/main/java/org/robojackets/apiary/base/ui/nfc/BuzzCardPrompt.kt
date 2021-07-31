@@ -30,20 +30,21 @@ import java.nio.charset.StandardCharsets
  * As an alternative, you can use the hidePrompt parameter to hide the displayed UI elements from
  * this composable, making it hidden whilst also not allowing it to be disposed.
  */
+@Suppress("MagicNumber", "LongMethod", "ComplexMethod")
 @Composable
 fun BuzzCardPrompt(
     hidePrompt: Boolean,
     nfcLib: NxpNfcLib,
     onBuzzCardTap: (buzzCardTap: BuzzCardTap) -> Unit,
 ) {
-    val TAG = "BuzzCardPrompt"
+    val tag = "BuzzCardPrompt"
     var error by remember { mutableStateOf<BuzzCardPromptError?>(null) }
 
-    val NFC_PRESENCE_CHECK_DELAY_MS = 50 // the minimum number of ms allowed between successive NFC
+    val nfcPresenceDelayCheckMs = 50 // the minimum number of ms allowed between successive NFC
     // tag reads. Lower is better, but too low seems to cause an increase in NFC read errors when
     // tapping many BuzzCards as quickly as possible
     nfcLib.enableReaderMode(
-        NFC_PRESENCE_CHECK_DELAY_MS,
+        nfcPresenceDelayCheckMs,
         {
             val cardType: CardType?
             try {
@@ -68,7 +69,7 @@ fun BuzzCardPrompt(
                     val gtidRegex = Regex("9[0-9]{8}")
                     if (!buzzStringRegex.matches(buzzString)) {
                         error = InvalidBuzzCardData
-                        Log.e(TAG, "Unexpected BuzzCard buzzString format: $buzzString")
+                        Log.e(tag, "Unexpected BuzzCard buzzString format: $buzzString")
                         return@enableReaderMode
                     }
 
@@ -77,17 +78,17 @@ fun BuzzCardPrompt(
 
                     if (!gtidRegex.matches(gtid)) {
                         error = InvalidBuzzCardData
-                        Log.e(TAG, "Unexpected BuzzCard GTID format: $gtid")
+                        Log.e(tag, "Unexpected BuzzCard GTID format: $gtid")
                     }
 
                     error = null
                     onBuzzCardTap(BuzzCardTap(gtid.toInt()))
                 } else {
-                    Log.i(TAG, "Unknown card type ($cardType) presented")
+                    Log.i(tag, "Unknown card type ($cardType) presented")
                     error = NotABuzzCard
                 }
             } catch (e: NxpNfcLibException) {
-                Log.w(TAG, "NxpNfcLib exception occurred while processing this NFC tag", e)
+                Log.w(tag, "NxpNfcLib exception occurred while processing this NFC tag", e)
                 error = when (e.localizedMessage) {
                     "Wrong CLA" -> NotABuzzCard
                     "Tag was lost." -> TagLost
@@ -95,11 +96,8 @@ fun BuzzCardPrompt(
                     else -> UnknownNfcError
                 }
             } catch (e: NumberFormatException) {
-                Log.e(TAG, "GTID string from (probably a) BuzzCard could not be parsed as an Int", e)
+                Log.e(tag, "GTID string from (probably a) BuzzCard could not be parsed as an Int", e)
                 error = InvalidBuzzCardData
-            } catch (e: Exception) {
-                Log.e(TAG, "Exception occurred while processing NFC tag", e)
-                error = UnknownNfcError
             }
         },
         NfcAdapter.FLAG_READER_NFC_A // NFC adapter flags, BuzzCards are Type A according to TagInfo
@@ -137,7 +135,8 @@ fun NfcNotABuzzCardError() {
     ActionPrompt(
         icon = { ContactlessIcon(Modifier.size(114.dp), tint = danger) },
         title = "Card read error",
-        subtitle = "If you are tapping a BuzzCard, please hold it against your phone longer, or reach out in #it-helpdesk for assistance",
+        subtitle = "If you are tapping a BuzzCard, please hold it against your phone longer, or " +
+                "reach out in #it-helpdesk for assistance",
     ) {
         IconWithText(icon = { WarningIcon(tint = danger) }, text = "We only support BuzzCards 😉")
     }
@@ -170,7 +169,8 @@ fun NfcReadUnknownError() {
     ActionPrompt(
         icon = { ContactlessIcon(Modifier.size(114.dp), tint = danger) },
         title = "Card read error",
-        subtitle = "Something went wrong while reading this card. If the problem continues, reach out in #it-helpdesk for assistance",
+        subtitle = "Something went wrong while reading this card. If the problem continues, " +
+                "reach out in #it-helpdesk for assistance",
     ) {
         IconWithText(icon = { WarningIcon(tint = danger) }, text = "Unknown NFC read error")
     }

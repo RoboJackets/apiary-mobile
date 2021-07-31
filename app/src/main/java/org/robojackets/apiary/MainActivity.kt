@@ -88,6 +88,7 @@ class MainActivity : ComponentActivity() {
         nfcLib.registerActivity(this, BuildConfig.taplinxKey, BuildConfig.taplinxOfflineKey)
     }
 
+    @Suppress("LongMethod")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -118,7 +119,12 @@ class MainActivity : ComponentActivity() {
                     Scaffold(
                         topBar = {
                                  TopAppBar(
-                                     title = { Text(text = "MyRoboJackets", style = MaterialTheme.typography.h5, fontWeight = FontWeight.W800) },
+                                     title = {
+                                         Text(
+                                             text = "MyRoboJackets",
+                                             style = MaterialTheme.typography.h5,
+                                             fontWeight = FontWeight.W800)
+                                         },
                                  )
                         },
                         bottomBar = {
