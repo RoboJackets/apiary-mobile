@@ -59,13 +59,14 @@ android {
     compileSdk = 30
     defaultConfig {
 //        applicationId = "org.robojackets.apiary.auth"
-        minSdk = 21
+        minSdk = 24
         targetSdk = 30
 //        versionCode = 1
 //        versionName = "1.0"
         vectorDrawables {
             useSupportLibrary = true
         }
+        manifestPlaceholders["appAuthRedirectScheme"] = "org.robojackets.apiary"
     }
     buildTypes {
         getByName("release") {

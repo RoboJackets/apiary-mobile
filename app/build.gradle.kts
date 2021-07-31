@@ -62,6 +62,10 @@ hilt {
 }
 
 android {
+    signingConfigs {
+        create("release") {
+        }
+    }
     compileSdk = 30
     defaultConfig {
         applicationId = "org.robojackets.apiary"
@@ -72,6 +76,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        manifestPlaceholders["appAuthRedirectScheme"] = "org.robojackets.apiary"
     }
     buildTypes {
         getByName("release") {

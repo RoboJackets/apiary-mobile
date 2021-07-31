@@ -48,11 +48,12 @@ dependencies {
 android {
     compileSdk = 30
     defaultConfig {
-//        applicationId = "org.robojackets.apiary.navigation"
-        minSdk = 21
+        minSdk = 24
         targetSdk = 30
+//        applicationId = "org.robojackets.apiary.navigation"
 //        versionCode = 1
 //        versionName = "1.0"
+
         vectorDrawables {
             useSupportLibrary = true
         }

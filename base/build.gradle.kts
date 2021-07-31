@@ -42,7 +42,7 @@ dependencies {
     api("hu.autsoft:krate:1.1.0")
 
     // NFC
-    implementation(files("../libs/nxpnfcandroidlib-release.aar"))
+    compileOnly(files("../libs/nxpnfcandroidlib-release.aar"))
     implementation("com.google.firebase:firebase-core:17.2.2") // Required when including TapLinx (line above) manually
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
@@ -55,8 +55,12 @@ hilt {
 android {
     compileSdk = 30
     defaultConfig {
-        minSdk = 21
+        minSdk = 24
         targetSdk = 30
+//        applicationId = "org.robojackets.apiary.base"
+//        versionCode = 1
+//        versionName = "1.0"
+
         vectorDrawables {
             useSupportLibrary = true
         }
