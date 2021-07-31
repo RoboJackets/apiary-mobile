@@ -61,7 +61,6 @@ class AttendanceViewModel @Inject constructor(
             )
             screenState.value = ReadyForTap
             totalScans.value += 1
-
         }
     }
 }

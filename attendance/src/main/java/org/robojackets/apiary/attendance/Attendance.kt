@@ -20,7 +20,6 @@ import org.robojackets.apiary.attendance.model.AttendanceViewModel
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPrompt
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
 
-
 @Composable
 private fun Attendance(
     @Suppress("UnusedPrivateMember") viewState: AttendanceState,
@@ -54,8 +53,6 @@ private fun Attendance(
             modifier = Modifier.align(Alignment.End)
         )
     }
-
-
 }
 
 @Composable

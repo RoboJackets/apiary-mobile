@@ -19,6 +19,6 @@ fun IconWithText(
         verticalAlignment = Alignment.CenterVertically
     ) {
         icon()
-        Text(text = text, modifier= Modifier.padding(start = 4.dp), textAlign = textAlign)
+        Text(text = text, modifier = Modifier.padding(start = 4.dp), textAlign = textAlign)
     }
 }

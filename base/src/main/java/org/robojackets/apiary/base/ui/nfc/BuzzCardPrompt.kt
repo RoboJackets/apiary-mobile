@@ -37,7 +37,7 @@ fun BuzzCardPrompt(
     onBuzzCardTap: (buzzCardTap: BuzzCardTap) -> Unit,
 ) {
     val TAG = "BuzzCardPrompt"
-    var error by remember { mutableStateOf<BuzzCardPromptError?>(null)}
+    var error by remember { mutableStateOf<BuzzCardPromptError?>(null) }
 
     val NFC_PRESENCE_CHECK_DELAY_MS = 50 // the minimum number of ms allowed between successive NFC
     // tag reads. Lower is better, but too low seems to cause an increase in NFC read errors when
@@ -177,8 +177,8 @@ fun NfcReadUnknownError() {
 }
 
 // Unused for now but useful once NFC disabled support is added back
-//@Composable
-//fun NfcUnsupportedError() {
+// @Composable
+// fun NfcUnsupportedError() {
 //    ActionPrompt(
 //        icon = { ErrorIcon(Modifier.size(114.dp), tint = danger) },
 //        title = "NFC is unavailable",
@@ -186,10 +186,10 @@ fun NfcReadUnknownError() {
 //    ) {
 //        IconWithText(icon = { WarningIcon(tint = danger) }, text = "NFC adapter was null")
 //    }
-//}
+// }
 //
-//@Composable
-//fun NfcDisabledError() {
+// @Composable
+// fun NfcDisabledError() {
 //    ActionPrompt(
 //        icon = { ContactlessIcon(Modifier.size(114.dp), tint = danger) },
 //        title = "NFC is disabled",
@@ -201,4 +201,4 @@ fun NfcReadUnknownError() {
 //            Text(text = "Enable NFC")
 //        }
 //    }
-//}
+// }

@@ -40,8 +40,6 @@ fun ActionPrompt(
             style = MaterialTheme.typography.subtitle1,
             textAlign = TextAlign.Center,
         )
-
-
     }
 }
 
@@ -76,4 +74,3 @@ fun ActionPromptCardReadErrorWrongType() {
             text = "We only support BuzzCards 😉")
     }
 }
-

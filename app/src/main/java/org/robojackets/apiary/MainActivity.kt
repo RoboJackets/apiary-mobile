@@ -41,7 +41,6 @@ import org.robojackets.apiary.navigation.NavigationDirections
 import org.robojackets.apiary.navigation.NavigationManager
 import javax.inject.Inject
 
-
 sealed class Screen(
     val navigationCommand: NavigationCommand,
     @StringRes val resourceId: Int,
@@ -119,7 +118,7 @@ class MainActivity : ComponentActivity() {
                     Scaffold(
                         topBar = {
                                  TopAppBar(
-                                     title = { Text(text = "MyRoboJackets", style = MaterialTheme.typography.h5, fontWeight = FontWeight.W800)},
+                                     title = { Text(text = "MyRoboJackets", style = MaterialTheme.typography.h5, fontWeight = FontWeight.W800) },
                                  )
                         },
                         bottomBar = {
