@@ -36,3 +36,16 @@ fun WarningIcon(
         contentDescription = "warning"
     )
 }
+
+@Composable
+fun ErrorIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_baseline_error_outline_24),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = "error"
+    )
+}

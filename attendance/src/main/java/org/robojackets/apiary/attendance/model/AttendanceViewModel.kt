@@ -1,5 +1,6 @@
 package org.robojackets.apiary.attendance.model
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,8 +8,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import org.robojackets.apiary.attendance.model.AttendanceScreenState.LOADING
-import org.robojackets.apiary.attendance.model.AttendanceScreenState.READY_TO_SCAN
+import org.robojackets.apiary.attendance.model.AttendanceScreenState.Loading
+import org.robojackets.apiary.attendance.model.AttendanceScreenState.ReadyForTap
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
 import javax.inject.Inject
 
@@ -19,7 +20,7 @@ class AttendanceViewModel @Inject constructor(
     private val _state = MutableStateFlow(AttendanceState())
 
     private val lastAttendee = MutableStateFlow<AttendanceStoreResult?>(null)
-    private val screenState = MutableStateFlow(READY_TO_SCAN)
+    private val screenState = MutableStateFlow(ReadyForTap)
     private val totalScans = MutableStateFlow(0)
 
     val state: StateFlow<AttendanceState>
@@ -44,16 +45,22 @@ class AttendanceViewModel @Inject constructor(
     }
 
     fun recordScan(tap: BuzzCardTap) {
-        screenState.value = LOADING
+        if (screenState.value == Loading) {
+            Log.d("AttendanceScreen", "Ignoring BuzzCard tap because another one is currently being processed")
+            return
+        }
+
+        screenState.value = Loading
 
         viewModelScope.launch {
-            delay(3000)
+            delay(250)
 
             lastAttendee.value = AttendanceStoreResult(
                 tap = tap,
                 name = "George P. Burdell"
             )
-            screenState.value = READY_TO_SCAN
+            screenState.value = ReadyForTap
+            totalScans.value += 1
 
         }
     }
@@ -61,6 +68,6 @@ class AttendanceViewModel @Inject constructor(
 
 data class AttendanceState(
     val lastAttendee: AttendanceStoreResult? = null,
-    val screenState: AttendanceScreenState = READY_TO_SCAN,
+    val screenState: AttendanceScreenState = ReadyForTap,
     val totalScans: Int = 0,
 )
