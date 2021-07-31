@@ -46,7 +46,6 @@ private fun Authentication(
     val systemUiController = rememberSystemUiController()
     val backgroundColor = MaterialTheme.colors.background
     SideEffect {
-        systemUiController.setStatusBarColor(backgroundColor)
         systemUiController.setSystemBarsColor(backgroundColor)
     }
 

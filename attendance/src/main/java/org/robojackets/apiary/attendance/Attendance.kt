@@ -1,9 +1,6 @@
 package org.robojackets.apiary.attendance
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -13,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.nxp.nfclib.NxpNfcLib
 import org.robojackets.apiary.attendance.model.AttendanceScreenState.Loading
 import org.robojackets.apiary.attendance.model.AttendanceState
@@ -61,11 +59,17 @@ fun AttendanceScreen(
     nfcLib: NxpNfcLib,
 ) {
     val state by viewModel.state.collectAsState()
-    Attendance(
-        state,
-        nfcLib,
-        onBuzzcardTap = {
-            viewModel.recordScan(it)
-        }
-    )
+    Box(
+        Modifier.fillMaxWidth()
+            .fillMaxHeight()
+            .padding(12.dp)
+    ) {
+        Attendance(
+            state,
+            nfcLib,
+            onBuzzcardTap = {
+                viewModel.recordScan(it)
+            }
+        )
+    }
 }

@@ -1,6 +1,7 @@
 package org.robojackets.apiary
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
@@ -16,7 +17,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -27,6 +27,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.nxp.nfclib.NxpNfcLib
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
@@ -155,14 +156,7 @@ class MainActivity : ComponentActivity() {
                         }
                     ) { innerPadding ->
                         Box(modifier = Modifier.padding(innerPadding)) {
-                            AppNavigation(
-                                navController, modifier = Modifier.padding(
-                                    start = 12.dp,
-                                    top = 12.dp,
-                                    end = 12.dp,
-                                    bottom = 12.dp
-                                )
-                            )
+                            AppNavigation(navController)
                         }
                     }
                 }
@@ -210,7 +204,7 @@ class MainActivity : ComponentActivity() {
         }
 
     @Composable
-    private fun AppNavigation(navController: NavHostController, modifier: Modifier) {
+    private fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifier) {
         val startDestination = if (settings.accessToken.isBlank()) NavigationDirections.Authentication.destination
             else NavigationDirections.Attendance.destination
 
@@ -231,11 +225,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @ExperimentalCoroutinesApi
     override fun onDestroy() {
         super.onDestroy()
+        Log.d("MainActivity", "onDestroy")
         // The AppAuth AuthenticationService has to be properly cleaned up to avoid
         // crashes. This `dispose` call works alongside Hilt, which destroys the single AuthManager
         // instance when this Activity is destroyed.
         authManager.authService.dispose()
+        navigationManager.commands.value = null
     }
 }
