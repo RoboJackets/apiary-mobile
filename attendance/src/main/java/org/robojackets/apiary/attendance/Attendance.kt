@@ -47,7 +47,7 @@ private fun Attendance(
                 pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
                 append("Total attendees: ")
                 pop()
-                append(viewState.totalScans.toString())
+                append(viewState.totalAttendees.toString())
                 toAnnotatedString()
             },
             modifier = Modifier.align(Alignment.End)

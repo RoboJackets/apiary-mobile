@@ -22,7 +22,7 @@ class AttendanceViewModel @Inject constructor(
 
     private val lastAttendee = MutableStateFlow<AttendanceStoreResult?>(null)
     private val screenState = MutableStateFlow(ReadyForTap)
-    private val totalScans = MutableStateFlow(0)
+    private val totalAttendees = MutableStateFlow(0)
 
     val state: StateFlow<AttendanceState>
         get() = _state
@@ -32,7 +32,7 @@ class AttendanceViewModel @Inject constructor(
             combine(listOf(
                 lastAttendee,
                 screenState,
-                totalScans,
+                totalAttendees,
             )) {
                 flows -> AttendanceState(
                     flows[0] as AttendanceStoreResult?,
@@ -61,7 +61,7 @@ class AttendanceViewModel @Inject constructor(
                 name = "George P. Burdell"
             )
             screenState.value = ReadyForTap
-            totalScans.value += 1
+            totalAttendees.value += 1
         }
     }
 }
@@ -69,5 +69,5 @@ class AttendanceViewModel @Inject constructor(
 data class AttendanceState(
     val lastAttendee: AttendanceStoreResult? = null,
     val screenState: AttendanceScreenState = ReadyForTap,
-    val totalScans: Int = 0,
+    val totalAttendees: Int = 0,
 )
