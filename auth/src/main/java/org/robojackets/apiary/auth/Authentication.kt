@@ -163,22 +163,22 @@ private fun Authentication(
                         },
                         title = { Text("Login failed") },
                         text = {
-                            Text("${viewState.loginErrorMessage}\n\nTry logging in again. " +
-                                    "If that does not work, please post in #it-helpdesk in Slack.")
+                            Text(
+                                "${viewState.loginErrorMessage}\n\nTry logging in again. " +
+                                        "If that does not work, please post in #it-helpdesk in Slack."
+                            )
                         },
                     )
                 }
 
-                if (BuildConfig.DEBUG) {
-                    TextButton(onClick = {
-                        coroutineScope.launch {
-                            scaffoldState.bottomSheetState.expand()
-                        }
-                    }) {
-                        Text("Change server")
+                TextButton(onClick = {
+                    coroutineScope.launch {
+                        scaffoldState.bottomSheetState.expand()
                     }
-                    Text("Server: ${viewState.appEnv.name} (${viewState.appEnv.apiBaseUrl})")
+                }) {
+                    Text("Change server")
                 }
+                Text("Server: ${viewState.appEnv.name} (${viewState.appEnv.apiBaseUrl})")
                 Text("Made with ♥ by RoboJackets")
             }
         }
