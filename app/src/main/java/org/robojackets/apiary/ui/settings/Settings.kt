@@ -51,7 +51,7 @@ import org.robojackets.apiary.base.ui.util.MadeWithLove
             SettingsHeader("About")
             SettingsMenuLink(
                 icon = { Icon(Icons.Outlined.Home, contentDescription = "home") },
-                title = { Text(text = "MyRoboJackets server") },
+                title = { Text(text = "Server") },
                 subtitle = { Text(
                     text = "${appEnv.name} (${appEnv.apiBaseUrl})"
                 )},
