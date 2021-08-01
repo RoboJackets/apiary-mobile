@@ -1,6 +1,7 @@
 package org.robojackets.apiary.di
 
 import android.content.Context
+import com.nxp.nfclib.NxpNfcLib
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,4 +28,8 @@ class AppModule {
     fun providesGlobalSettings(
         @ApplicationContext context: Context
     ) = GlobalSettings(context)
+
+    @Singleton
+    @Provides
+    fun providesNxpNfcLib() = NxpNfcLib.getInstance()
 }

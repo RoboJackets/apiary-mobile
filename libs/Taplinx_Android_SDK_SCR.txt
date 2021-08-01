@@ -1,0 +1,22 @@
+NXP Software Content Register
+
+Release - Taplinx Android SDK
+Jan 2021
+
+
+--------------------------------------------
+
+Package:                   	nxpnfcandroidlib-1.8.zip
+Outgoing License:          	LA_OPT_NXP_Software_License v15 August 2020 - Additional distribution license granted, license in Section 2.3 applies
+License Files:             	./LA_OPT_NXP_Software_License.txt
+Type of content:           	Binary
+Description and comments:  	TapLinx Android SDK consists of Android library that can be used to generate APDU to communicate
+                            with NXP Smartcards and uses Android SDK’s transceive functionality.
+                            The NFC transceive operations in Android is dependent on the middleware provided by the OEMs.
+Release Location:          	Mifare.net
+Origin:                    	NXP (proprietary)
+
+                            com.google.firebase:firebase-core:16.0.7	(Android SDK LA)	-	http://firebase.google.com/
+
+--------------------------------------------
+

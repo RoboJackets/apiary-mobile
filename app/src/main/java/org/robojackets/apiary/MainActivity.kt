@@ -1,17 +1,22 @@
 package org.robojackets.apiary
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -20,11 +25,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.nxp.nfclib.NxpNfcLib
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
-import org.robojackets.apiary.android.R
 import org.robojackets.apiary.attendance.AttendanceScreen
 import org.robojackets.apiary.auth.AuthenticationScreen
 import org.robojackets.apiary.auth.oauth2.AuthManager
@@ -51,6 +57,10 @@ sealed class Screen(
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    companion object {
+        const val TAG = "MainActivity"
+    }
+
     @Inject
     lateinit var navigationManager: NavigationManager
 
@@ -63,6 +73,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var settings: GlobalSettings
 
+    @Inject
+    lateinit var nfcLib: NxpNfcLib
+
     // Based on https://stackoverflow.com/a/66838316
     @Composable
     fun currentRoute(navController: NavHostController): String? {
@@ -70,6 +83,13 @@ class MainActivity : ComponentActivity() {
         return navBackStackEntry?.destination?.route
     }
 
+    private fun initMifareLib() {
+        nfcLib = NxpNfcLib.getInstance()
+
+        nfcLib.registerActivity(this, BuildConfig.taplinxKey, BuildConfig.taplinxOfflineKey)
+    }
+
+    @Suppress("LongMethod")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -78,8 +98,9 @@ class MainActivity : ComponentActivity() {
             Screen.Settings,
         )
 
-        setContent {
+        initMifareLib()
 
+        setContent {
             Apiary_MobileTheme {
                 window.statusBarColor = MaterialTheme.colors.primaryVariant.toArgb()
                 val navController = rememberNavController()
@@ -97,6 +118,16 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     Scaffold(
+                        topBar = {
+                                 TopAppBar(
+                                     title = {
+                                         Text(
+                                             text = "MyRoboJackets",
+                                             style = MaterialTheme.typography.h5,
+                                             fontWeight = FontWeight.W800)
+                                         },
+                                 )
+                        },
                         bottomBar = {
                             if (currentRoute(navController) != NavigationDirections.Authentication
                                     .destination) {
@@ -124,7 +155,9 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     ) { innerPadding ->
-                        AppNavigation(navController)
+                        Box(modifier = Modifier.padding(innerPadding)) {
+                            AppNavigation(navController)
+                        }
                     }
                 }
             }
@@ -171,19 +204,20 @@ class MainActivity : ComponentActivity() {
         }
 
     @Composable
-    private fun AppNavigation(navController: NavHostController) {
+    private fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifier) {
         val startDestination = if (settings.accessToken.isBlank()) NavigationDirections.Authentication.destination
             else NavigationDirections.Attendance.destination
 
         NavHost(
             navController = navController,
-            startDestination = startDestination
+            startDestination = startDestination,
+            modifier = modifier,
         ) {
             composable(NavigationDirections.Authentication.destination) {
                 AuthenticationScreen(hiltViewModel(), authManager)
             }
             composable(NavigationDirections.Attendance.destination) {
-                AttendanceScreen(hiltViewModel())
+                AttendanceScreen(hiltViewModel(), nfcLib)
             }
             composable(NavigationDirections.Settings.destination) {
                 SettingsScreen()
@@ -191,11 +225,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @ExperimentalCoroutinesApi
     override fun onDestroy() {
         super.onDestroy()
+        Log.d("MainActivity", "onDestroy")
         // The AppAuth AuthenticationService has to be properly cleaned up to avoid
         // crashes. This `dispose` call works alongside Hilt, which destroys the single AuthManager
         // instance when this Activity is destroyed.
         authManager.authService.dispose()
+        navigationManager.commands.value = null
     }
 }
