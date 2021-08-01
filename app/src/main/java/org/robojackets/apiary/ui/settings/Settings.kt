@@ -8,8 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Logout
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,11 +18,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.alorma.settings.composables.SettingsMenuLink
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import org.robojackets.apiary.BuildConfig
+import org.robojackets.apiary.base.AppEnvironment
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.MadeWithLove
 
 @Composable
- private fun Settings(onLogout: () -> Unit) {
+ private fun Settings(
+    appEnv: AppEnvironment,
+    onLogout: () -> Unit,
+) {
     val context = LocalContext.current
 
     Column(
@@ -35,11 +38,38 @@ import org.robojackets.apiary.base.ui.util.MadeWithLove
         Column {
             SettingsHeader("Account")
             SettingsMenuLink(
+                icon = { Icon(Icons.Outlined.Person, contentDescription = "person") },
+                title = { Text(text = "George Burdell") },
+                subtitle = { Text(text = "gburdell3") },
+                onClick = {}
+            )
+            SettingsMenuLink(
                 icon = { Icon(Icons.Outlined.Logout, contentDescription = "logout") },
                 title = { Text(text = "Logout") },
                 onClick = onLogout
             )
             SettingsHeader("About")
+            SettingsMenuLink(
+                icon = { Icon(Icons.Outlined.Home, contentDescription = "home") },
+                title = { Text(text = "MyRoboJackets server") },
+                subtitle = { Text(
+                    text = "${appEnv.name} (${appEnv.apiBaseUrl})"
+                )},
+                onClick = {}
+            )
+            SettingsMenuLink(
+                icon = { Icon(Icons.Outlined.Build, contentDescription = "build") },
+                title = { Text(text = "Version") },
+                subtitle = { Text(
+                    text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+                )},
+                onClick = {}
+            )
+            SettingsMenuLink(
+                icon = { Icon(Icons.Outlined.PrivacyTip, contentDescription = "privacy tip") },
+                title = { Text(text = "Privacy policy") },
+                onClick = {}
+            )
             SettingsMenuLink(
                 icon = { Icon(Icons.Outlined.Info, contentDescription = "info") },
                 title = { Text(text = "Open-source licenses") },
@@ -52,8 +82,6 @@ import org.robojackets.apiary.base.ui.util.MadeWithLove
             Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "MyRoboJackets Android v${BuildConfig.VERSION_NAME} " +
-                    "(${BuildConfig.VERSION_CODE})")
             MadeWithLove()
         }
     }
@@ -72,6 +100,7 @@ fun SettingsScreen(
 ) {
     ContentPadding {
        Settings(
+           appEnv = viewModel.globalSettings.appEnv,
            onLogout = {
                viewModel.logout()
            }
@@ -82,5 +111,5 @@ fun SettingsScreen(
 @Preview
 @Composable
 private fun SettingsPreview() {
-    Settings(onLogout = {})
+    Settings(onLogout = {}, appEnv = AppEnvironment.Production)
 }
