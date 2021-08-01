@@ -39,8 +39,10 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.35")
     kapt("com.google.dagger:hilt-android-compiler:2.35")
     // NFC
+    implementation(platform("com.google.firebase:firebase-bom:28.3.0"))
+
     compileOnly(files("../libs/nxpnfcandroidlib-release.aar"))
-    implementation("com.google.firebase:firebase-core:17.2.2") // Required when including TapLinx (line above) manually
+    implementation("com.google.firebase:firebase-core") // Required when including TapLinx (line above) manually
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 }

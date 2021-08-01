@@ -42,8 +42,9 @@ dependencies {
     api("hu.autsoft:krate:1.1.0")
 
     // NFC
+    implementation(platform("com.google.firebase:firebase-bom:28.3.0"))
     compileOnly(files("../libs/nxpnfcandroidlib-release.aar"))
-    implementation("com.google.firebase:firebase-core:17.2.2") // Required when including TapLinx (line above) manually
+    implementation("com.google.firebase:firebase-core") // Required when including TapLinx (line above) manually
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 }

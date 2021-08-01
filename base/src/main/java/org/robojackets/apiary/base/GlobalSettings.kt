@@ -17,4 +17,9 @@ class GlobalSettings @Inject constructor(
 
     val appEnv: AppEnvironment
         get() = AppEnvironment.valueOf(appEnvName)
+
+    fun clearLoginInfo() {
+        accessToken = ""
+        refreshToken = ""
+    }
 }

@@ -36,10 +36,10 @@ import org.robojackets.apiary.auth.AuthenticationScreen
 import org.robojackets.apiary.auth.oauth2.AuthManager
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
-import org.robojackets.apiary.base.ui.theme.SettingsScreen
 import org.robojackets.apiary.navigation.NavigationCommand
 import org.robojackets.apiary.navigation.NavigationDirections
 import org.robojackets.apiary.navigation.NavigationManager
+import org.robojackets.apiary.ui.settings.SettingsScreen
 import javax.inject.Inject
 
 sealed class Screen(
@@ -169,34 +169,41 @@ class MainActivity : ComponentActivity() {
         { command ->
             if (command.destination.isNotEmpty()) {
                 navController.navigate(command.destination) {
-                    if (command.isInBottomNav) {
-                        if (navController.graph.findStartDestination().route ==
-                            NavigationDirections.Authentication.destination) {
+                    when {
+                        // When navigating to the login screen (e.g., logout), clear the back stack
+                        command.destination == NavigationDirections.Authentication.destination -> {
+                            popUpTo(id = 0)
+                        }
+                        command.isInBottomNav -> {
+                            if (navController.graph.findStartDestination().route ==
+                                NavigationDirections.Authentication.destination) {
+                                // Clear anything before and including the Authentication screen to
+                                // remove the login flow from the back stack
+                                popUpTo(route = NavigationDirections.Authentication.destination) {
+                                    inclusive = true
+                                }
+                            } else {
+                                // Pop up to the start destination of the graph to
+                                // avoid building up a large stack of destinations
+                                // on the back stack as users select items
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                            }
+
+                            // Avoid multiple copies of the same destination when
+                            // reselecting the same item
+                            launchSingleTop = true
+                            // Restore state when reselecting a previously selected item
+                            restoreState = true
+                        }
+                        navController.graph.findStartDestination().route ==
+                                NavigationDirections.Authentication.destination -> {
                             // Clear anything before and including the Authentication screen to
                             // remove the login flow from the back stack
                             popUpTo(route = NavigationDirections.Authentication.destination) {
                                 inclusive = true
                             }
-                        } else {
-                            // Pop up to the start destination of the graph to
-                            // avoid building up a large stack of destinations
-                            // on the back stack as users select items
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                        }
-
-                        // Avoid multiple copies of the same destination when
-                        // reselecting the same item
-                        launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
-                        restoreState = true
-                    } else if (navController.graph.findStartDestination().route ==
-                        NavigationDirections.Authentication.destination) {
-                        // Clear anything before and including the Authentication screen to
-                        // remove the login flow from the back stack
-                        popUpTo(route = NavigationDirections.Authentication.destination) {
-                            inclusive = true
                         }
                     }
                 }
@@ -220,7 +227,7 @@ class MainActivity : ComponentActivity() {
                 AttendanceScreen(hiltViewModel(), nfcLib)
             }
             composable(NavigationDirections.Settings.destination) {
-                SettingsScreen()
+                SettingsScreen(hiltViewModel())
             }
         }
     }
@@ -233,6 +240,8 @@ class MainActivity : ComponentActivity() {
         // crashes. This `dispose` call works alongside Hilt, which destroys the single AuthManager
         // instance when this Activity is destroyed.
         authManager.authService.dispose()
+
+        // Clear the last navigation command when exiting the app
         navigationManager.commands.value = null
     }
 }
