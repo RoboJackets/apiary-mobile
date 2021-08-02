@@ -66,6 +66,9 @@ dependencies {
 
     // Collects open-source license information
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
+
+    // Chrome Custom Tabs
+    implementation("androidx.browser:browser:1.3.0")
 }
 
 hilt {

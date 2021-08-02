@@ -1,6 +1,8 @@
 package org.robojackets.apiary.ui.settings
 
 import android.content.Intent
+import android.util.Log
+import androidx.browser.customtabs.CustomTabsClient
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -10,8 +12,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,6 +23,7 @@ import com.alorma.settings.composables.SettingsMenuLink
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import org.robojackets.apiary.BuildConfig
 import org.robojackets.apiary.base.AppEnvironment
+import org.robojackets.apiary.base.ui.theme.webNavBarBackground
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.MadeWithLove
 
@@ -26,6 +31,7 @@ import org.robojackets.apiary.base.ui.util.MadeWithLove
  private fun Settings(
     appEnv: AppEnvironment,
     onLogout: () -> Unit,
+    onOpenPrivacyPolicy: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -68,7 +74,7 @@ import org.robojackets.apiary.base.ui.util.MadeWithLove
             SettingsMenuLink(
                 icon = { Icon(Icons.Outlined.PrivacyTip, contentDescription = "privacy tip") },
                 title = { Text(text = "Privacy policy") },
-                onClick = {}
+                onClick = onOpenPrivacyPolicy,
             )
             SettingsMenuLink(
                 icon = { Icon(Icons.Outlined.Info, contentDescription = "info") },
@@ -98,11 +104,23 @@ private fun SettingsHeader(headerText: String) {
 fun SettingsScreen(
     viewModel: SettingsViewModel
 ) {
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        Log.d("Settings", "Settings launched effect")
+        // The package name below is NOT the app package name...sigh
+        // Thanks to https://stackoverflow.com/a/62183713
+        CustomTabsClient.bindCustomTabsService(context, "com.android.chrome", viewModel.customTabsServiceConnection)
+    }
+
     ContentPadding {
        Settings(
            appEnv = viewModel.globalSettings.appEnv,
            onLogout = {
                viewModel.logout()
+           },
+           onOpenPrivacyPolicy = {
+               val customTabsIntent = viewModel.getPrivacyPolicyCustomTabsIntent(webNavBarBackground.toArgb())
+               customTabsIntent.launchUrl(context, viewModel.privacyPolicyUrl)
            }
        )
     }
@@ -111,5 +129,9 @@ fun SettingsScreen(
 @Preview
 @Composable
 private fun SettingsPreview() {
-    Settings(onLogout = {}, appEnv = AppEnvironment.Production)
+    Settings(
+        appEnv = AppEnvironment.Production,
+        onLogout = {},
+        onOpenPrivacyPolicy = {}
+    )
 }
