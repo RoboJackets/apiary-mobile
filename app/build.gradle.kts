@@ -23,7 +23,7 @@ dependencies {
     androidTestImplementation("junit:junit:4.13.2")
 
     // Compose
-    implementation("androidx.compose.ui:ui:1.0.0")
+    implementation(composeDependencies.compose_ui)
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-beta08")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.12.0")
     // Tooling support (Previews, etc.)
@@ -85,8 +85,8 @@ android {
         applicationId = "org.robojackets.apiary"
         minSdk = 24 // FIXME: this is temporary to workaround a Compose bug (https://issuetracker.google.com/issues/194289155)
         targetSdk = 30
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 3
+        versionName = "0.2.0"
         vectorDrawables {
             useSupportLibrary = true
         }
