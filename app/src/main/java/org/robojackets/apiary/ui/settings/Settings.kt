@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
@@ -23,7 +24,6 @@ import com.alorma.settings.composables.SettingsMenuLink
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import org.robojackets.apiary.BuildConfig
 import org.robojackets.apiary.base.AppEnvironment
-import org.robojackets.apiary.base.ui.theme.webNavBarBackground
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.MadeWithLove
 
@@ -32,6 +32,7 @@ import org.robojackets.apiary.base.ui.util.MadeWithLove
     appEnv: AppEnvironment,
     onLogout: () -> Unit,
     onOpenPrivacyPolicy: () -> Unit,
+    onOpenMakeAWish: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -70,6 +71,11 @@ import org.robojackets.apiary.base.ui.util.MadeWithLove
                     text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
                 )},
                 onClick = {}
+            )
+            SettingsMenuLink(
+                icon = { Icon(Icons.Outlined.Feedback, contentDescription = "feedback") },
+                title = { Text(text = "Make a wish") },
+                onClick = onOpenMakeAWish,
             )
             SettingsMenuLink(
                 icon = { Icon(Icons.Outlined.PrivacyTip, contentDescription = "privacy tip") },
@@ -112,6 +118,7 @@ fun SettingsScreen(
         CustomTabsClient.bindCustomTabsService(context, "com.android.chrome", viewModel.customTabsServiceConnection)
     }
 
+    val secondaryThemeColor = MaterialTheme.colors.background
     ContentPadding {
        Settings(
            appEnv = viewModel.globalSettings.appEnv,
@@ -119,8 +126,12 @@ fun SettingsScreen(
                viewModel.logout()
            },
            onOpenPrivacyPolicy = {
-               val customTabsIntent = viewModel.getPrivacyPolicyCustomTabsIntent(webNavBarBackground.toArgb())
+               val customTabsIntent = viewModel.getCustomTabsIntent()
                customTabsIntent.launchUrl(context, viewModel.privacyPolicyUrl)
+           },
+           onOpenMakeAWish = {
+               val customTabsIntent = viewModel.getCustomTabsIntent(secondaryThemeColor.toArgb())
+               customTabsIntent.launchUrl(context, viewModel.makeAWishUrl)
            }
        )
     }
@@ -132,6 +143,7 @@ private fun SettingsPreview() {
     Settings(
         appEnv = AppEnvironment.Production,
         onLogout = {},
-        onOpenPrivacyPolicy = {}
+        onOpenPrivacyPolicy = {},
+        onOpenMakeAWish = {}
     )
 }
