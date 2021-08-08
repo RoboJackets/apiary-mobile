@@ -23,6 +23,7 @@ allprojects {
 
 plugins {
     id("io.gitlab.arturbosch.detekt").version("1.18.0-RC2")
+    id("com.autonomousapps.dependency-analysis").version("0.75.0")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
@@ -63,4 +64,20 @@ tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt::class) {
 
 dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.16.0")
+}
+
+// from https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/wiki/ABI-filtering
+dependencyAnalysis {
+    abi {
+        exclusions {
+            // Convenience helpers
+            ignoreSubPackage("internal")
+            ignoreInternalPackages()
+            ignoreGeneratedCode()
+
+            // Raw, regexp-based APIs
+            excludeAnnotations(".*\\.Generated")
+            excludeClasses(".*\\.internal\\..*")
+        }
+    }
 }

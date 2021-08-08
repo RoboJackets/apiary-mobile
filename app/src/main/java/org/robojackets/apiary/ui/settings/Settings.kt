@@ -27,13 +27,14 @@ import org.robojackets.apiary.base.AppEnvironment
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.MadeWithLove
 
+@Suppress("LongMethod")
 @Composable
  private fun Settings(
-    appEnv: AppEnvironment,
-    onLogout: () -> Unit,
-    onOpenPrivacyPolicy: () -> Unit,
-    onOpenMakeAWish: () -> Unit,
-) {
+     appEnv: AppEnvironment,
+     onLogout: () -> Unit,
+     onOpenPrivacyPolicy: () -> Unit,
+     onOpenMakeAWish: () -> Unit,
+ ) {
     val context = LocalContext.current
 
     Column(
@@ -61,7 +62,7 @@ import org.robojackets.apiary.base.ui.util.MadeWithLove
                 title = { Text(text = "Server") },
                 subtitle = { Text(
                     text = "${appEnv.name} (${appEnv.apiBaseUrl})"
-                )},
+                ) },
                 onClick = {}
             )
             SettingsMenuLink(
@@ -69,7 +70,7 @@ import org.robojackets.apiary.base.ui.util.MadeWithLove
                 title = { Text(text = "Version") },
                 subtitle = { Text(
                     text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
-                )},
+                ) },
                 onClick = {}
             )
             SettingsMenuLink(
@@ -97,8 +98,6 @@ import org.robojackets.apiary.base.ui.util.MadeWithLove
             MadeWithLove()
         }
     }
-
-
  }
 
 @Composable
@@ -137,6 +136,7 @@ fun SettingsScreen(
     }
 }
 
+@Suppress("UnusedPrivateMember")
 @Preview
 @Composable
 private fun SettingsPreview() {

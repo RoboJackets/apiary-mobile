@@ -8,45 +8,32 @@ plugins {
 }
 
 dependencies {
-    implementation("com.google.android.material:material:1.4.0")
-    implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
-    implementation("androidx.activity:activity-compose:1.3.0")
-    androidTestImplementation("junit:junit:4.13.2")
+    androidTestImplementation(TestDependencies.junit)
 
     // Compose
-    implementation("androidx.compose.ui:ui:1.0.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-beta08")
+    api(ComposeDependencies.compose_ui)
     // Tooling support (Previews, etc.)
-    implementation("androidx.compose.ui:ui-tooling:1.0.0")
+    implementation(ComposeDependencies.compose_ui_tooling)
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-    implementation("androidx.compose.foundation:foundation:1.0.0")
+    api(ComposeDependencies.compose_foundation)
     // Material Design
-    implementation("androidx.compose.material:material:1.0.0")
+    api(ComposeDependencies.compose_material)
 
-    // Integration with observables
-    implementation("androidx.compose.runtime:runtime-livedata:1.0.0")
-    implementation("androidx.compose.runtime:runtime-rxjava2:1.0.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("androidx.activity:activity-compose:1.3.0")
     // UI Tests
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.0")
-    // Navigation
-    implementation("androidx.navigation:navigation-compose:2.4.0-alpha05")
+    androidTestImplementation(ComposeDependencies.compose_ui_test)
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.35")
-    kapt("com.google.dagger:hilt-android-compiler:2.35")
+    implementation(HiltDependencies.hilt)
+    kapt(HiltDependencies.hilt_android_compiler)
 
-    implementation("androidx.preference:preference-ktx:1.1.1")
-    api("hu.autsoft:krate:1.1.0")
+    api(AndroidToolDependencies.krate)
 
     // NFC
-    implementation(platform("com.google.firebase:firebase-bom:28.3.0"))
-    compileOnly(files("../libs/nxpnfcandroidlib-release.aar"))
-    implementation("com.google.firebase:firebase-core") // Required when including TapLinx (line above) manually
+    implementation(platform(FirebaseDependencies.firebase_bom))
+    compileOnly(files(NfcDependencies.nxp_nfc_android_aar_path))
+    implementation(FirebaseDependencies.firebase_core) // Required when including TapLinx (line above) manually
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+    coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
 }
 
 hilt {
@@ -58,9 +45,6 @@ android {
     defaultConfig {
         minSdk = 24
         targetSdk = 30
-//        applicationId = "org.robojackets.apiary.base"
-//        versionCode = 1
-//        versionName = "1.0"
 
         vectorDrawables {
             useSupportLibrary = true

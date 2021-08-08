@@ -16,59 +16,53 @@ dependencies {
     implementation(project(mapOf("path" to ":base")))
 
     // Basics
-    implementation("com.google.android.material:material:1.4.0")
-    implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
-    implementation("androidx.activity:activity-compose:1.3.0")
-    androidTestImplementation("junit:junit:4.13.2")
+    implementation(AndroidXDependencies.androidx_appcompat)
+    implementation(AndroidXDependencies.androidx_activity_compose)
+    androidTestImplementation(TestDependencies.junit)
 
     // Compose
-    implementation(composeDependencies.compose_ui)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-beta08")
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.12.0")
-    // Tooling support (Previews, etc.)
-    implementation("androidx.compose.ui:ui-tooling:1.0.0")
+    implementation(ComposeDependencies.compose_ui)
+    implementation(ComposeDependencies.lifecycle_viewmodel_compose)
+    implementation(ComposeDependencies.compose_ui_tooling)
+
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-    implementation("androidx.compose.foundation:foundation:1.0.0")
+    implementation(ComposeDependencies.compose_foundation)
     // Material Design
-    implementation("androidx.compose.material:material:1.0.0")
+    implementation(ComposeDependencies.compose_material)
     // Material design icons
-    implementation("androidx.compose.material:material-icons-core:1.0.0")
-    implementation("androidx.compose.material:material-icons-extended:1.0.0")
+    implementation(ComposeDependencies.compose_material_icons_core)
+    implementation(ComposeDependencies.compose_material_icons_extended)
     // Integration with observables
-    implementation("androidx.compose.runtime:runtime-livedata:1.0.0")
-    implementation("androidx.compose.runtime:runtime-rxjava2:1.0.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("androidx.activity:activity-compose:1.3.0")
+    implementation(AndroidXDependencies.androidx_activity_compose)
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:28.3.0"))
+    implementation(platform(FirebaseDependencies.firebase_bom))
 
     // NFC
-    implementation(files("../libs/nxpnfcandroidlib-release.aar"))
-    implementation("com.google.firebase:firebase-core") // Required when including TapLinx (line above) manually
+    implementation(files(NfcDependencies.nxp_nfc_android_aar_path))
+    implementation(FirebaseDependencies.firebase_core) // Required when including TapLinx (line above) manually
 
     // UI Tests
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.0")
+    androidTestImplementation(ComposeDependencies.compose_ui_test)
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.3.5")
+    implementation(AndroidXDependencies.androidx_navigation_compose)
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.35")
-    kapt("com.google.dagger:hilt-android-compiler:2.35")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0-alpha03")
+    implementation(HiltDependencies.hilt)
+    kapt(HiltDependencies.hilt_android_compiler)
+    implementation(HiltDependencies.hilt_navigation_compose)
 
-    implementation("androidx.preference:preference-ktx:1.1.1")
-
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+    coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
 
     // Settings UI
-    implementation("com.github.alorma:compose-settings:0.2.0")
+    implementation(ComposeDependencies.compose_settings)
 
     // Collects open-source license information
-    implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
+    implementation(AndroidToolDependencies.open_source_licenses)
 
     // Chrome Custom Tabs
-    implementation("androidx.browser:browser:1.3.0")
+    implementation(AndroidXDependencies.androidx_browser)
+
+    implementation(AuthDependencies.appauth)
 }
 
 hilt {
