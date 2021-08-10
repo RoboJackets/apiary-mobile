@@ -5,6 +5,7 @@ plugins {
     kotlin("kapt")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 
 dependencies {
@@ -15,46 +16,53 @@ dependencies {
     implementation(project(mapOf("path" to ":base")))
 
     // Basics
-    implementation("com.google.android.material:material:1.4.0")
-    implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
-    implementation("androidx.activity:activity-compose:1.3.0")
-    androidTestImplementation("junit:junit:4.13.2")
+    implementation(AndroidXDependencies.androidx_appcompat)
+    implementation(AndroidXDependencies.androidx_activity_compose)
+    androidTestImplementation(TestDependencies.junit)
 
     // Compose
-    implementation("androidx.compose.ui:ui:1.0.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-beta08")
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.12.0")
-    // Tooling support (Previews, etc.)
-    implementation("androidx.compose.ui:ui-tooling:1.0.0")
-    // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-    implementation("androidx.compose.foundation:foundation:1.0.0")
-    // Material Design
-    implementation("androidx.compose.material:material:1.0.0")
-    // Material design icons
-    implementation("androidx.compose.material:material-icons-core:1.0.0")
-    implementation("androidx.compose.material:material-icons-extended:1.0.0")
-    // Integration with observables
-    implementation("androidx.compose.runtime:runtime-livedata:1.0.0")
-    implementation("androidx.compose.runtime:runtime-rxjava2:1.0.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("androidx.activity:activity-compose:1.3.0")
+    implementation(ComposeDependencies.compose_ui)
+    implementation(ComposeDependencies.lifecycle_viewmodel_compose)
+    implementation(ComposeDependencies.compose_ui_tooling)
 
-    implementation(files("../libs/nxpnfcandroidlib-release.aar"))
-    implementation("com.google.firebase:firebase-core:17.2.2") // Required when including TapLinx (line above) manually
+    // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
+    implementation(ComposeDependencies.compose_foundation)
+    // Material Design
+    implementation(ComposeDependencies.compose_material)
+    // Material design icons
+    implementation(ComposeDependencies.compose_material_icons_core)
+    implementation(ComposeDependencies.compose_material_icons_extended)
+    // Integration with observables
+    implementation(AndroidXDependencies.androidx_activity_compose)
+
+    // Firebase
+    implementation(platform(FirebaseDependencies.firebase_bom))
+
+    // NFC
+    implementation(files(NfcDependencies.nxp_nfc_android_aar_path))
+    implementation(FirebaseDependencies.firebase_core) // Required when including TapLinx (line above) manually
 
     // UI Tests
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.0")
+    androidTestImplementation(ComposeDependencies.compose_ui_test)
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.3.5")
+    implementation(AndroidXDependencies.androidx_navigation_compose)
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.35")
-    kapt("com.google.dagger:hilt-android-compiler:2.35")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0-alpha03")
+    implementation(HiltDependencies.hilt)
+    kapt(HiltDependencies.hilt_android_compiler)
+    implementation(HiltDependencies.hilt_navigation_compose)
 
-    implementation("androidx.preference:preference-ktx:1.1.1")
+    coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+    // Settings UI
+    implementation(ComposeDependencies.compose_settings)
+
+    // Collects open-source license information
+    implementation(AndroidToolDependencies.open_source_licenses)
+
+    // Chrome Custom Tabs
+    implementation(AndroidXDependencies.androidx_browser)
+
+    implementation(AuthDependencies.appauth)
 }
 
 hilt {
@@ -71,8 +79,8 @@ android {
         applicationId = "org.robojackets.apiary"
         minSdk = 24 // FIXME: this is temporary to workaround a Compose bug (https://issuetracker.google.com/issues/194289155)
         targetSdk = 30
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "0.2.0"
         vectorDrawables {
             useSupportLibrary = true
         }

@@ -24,6 +24,7 @@ import org.robojackets.apiary.auth.model.LoginStatus.*
 import org.robojackets.apiary.auth.oauth2.AuthManager
 import org.robojackets.apiary.base.AppEnvironment
 import org.robojackets.apiary.base.ui.theme.BottomSheetShape
+import org.robojackets.apiary.base.ui.util.MadeWithLove
 
 @OptIn(ExperimentalMaterialApi::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Suppress("LongMethod", "MagicNumber")
@@ -178,7 +179,7 @@ private fun Authentication(
                     Text("Change server")
                 }
                 Text("Server: ${viewState.appEnv.name} (${viewState.appEnv.apiBaseUrl})")
-                Text("Made with ♥ by RoboJackets")
+                MadeWithLove()
             }
         }
     }

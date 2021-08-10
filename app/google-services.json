@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1086810010927",
+    "project_id": "apiary-mobile-3f817",
+    "storage_bucket": "apiary-mobile-3f817.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1086810010927:android:5a05c3bbcd3fdc16301dda",
+        "android_client_info": {
+          "package_name": "org.robojackets.apiary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1086810010927-h68ig41tkb2auuaeq7g4etcja6835if5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxf5Uv8R-Kk_QLh2AdaFFj03E2VXPn0q0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1086810010927-h68ig41tkb2auuaeq7g4etcja6835if5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

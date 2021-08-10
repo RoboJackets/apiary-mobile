@@ -9,6 +9,8 @@ buildscript {
         classpath("com.android.tools.build:gradle:7.1.0-alpha05")
         classpath("com.google.dagger:hilt-android-gradle-plugin:2.36")
         classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:1.3.0")
+        classpath("com.google.gms:google-services:4.3.8")
+        classpath("com.google.android.gms:oss-licenses-plugin:0.10.4")
     }
 }
 
@@ -21,6 +23,7 @@ allprojects {
 
 plugins {
     id("io.gitlab.arturbosch.detekt").version("1.18.0-RC2")
+    id("com.autonomousapps.dependency-analysis").version("0.75.0")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
@@ -61,4 +64,20 @@ tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt::class) {
 
 dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.16.0")
+}
+
+// from https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/wiki/ABI-filtering
+dependencyAnalysis {
+    abi {
+        exclusions {
+            // Convenience helpers
+            ignoreSubPackage("internal")
+            ignoreInternalPackages()
+            ignoreGeneratedCode()
+
+            // Raw, regexp-based APIs
+            excludeAnnotations(".*\\.Generated")
+            excludeClasses(".*\\.internal\\..*")
+        }
+    }
 }

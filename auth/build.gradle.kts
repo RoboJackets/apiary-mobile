@@ -12,57 +12,47 @@ hilt {
 }
 
 dependencies {
-    implementation(project(mapOf("path" to ":base")))
-    implementation(project(mapOf("path" to ":navigation")))
+    api(project(mapOf("path" to ":base")))
+    api(project(mapOf("path" to ":navigation")))
 
-    implementation("com.google.android.material:material:1.4.0")
-    implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
-    implementation("androidx.activity:activity-compose:1.3.0")
-    androidTestImplementation("junit:junit:4.13.2")
+    implementation(MaterialDependencies.material_android)
+    implementation(AndroidXDependencies.androidx_activity_compose)
+    androidTestImplementation(TestDependencies.junit)
+    androidTestDebugImplementation(TestDependencies.junit)
 
     // Compose
-    implementation("androidx.compose.ui:ui:1.0.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-beta08")
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.12.0")
+    implementation(ComposeDependencies.compose_ui)
+    implementation(ComposeDependencies.accompanist)
+    implementation(AndroidXDependencies.androidx_navigation_compose)
 
     // Tooling support (Previews, etc.)
-    implementation("androidx.compose.ui:ui-tooling:1.0.0")
+    implementation(ComposeDependencies.compose_ui_tooling)
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-    implementation("androidx.compose.foundation:foundation:1.0.0")
+    implementation(ComposeDependencies.compose_foundation)
     // Material Design
-    implementation("androidx.compose.material:material:1.0.0")
+    implementation(ComposeDependencies.compose_material)
 
     // Integration with observables
-    implementation("androidx.compose.runtime:runtime-livedata:1.0.0")
-    implementation("androidx.compose.runtime:runtime-rxjava2:1.0.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("androidx.activity:activity-compose:1.3.0")
+    implementation(AndroidXDependencies.androidx_lifecycle_runtime_ktx)
 
     // UI Tests
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.0")
-    // Navigation
-    implementation("androidx.navigation:navigation-compose:2.4.0-alpha05")
+    androidTestImplementation(ComposeDependencies.compose_ui_test)
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.35")
-    kapt("com.google.dagger:hilt-android-compiler:2.35")
+    implementation(HiltDependencies.hilt)
+    kapt(HiltDependencies.hilt_android_compiler)
 
     // OAuth2
-    api("net.openid:appauth:0.9.0")
+    api(AuthDependencies.appauth)
 
-    implementation("androidx.preference:preference-ktx:1.1.1")
-
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+    coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
 }
 
 android {
     compileSdk = 30
     defaultConfig {
-//        applicationId = "org.robojackets.apiary.auth"
         minSdk = 24
         targetSdk = 30
-//        versionCode = 1
-//        versionName = "1.0"
+
         vectorDrawables {
             useSupportLibrary = true
         }
