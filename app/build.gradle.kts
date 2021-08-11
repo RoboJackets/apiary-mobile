@@ -10,59 +10,45 @@ plugins {
 
 dependencies {
     // Other modules
-    implementation(project(mapOf("path" to ":navigation")))
-    implementation(project(mapOf("path" to ":auth")))
     implementation(project(mapOf("path" to ":attendance")))
+    implementation(project(mapOf("path" to ":auth")))
     implementation(project(mapOf("path" to ":base")))
+    implementation(project(mapOf("path" to ":navigation")))
 
-    // Basics
-    implementation(AndroidXDependencies.androidx_appcompat)
+    // Dependencies
+    coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+    implementation(AndroidToolDependencies.open_source_licenses)
+    implementation(AndroidToolDependencies.timber)
+
     implementation(AndroidXDependencies.androidx_activity_compose)
-    androidTestImplementation(TestDependencies.junit)
+    implementation(AndroidXDependencies.androidx_appcompat)
+    implementation(AndroidXDependencies.androidx_browser)
+    implementation(AndroidXDependencies.androidx_navigation_compose)
 
-    // Compose
+    implementation(AuthDependencies.appauth)
+
     implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.lifecycle_viewmodel_compose)
     implementation(ComposeDependencies.compose_ui_tooling)
-
-    // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
     implementation(ComposeDependencies.compose_foundation)
-    // Material Design
     implementation(ComposeDependencies.compose_material)
-    // Material design icons
     implementation(ComposeDependencies.compose_material_icons_core)
     implementation(ComposeDependencies.compose_material_icons_extended)
-    // Integration with observables
-    implementation(AndroidXDependencies.androidx_activity_compose)
+    implementation(ComposeDependencies.compose_settings)
 
-    // Firebase
-    implementation(platform(FirebaseDependencies.firebase_bom))
 
-    // NFC
-    implementation(files(NfcDependencies.nxp_nfc_android_aar_path))
-    implementation(FirebaseDependencies.firebase_core) // Required when including TapLinx (line above) manually
-
-    // UI Tests
-    androidTestImplementation(ComposeDependencies.compose_ui_test)
-    // Navigation
-    implementation(AndroidXDependencies.androidx_navigation_compose)
-    // Hilt
     implementation(HiltDependencies.hilt)
     kapt(HiltDependencies.hilt_android_compiler)
     implementation(HiltDependencies.hilt_navigation_compose)
 
-    coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+    implementation(platform(NfcDependencies.nfc_firebase_bom))
+    implementation(NfcDependencies.nfc_firebase_core) // Firebase BoM and Core are required when including TapLinx (line below) manually
+    implementation(files(NfcDependencies.nxp_nfc_android_aar_path))
 
-    // Settings UI
-    implementation(ComposeDependencies.compose_settings)
+    // Test dependencies
+    androidTestImplementation(ComposeDependencies.compose_ui_test)
 
-    // Collects open-source license information
-    implementation(AndroidToolDependencies.open_source_licenses)
-
-    // Chrome Custom Tabs
-    implementation(AndroidXDependencies.androidx_browser)
-
-    implementation(AuthDependencies.appauth)
+    androidTestImplementation(TestDependencies.junit)
 }
 
 hilt {

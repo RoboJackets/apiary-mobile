@@ -8,32 +8,27 @@ plugins {
 }
 
 dependencies {
-    androidTestImplementation(TestDependencies.junit)
+    // Other modules (none right now)
 
-    // Compose
-    api(ComposeDependencies.compose_ui)
-    // Tooling support (Previews, etc.)
+    // Dependencies
+    coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+    api(AndroidToolDependencies.krate)
+
+    implementation(ComposeDependencies.compose_foundation)
+    implementation(ComposeDependencies.compose_material)
+    implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.compose_ui_tooling)
-    // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-    api(ComposeDependencies.compose_foundation)
-    // Material Design
-    api(ComposeDependencies.compose_material)
 
-    // UI Tests
-    androidTestImplementation(ComposeDependencies.compose_ui_test)
-
-    // Hilt
     implementation(HiltDependencies.hilt)
     kapt(HiltDependencies.hilt_android_compiler)
 
-    api(AndroidToolDependencies.krate)
-
-    // NFC
-    implementation(platform(FirebaseDependencies.firebase_bom))
+    implementation(platform(NfcDependencies.nfc_firebase_bom))
+    implementation(NfcDependencies.nfc_firebase_core) // Firebase BoM and Core are required when including TapLinx (line below) manually
     compileOnly(files(NfcDependencies.nxp_nfc_android_aar_path))
-    implementation(FirebaseDependencies.firebase_core) // Required when including TapLinx (line above) manually
 
-    coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+    // Test dependencies
+    androidTestImplementation(ComposeDependencies.compose_ui_test)
+    androidTestImplementation(TestDependencies.junit)
 }
 
 hilt {
