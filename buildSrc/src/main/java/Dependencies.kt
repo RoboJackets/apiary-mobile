@@ -1,9 +1,9 @@
 object ComposeDependencies {
     object Versions {
-        const val compose_version = "1.0.0"
+        const val compose_version = "1.0.1"
         const val lifecycle_viewmodel_compose_version = "1.0.0-alpha07"
-        const val accompanist_version = "0.12.0"
-        const val compose_settings_version = "0.2.0"
+        const val accompanist_version = "0.16.1"
+        const val compose_settings_version = "0.3.0"
     }
 
     const val compose_ui = "androidx.compose.ui:ui:${Versions.compose_version}"
@@ -45,7 +45,7 @@ object AndroidXDependencies {
     object Versions {
         const val androidx_lifecycle_runtime_ktx_version = "2.3.1"
         const val androidx_activity_compose_version = "1.3.1"
-        const val androidx_navigation_compose_version = "2.4.0-alpha05"
+        const val androidx_navigation_compose_version = "2.4.0-alpha06"
         const val androidx_preference_ktx_version = "1.1.1"
         const val androidx_browser_version = "1.3.0"
         const val androidx_appcompat_version = "1.3.1"
@@ -66,7 +66,7 @@ object AndroidXDependencies {
 
 object FirebaseDependencies {
     object Versions {
-        const val firebase_bom_version = "28.3.0"
+        const val firebase_bom_version = "28.3.1"
     }
 
     const val firebase_bom = "com.google.firebase:firebase-bom:${Versions.firebase_bom_version}"
@@ -80,7 +80,7 @@ object NfcDependencies {
 
 object AuthDependencies {
     object Versions {
-        const val appauth_version = "0.9.0"
+        const val appauth_version = "0.9.1"
     }
 
     const val appauth = "net.openid:appauth:${Versions.appauth_version}"
@@ -88,7 +88,7 @@ object AuthDependencies {
 
 object HiltDependencies {
     object Versions {
-        const val hilt_version = "2.35"
+        const val hilt_version = "2.38.1"
         const val hilt_navigation_compose_version = "1.0.0-alpha03"
     }
 
