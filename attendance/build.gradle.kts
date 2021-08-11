@@ -8,28 +8,29 @@ plugins {
 }
 
 dependencies {
-    api(project(mapOf("path" to ":base")))
+    // Other modules
+    implementation(project(mapOf("path" to ":base")))
 
-    implementation(MaterialDependencies.material_android)
-    androidTestImplementation(TestDependencies.junit)
+    // Dependencies
+    coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
 
-    implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.compose_material)
+    implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.lifecycle_viewmodel_compose)
 
-    // UI Tests
-    androidTestImplementation(ComposeDependencies.compose_ui_test)
-
-    // Hilt
     implementation(HiltDependencies.hilt)
     kapt(HiltDependencies.hilt_android_compiler)
 
-    // NFC
-    implementation(platform(FirebaseDependencies.firebase_bom))
-    compileOnly(files(NfcDependencies.nxp_nfc_android_aar_path))
-    implementation(FirebaseDependencies.firebase_core) // Required when including TapLinx (line above) manually
+    implementation(MaterialDependencies.material_android)
 
-    coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+    implementation(platform(NfcDependencies.nfc_firebase_bom))
+    implementation(NfcDependencies.nfc_firebase_core) // Firebase BoM and Core are required when including TapLinx (line below) manually
+    compileOnly(files(NfcDependencies.nxp_nfc_android_aar_path))
+
+    // Test dependencies
+    androidTestImplementation(ComposeDependencies.compose_ui_test)
+
+    androidTestImplementation(TestDependencies.junit)
 }
 
 android {

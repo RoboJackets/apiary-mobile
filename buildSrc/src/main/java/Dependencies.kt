@@ -76,6 +76,10 @@ object FirebaseDependencies {
 
 object NfcDependencies {
     const val nxp_nfc_android_aar_path = "../libs/nxpnfcandroidlib-release.aar"
+    const val nfc_firebase_bom = FirebaseDependencies.firebase_bom
+    const val nfc_firebase_core = FirebaseDependencies.firebase_core // Duplicate definition
+    // with the goal of clarifying that the inclusion of Firebase Core here is specifically for
+    // the NXP NFC (TapLinx) library
 }
 
 object AuthDependencies {
@@ -104,6 +108,7 @@ object AndroidToolDependencies {
         const val android_tools_desugar_version = "1.1.5"
         const val open_source_licenses_version = "17.0.0"
         const val krate_version = "1.1.0"
+        const val timber_version = "5.0.0"
     }
 
     const val android_tools_desugar_jdk =
@@ -111,6 +116,7 @@ object AndroidToolDependencies {
     const val open_source_licenses =
         "com.google.android.gms:play-services-oss-licenses:${Versions.open_source_licenses_version}"
     const val krate = "hu.autsoft:krate:${Versions.krate_version}"
+    const val timber = "com.jakewharton.timber:timber:${Versions.timber_version}"
 }
 
 object TestDependencies {

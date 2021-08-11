@@ -12,39 +12,34 @@ hilt {
 }
 
 dependencies {
-    api(project(mapOf("path" to ":base")))
-    api(project(mapOf("path" to ":navigation")))
+    // Other modules
+    implementation(project(mapOf("path" to ":base")))
+    implementation(project(mapOf("path" to ":navigation")))
 
-    implementation(MaterialDependencies.material_android)
+    // Dependencies
+    coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+
     implementation(AndroidXDependencies.androidx_activity_compose)
-    androidTestImplementation(TestDependencies.junit)
-    androidTestDebugImplementation(TestDependencies.junit)
-
-    // Compose
-    implementation(ComposeDependencies.compose_ui)
-    implementation(ComposeDependencies.accompanist)
+    implementation(AndroidXDependencies.androidx_lifecycle_runtime_ktx)
     implementation(AndroidXDependencies.androidx_navigation_compose)
 
-    // Tooling support (Previews, etc.)
-    implementation(ComposeDependencies.compose_ui_tooling)
-    // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
+    implementation(AuthDependencies.appauth)
+
+    implementation(ComposeDependencies.accompanist)
     implementation(ComposeDependencies.compose_foundation)
-    // Material Design
     implementation(ComposeDependencies.compose_material)
+    implementation(ComposeDependencies.compose_ui)
+    implementation(ComposeDependencies.compose_ui_tooling)
 
-    // Integration with observables
-    implementation(AndroidXDependencies.androidx_lifecycle_runtime_ktx)
-
-    // UI Tests
-    androidTestImplementation(ComposeDependencies.compose_ui_test)
-    // Hilt
     implementation(HiltDependencies.hilt)
     kapt(HiltDependencies.hilt_android_compiler)
 
-    // OAuth2
-    api(AuthDependencies.appauth)
+    implementation(MaterialDependencies.material_android)
 
-    coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+    // Test dependencies
+    androidTestImplementation(ComposeDependencies.compose_ui_test)
+
+    androidTestImplementation(TestDependencies.junit)
 }
 
 android {

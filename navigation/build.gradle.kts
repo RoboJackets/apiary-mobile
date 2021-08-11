@@ -12,21 +12,20 @@ hilt {
 }
 
 dependencies {
-    implementation(MaterialDependencies.material_android)
-    androidTestImplementation(TestDependencies.junit)
+    // Other modules (none right now)
 
-    // UI Tests
-    androidTestImplementation(ComposeDependencies.compose_ui_test)
-    // Navigation
-    api(AndroidXDependencies.androidx_navigation_compose)
+    // Dependencies
+    coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
 
-    // Hilt
+    implementation(AndroidXDependencies.androidx_navigation_compose)
+
     implementation(HiltDependencies.hilt)
     kapt(HiltDependencies.hilt_android_compiler)
 
-    coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+    implementation(MaterialDependencies.material_android)
 
-    api(ComposeDependencies.compose_runtime)
+    // Test dependencies
+    androidTestImplementation(TestDependencies.junit)
 }
 
 android {
