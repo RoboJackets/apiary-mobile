@@ -36,6 +36,10 @@ dependencies {
 
     implementation(MaterialDependencies.material_android)
 
+    implementation(NetworkDependencies.moshi)
+    kapt(NetworkDependencies.moshi_kotlin_codegen)
+    implementation(NetworkDependencies.retrofit)
+
     // Test dependencies
     androidTestImplementation(ComposeDependencies.compose_ui_test)
 

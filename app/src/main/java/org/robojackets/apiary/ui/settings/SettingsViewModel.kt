@@ -9,8 +9,14 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import org.robojackets.apiary.auth.AuthStateManager
 import org.robojackets.apiary.base.GlobalSettings
+import org.robojackets.apiary.base.model.NetworkResult
+import org.robojackets.apiary.base.model.ServerInfoContainer
+import org.robojackets.apiary.base.repository.ServerInfoRepository
 import org.robojackets.apiary.base.ui.theme.webNavBarBackground
 import org.robojackets.apiary.navigation.NavigationDirections
 import org.robojackets.apiary.navigation.NavigationManager
@@ -20,6 +26,8 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     val globalSettings: GlobalSettings,
     val navigationManager: NavigationManager,
+    val serverInfoRepository: ServerInfoRepository,
+    val authStateManager: AuthStateManager,
 ) : ViewModel() {
     val privacyPolicyUrl: Uri = Uri.withAppendedPath(globalSettings.appEnv.apiBaseUrl, "privacy")
     val makeAWishUrl: Uri = Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLSelERsYq3" +
@@ -50,6 +58,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun logout() {
+        authStateManager.replace(null)
         globalSettings.clearLoginInfo()
         navigateToLogin()
     }
@@ -63,5 +72,20 @@ class SettingsViewModel @Inject constructor(
         )
 
         return customTabsBuilder.build()
+    }
+
+    fun getServerInfo() {
+        viewModelScope.launch {
+            val serverInfoContainerResult: NetworkResult<ServerInfoContainer> = serverInfoRepository.getServerInfo()
+
+            when (serverInfoContainerResult) {
+                is NetworkResult.Success -> {
+                    Log.d("SettingsViewModel", "Server info result: ${serverInfoContainerResult.data?.info?.appName}")
+                }
+                is NetworkResult.Error -> {
+                    Log.d("SettingsViewModel", "Server info call failed: ${serverInfoContainerResult.message}")
+                }
+            }
+        }
     }
 }

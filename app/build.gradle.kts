@@ -36,10 +36,15 @@ dependencies {
     implementation(ComposeDependencies.compose_material_icons_extended)
     implementation(ComposeDependencies.compose_settings)
 
-
     implementation(HiltDependencies.hilt)
     kapt(HiltDependencies.hilt_android_compiler)
     implementation(HiltDependencies.hilt_navigation_compose)
+
+    implementation(NetworkDependencies.moshi_converter_factory)
+    implementation(NetworkDependencies.okhttp)
+    implementation(platform(NetworkDependencies.okhttp_bom))
+    implementation(NetworkDependencies.okhttp_logging_interceptor)
+    implementation(NetworkDependencies.retrofit)
 
     implementation(platform(NfcDependencies.nfc_firebase_bom))
     implementation(NfcDependencies.nfc_firebase_core) // Firebase BoM and Core are required when including TapLinx (line below) manually

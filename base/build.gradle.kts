@@ -22,6 +22,10 @@ dependencies {
     implementation(HiltDependencies.hilt)
     kapt(HiltDependencies.hilt_android_compiler)
 
+    implementation(NetworkDependencies.moshi)
+    kapt(NetworkDependencies.moshi_kotlin_codegen)
+    implementation(NetworkDependencies.retrofit)
+
     implementation(platform(NfcDependencies.nfc_firebase_bom))
     implementation(NfcDependencies.nfc_firebase_core) // Firebase BoM and Core are required when including TapLinx (line below) manually
     compileOnly(files(NfcDependencies.nxp_nfc_android_aar_path))
