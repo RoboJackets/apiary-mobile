@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -40,7 +42,8 @@ import org.robojackets.apiary.base.ui.util.MadeWithLove
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
         Column {
@@ -115,6 +118,7 @@ fun SettingsScreen(
         // The package name below is NOT the app package name...sigh
         // Thanks to https://stackoverflow.com/a/62183713
         CustomTabsClient.bindCustomTabsService(context, "com.android.chrome", viewModel.customTabsServiceConnection)
+        viewModel.getServerInfo()
     }
 
     val secondaryThemeColor = MaterialTheme.colors.background
