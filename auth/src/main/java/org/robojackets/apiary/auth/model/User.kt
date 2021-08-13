@@ -11,6 +11,7 @@ data class User(
 data class UserInfo(
     val id : Int,
     val uid : String,
+    val name : String,
     val preferred_first_name: String,
-    val allPermissions: List<String>
+    val allPermissions: List<String>,
 )

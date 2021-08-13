@@ -14,6 +14,9 @@ import okhttp3.logging.HttpLoggingInterceptor.Level.BODY
 import org.robojackets.apiary.ApiaryMobileApplication
 import org.robojackets.apiary.BuildConfig
 import org.robojackets.apiary.auth.AuthStateManager
+import org.robojackets.apiary.auth.network.AuthHeaderInterceptor
+import org.robojackets.apiary.auth.network.UserApiService
+import org.robojackets.apiary.auth.network.UserRepository
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.repository.ServerInfoRepository
 import org.robojackets.apiary.base.service.ServerInfoApiService
@@ -43,7 +46,7 @@ class AppModule {
     @Provides
     fun providesAuthStateManager(
         @ApplicationContext context: Context
-    ) = AuthStateManager.getInstance(context)
+    ): AuthStateManager = AuthStateManager.getInstance(context)
 
     @Singleton
     @Provides
@@ -51,13 +54,16 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun providesOkHttpClient(): OkHttpClient {
+    fun providesOkHttpClient(
+        authStateManager: AuthStateManager
+    ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(if (BuildConfig.DEBUG) BODY else BASIC) // Only log detailed
         // network requests in debug builds
         loggingInterceptor.redactHeader("Authorization") // Redact access tokens in headers
 
         return OkHttpClient.Builder()
+            .addInterceptor(AuthHeaderInterceptor(authStateManager))
             .addInterceptor(loggingInterceptor)
             .build()
     }
@@ -84,4 +90,16 @@ class AppModule {
     fun provideServerInfoRepository(
         serverInfoApiService: ServerInfoApiService
     ) = ServerInfoRepository(serverInfoApiService)
+
+    @Singleton
+    @Provides
+    fun providesUserApiService(
+        retrofit: Retrofit
+    ): UserApiService = retrofit.create(UserApiService::class.java)
+
+    @Singleton
+    @Provides
+    fun providesUserRepository(
+        userApiService: UserApiService
+    ) = UserRepository(userApiService)
 }

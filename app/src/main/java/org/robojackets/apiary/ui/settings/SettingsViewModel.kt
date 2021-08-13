@@ -11,8 +11,11 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.robojackets.apiary.auth.AuthStateManager
+import org.robojackets.apiary.auth.model.UserInfo
+import org.robojackets.apiary.auth.network.UserRepository
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.model.NetworkResult
 import org.robojackets.apiary.base.model.ServerInfoContainer
@@ -27,6 +30,7 @@ class SettingsViewModel @Inject constructor(
     val globalSettings: GlobalSettings,
     val navigationManager: NavigationManager,
     val serverInfoRepository: ServerInfoRepository,
+    val userRepository: UserRepository,
     val authStateManager: AuthStateManager,
 ) : ViewModel() {
     val privacyPolicyUrl: Uri = Uri.withAppendedPath(globalSettings.appEnv.apiBaseUrl, "privacy")
@@ -50,6 +54,26 @@ class SettingsViewModel @Inject constructor(
 
         override fun onServiceDisconnected(name: ComponentName?) {
             customTabsClient = null
+        }
+    }
+
+    private val _state = MutableStateFlow(SettingsState())
+
+    private val user = MutableStateFlow<UserInfo?>(null)
+
+    val state: StateFlow<SettingsState>
+        get() = _state
+
+    init {
+        viewModelScope.launch {
+            combine(listOf(
+                user,
+            )) {
+                flows -> SettingsState(
+                    flows[0] as UserInfo?
+                )
+            }.catch { throwable -> throw throwable }
+                .collect { _state.value = it }
         }
     }
 
@@ -88,4 +112,16 @@ class SettingsViewModel @Inject constructor(
             }
         }
     }
+
+    fun getUser() {
+        viewModelScope.launch {
+            if (user.value == null) {
+                user.value = userRepository.getLoggedInUserInfo()?.user
+            }
+        }
+    }
 }
+
+data class SettingsState(
+    val user: UserInfo? = null,
+)

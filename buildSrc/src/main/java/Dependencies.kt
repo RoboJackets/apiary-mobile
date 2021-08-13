@@ -123,6 +123,7 @@ object NetworkDependencies {
         const val moshi_converter_factory_version = "2.9.0"
         const val okhttp_bom_version = "4.9.0"
         const val retrofit_version = "2.9.0"
+        const val sandwich_version = "1.2.1"
     }
 
     const val moshi = "com.squareup.moshi:moshi:${Versions.moshi_version}"
@@ -133,7 +134,7 @@ object NetworkDependencies {
     const val okhttp = "com.squareup.okhttp3:okhttp"
     const val okhttp_logging_interceptor = "com.squareup.okhttp3:logging-interceptor"
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit_version}"
-
+    const val sandwich = "com.github.skydoves:sandwich:${Versions.sandwich_version}"
 }
 
 object TestDependencies {
