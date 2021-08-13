@@ -21,6 +21,7 @@ import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.repository.ServerInfoRepository
 import org.robojackets.apiary.base.service.ServerInfoApiService
 import org.robojackets.apiary.navigation.NavigationManager
+import org.robojackets.apiary.network.UserAgentInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
@@ -55,7 +56,8 @@ class AppModule {
     @Singleton
     @Provides
     fun providesOkHttpClient(
-        authStateManager: AuthStateManager
+        @ApplicationContext context: Context,
+        authStateManager: AuthStateManager,
     ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(if (BuildConfig.DEBUG) BODY else BASIC) // Only log detailed
@@ -63,6 +65,7 @@ class AppModule {
         loggingInterceptor.redactHeader("Authorization") // Redact access tokens in headers
 
         return OkHttpClient.Builder()
+            .addInterceptor(UserAgentInterceptor(context))
             .addInterceptor(AuthHeaderInterceptor(authStateManager))
             .addInterceptor(loggingInterceptor)
             .build()
