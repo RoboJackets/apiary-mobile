@@ -3,22 +3,21 @@ package org.robojackets.apiary.auth
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-
 import androidx.annotation.AnyThread
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import net.openid.appauth.*
-
 import org.json.JSONException
 import java.lang.ref.WeakReference
-
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.ReentrantLock
 import javax.inject.Inject
 
 // Based on AuthStateManager.java from the AppAuth-Android example app
 // https://github.com/openid/AppAuth-Android/blob/master/app/java/net/openid/appauthdemo/AuthStateManager.java
+@ActivityRetainedScoped
 class AuthStateManager @Inject constructor(
     @ApplicationContext context: Context
 ) {
