@@ -10,6 +10,7 @@ import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skydoves.sandwich.getOrThrow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -17,8 +18,6 @@ import org.robojackets.apiary.auth.AuthStateManager
 import org.robojackets.apiary.auth.model.UserInfo
 import org.robojackets.apiary.auth.network.UserRepository
 import org.robojackets.apiary.base.GlobalSettings
-import org.robojackets.apiary.base.model.NetworkResult
-import org.robojackets.apiary.base.model.ServerInfoContainer
 import org.robojackets.apiary.base.repository.ServerInfoRepository
 import org.robojackets.apiary.base.ui.theme.webNavBarBackground
 import org.robojackets.apiary.navigation.NavigationDirections
@@ -100,23 +99,27 @@ class SettingsViewModel @Inject constructor(
 
     fun getServerInfo() {
         viewModelScope.launch {
-            val serverInfoContainerResult: NetworkResult<ServerInfoContainer> = serverInfoRepository.getServerInfo()
-
-            when (serverInfoContainerResult) {
-                is NetworkResult.Success -> {
-                    Log.d("SettingsViewModel", "Server info result: ${serverInfoContainerResult.data?.info?.appName}")
-                }
-                is NetworkResult.Error -> {
-                    Log.d("SettingsViewModel", "Server info call failed: ${serverInfoContainerResult.message}")
-                }
-            }
+//            val serverInfoContainerResult: NetworkResult<ServerInfoContainer> = serverInfoRepository.getServerInfo()
+//
+//            when (serverInfoContainerResult) {
+//                is NetworkResult.Success -> {
+//                    Log.d("SettingsViewModel", "Server info result: ${serverInfoContainerResult.data?.info?.appName}")
+//                }
+//                is NetworkResult.Error -> {
+//                    Log.d("SettingsViewModel", "Server info call failed: ${serverInfoContainerResult.message}")
+//                }
+//            }
         }
     }
 
     fun getUser() {
         viewModelScope.launch {
             if (user.value == null) {
-                user.value = userRepository.getLoggedInUserInfo()?.user
+                try {
+                    user.value = userRepository.getLoggedInUserInfo().getOrThrow().user
+                } catch (e: Exception) {
+                    Log.e("SettingsViewModel", "User info API error", e)
+                }
             }
         }
     }

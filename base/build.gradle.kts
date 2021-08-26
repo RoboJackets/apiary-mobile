@@ -25,6 +25,7 @@ dependencies {
     implementation(NetworkDependencies.moshi)
     kapt(NetworkDependencies.moshi_kotlin_codegen)
     implementation(NetworkDependencies.retrofit)
+    implementation(NetworkDependencies.sandwich)
 
     implementation(platform(NfcDependencies.nfc_firebase_bom))
     implementation(NfcDependencies.nfc_firebase_core) // Firebase BoM and Core are required when including TapLinx (line below) manually

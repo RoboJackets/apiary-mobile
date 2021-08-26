@@ -2,6 +2,7 @@ package org.robojackets.apiary.di
 
 import android.content.Context
 import com.nxp.nfclib.NxpNfcLib
+import com.skydoves.sandwich.coroutines.CoroutinesResponseCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -57,6 +58,7 @@ object MainActivityModule {
     ): Retrofit = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(globalSettings.appEnv.apiBaseUrl.toString())
+        .addCallAdapterFactory(CoroutinesResponseCallAdapterFactory.create())
         .addConverterFactory(MoshiConverterFactory.create())
         .build()
 

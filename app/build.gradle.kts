@@ -45,6 +45,7 @@ dependencies {
     implementation(platform(NetworkDependencies.okhttp_bom))
     implementation(NetworkDependencies.okhttp_logging_interceptor)
     implementation(NetworkDependencies.retrofit)
+    implementation(NetworkDependencies.sandwich) // yum yum
 
     implementation(platform(NfcDependencies.nfc_firebase_bom))
     implementation(NfcDependencies.nfc_firebase_core) // Firebase BoM and Core are required when including TapLinx (line below) manually
@@ -52,7 +53,6 @@ dependencies {
 
     // Test dependencies
     androidTestImplementation(ComposeDependencies.compose_ui_test)
-
     androidTestImplementation(TestDependencies.junit)
 }
 
