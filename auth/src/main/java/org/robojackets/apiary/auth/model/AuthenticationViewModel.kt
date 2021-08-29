@@ -8,6 +8,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationException
+import net.openid.appauth.AuthorizationResponse
+import net.openid.appauth.TokenResponse
+import org.robojackets.apiary.auth.AuthStateManager
 import org.robojackets.apiary.auth.model.LoginStatus.ERROR
 import org.robojackets.apiary.auth.model.LoginStatus.NOT_STARTED
 import org.robojackets.apiary.base.AppEnvironment
@@ -18,9 +21,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
-    @Suppress("UnusedPrivateMember") private val savedStateHandle: SavedStateHandle,
-    private val navigationManager: NavigationManager,
-    private val globalSettings: GlobalSettings,
+    @Suppress("UnusedPrivateMember") val savedStateHandle: SavedStateHandle,
+    val navigationManager: NavigationManager,
+    val globalSettings: GlobalSettings,
+    val authStateManager: AuthStateManager,
 ) : ViewModel() {
     companion object {
         const val TAG = "AuthenticationViewModel"
@@ -86,6 +90,20 @@ class AuthenticationViewModel @Inject constructor(
 
     fun setLoginStatus(status: LoginStatus) {
         loginStatus.value = status
+    }
+
+    fun updateAuthStateAfterAuthorization(
+        response: AuthorizationResponse?,
+        ex: AuthorizationException?
+    ) {
+        authStateManager.updateAfterAuthorization(response, ex)
+    }
+
+    fun updateAuthStateAfterTokenResponse(
+        response: TokenResponse?,
+        ex: AuthorizationException?
+    ) {
+        authStateManager.updateAfterTokenResponse(response, ex)
     }
 }
 

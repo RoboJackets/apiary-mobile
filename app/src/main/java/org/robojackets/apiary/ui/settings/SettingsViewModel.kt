@@ -9,8 +9,16 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.skydoves.sandwich.getOrThrow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import org.robojackets.apiary.auth.AuthStateManager
+import org.robojackets.apiary.auth.model.UserInfo
+import org.robojackets.apiary.auth.network.UserRepository
 import org.robojackets.apiary.base.GlobalSettings
+import org.robojackets.apiary.base.repository.ServerInfoRepository
 import org.robojackets.apiary.base.ui.theme.webNavBarBackground
 import org.robojackets.apiary.navigation.NavigationDirections
 import org.robojackets.apiary.navigation.NavigationManager
@@ -20,6 +28,9 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     val globalSettings: GlobalSettings,
     val navigationManager: NavigationManager,
+    val serverInfoRepository: ServerInfoRepository,
+    val userRepository: UserRepository,
+    val authStateManager: AuthStateManager,
 ) : ViewModel() {
     val privacyPolicyUrl: Uri = Uri.withAppendedPath(globalSettings.appEnv.apiBaseUrl, "privacy")
     val makeAWishUrl: Uri = Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLSelERsYq3" +
@@ -45,11 +56,32 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    private val _state = MutableStateFlow(SettingsState())
+
+    private val user = MutableStateFlow<UserInfo?>(null)
+
+    val state: StateFlow<SettingsState>
+        get() = _state
+
+    init {
+        viewModelScope.launch {
+            combine(listOf(
+                user,
+            )) {
+                flows -> SettingsState(
+                    flows[0] as UserInfo?
+                )
+            }.catch { throwable -> throw throwable }
+                .collect { _state.value = it }
+        }
+    }
+
     private fun navigateToLogin() {
         navigationManager.navigate(NavigationDirections.Authentication)
     }
 
     fun logout() {
+        authStateManager.replace(null)
         globalSettings.clearLoginInfo()
         navigateToLogin()
     }
@@ -64,4 +96,35 @@ class SettingsViewModel @Inject constructor(
 
         return customTabsBuilder.build()
     }
+
+    fun getServerInfo() {
+        viewModelScope.launch {
+//            val serverInfoContainerResult: NetworkResult<ServerInfoContainer> = serverInfoRepository.getServerInfo()
+//
+//            when (serverInfoContainerResult) {
+//                is NetworkResult.Success -> {
+//                    Log.d("SettingsViewModel", "Server info result: ${serverInfoContainerResult.data?.info?.appName}")
+//                }
+//                is NetworkResult.Error -> {
+//                    Log.d("SettingsViewModel", "Server info call failed: ${serverInfoContainerResult.message}")
+//                }
+//            }
+        }
+    }
+
+    fun getUser() {
+        viewModelScope.launch {
+            if (user.value == null) {
+                try {
+                    user.value = userRepository.getLoggedInUserInfo().getOrThrow().user
+                } catch (e: Exception) {
+                    Log.e("SettingsViewModel", "User info API error", e)
+                }
+            }
+        }
+    }
 }
+
+data class SettingsState(
+    val user: UserInfo? = null,
+)

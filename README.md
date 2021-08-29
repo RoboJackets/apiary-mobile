@@ -39,6 +39,16 @@ dependency.  Place such code in the `base` (or a new) module.
 - **auth** - Authentication logic and UI
 - **attendance** - Attendance logic and UI
 
+#### Dependency management
+
+Dependency versions are managed centrally in 
+[Dependencies.kt](buildSrc/src/main/java/Dependencies.kt) in the `buildSrc` module.  If you change
+a version in `Dependencies.kt`, make sure to manually sync Gradle because Android Studio might not
+recognize that the change requires a Gradle sync.
+
+After adding a dependency in `Dependencies.kt`, you must also add it to the appropriate Gradle 
+Script (take a look at a `build.gradle.kts` file for one of the modules for examples).
+
 ### Environment configuration
 
 Environment definitions that allow changing what MyRoboJackets instance to use are specified in

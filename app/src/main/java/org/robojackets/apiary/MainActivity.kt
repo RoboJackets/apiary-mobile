@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import org.robojackets.apiary.attendance.AttendanceScreen
+import org.robojackets.apiary.auth.AuthStateManager
 import org.robojackets.apiary.auth.AuthenticationScreen
 import org.robojackets.apiary.auth.oauth2.AuthManager
 import org.robojackets.apiary.base.GlobalSettings
@@ -72,6 +73,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var settings: GlobalSettings
+
+    @Inject
+    lateinit var authStateManager: AuthStateManager
 
     @Inject
     lateinit var nfcLib: NxpNfcLib
@@ -212,7 +216,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifier) {
-        val startDestination = if (settings.accessToken.isBlank()) NavigationDirections.Authentication.destination
+        val startDestination = if (!authStateManager.current.isAuthorized) NavigationDirections.Authentication.destination
             else NavigationDirections.Attendance.destination
 
         NavHost(

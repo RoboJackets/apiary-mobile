@@ -53,15 +53,15 @@ private fun Authentication(
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK) {
-
                 val authResponse = AuthorizationResponse.fromIntent(it.data!!)
                 val authException = AuthorizationException.fromIntent(it.data!!)
-
+                viewModel.updateAuthStateAfterAuthorization(authResponse, authException)
                 when {
                     authResponse != null -> {
                         authManager.authService.performTokenRequest(
                             authResponse.createTokenExchangeRequest()
                         ) { response, ex ->
+                            viewModel.updateAuthStateAfterTokenResponse(response, ex)
                             when {
                                 response != null -> {
                                     val accessToken = response.accessToken

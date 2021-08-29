@@ -3,7 +3,7 @@ package org.robojackets.apiary.auth.oauth2
 import android.content.Context
 import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ViewModelScoped
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
@@ -11,7 +11,7 @@ import net.openid.appauth.ResponseTypeValues
 import org.robojackets.apiary.base.GlobalSettings
 import javax.inject.Inject
 
-@ViewModelScoped
+@ActivityRetainedScoped
 class AuthManager @Inject constructor(
     @ApplicationContext context: Context,
     val authService: AuthorizationService
