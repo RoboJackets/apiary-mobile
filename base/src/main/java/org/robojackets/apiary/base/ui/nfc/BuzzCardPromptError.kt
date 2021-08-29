@@ -4,5 +4,5 @@ enum class BuzzCardPromptError {
     NotABuzzCard,
     UnknownNfcError,
     TagLost,
-    InvalidBuzzCardData
+    InvalidBuzzCardData,
 }

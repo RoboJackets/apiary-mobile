@@ -17,13 +17,13 @@ import org.robojackets.apiary.base.ui.theme.danger
 fun ActionPrompt(
     icon: @Composable () -> Unit,
     title: String,
-    subtitle: String = "",
-    customContent: @Composable () -> Unit = { },
+    subtitle: String? = "",
+    customContent: (@Composable () -> Unit)? = { },
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
     ) {
         icon()
         Text(
@@ -33,13 +33,17 @@ fun ActionPrompt(
             textAlign = TextAlign.Center,
         )
 
-        customContent()
+        if (customContent != null) {
+            customContent()
+        }
 
-        Text(
-            text = subtitle,
-            style = MaterialTheme.typography.subtitle1,
-            textAlign = TextAlign.Center,
-        )
+        subtitle?.let {
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.subtitle1,
+                textAlign = TextAlign.Center,
+            )
+        }
     }
 }
 
