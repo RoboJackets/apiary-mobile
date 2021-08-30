@@ -49,3 +49,17 @@ fun ErrorIcon(
         contentDescription = "error"
     )
 }
+
+@Composable
+fun CreditCardIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_baseline_credit_card_24),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = "credit card"
+    )
+}
+
