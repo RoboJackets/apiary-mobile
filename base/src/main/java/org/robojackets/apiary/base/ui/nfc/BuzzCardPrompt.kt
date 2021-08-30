@@ -39,7 +39,7 @@ import java.nio.charset.StandardCharsets
  * As an alternative, you can use the hidePrompt parameter to hide the displayed UI elements from
  * this composable, making it hidden whilst also not allowing it to be disposed.
  */
-val gtidRegex = Regex("9[0-9]{8}")
+val gtidRegex = Regex("90[0-9]{7}")
 
 @Suppress("MagicNumber", "LongMethod", "ComplexMethod")
 @Composable
@@ -75,7 +75,7 @@ fun BuzzCardPrompt(
                     // a string containing "gtid=proxID", such as "901234567=123456"
                     buzzString = String(buzzData, StandardCharsets.UTF_8)
 
-                    val buzzStringRegex = Regex("9[0-9]{8}=[0-9]{6}.*")
+                    val buzzStringRegex = Regex("90[0-9]{7}=[0-9]{6}.*")
 
                     if (!buzzStringRegex.matches(buzzString)) {
                         error = InvalidBuzzCardData
@@ -150,13 +150,17 @@ fun BuzzCardPrompt(
                 onBuzzCardTap(it)
                 error = null
             },
-            onHide = { showGtidPrompt = false }
+            onHide = { showGtidPrompt = false },
         )
+
     }
 }
 
 @Composable
-fun ManualGtidEntryPrompt(onHide: () -> Unit, onGtidEntered: (entry: BuzzCardTap) -> Unit) {
+fun ManualGtidEntryPrompt(
+    onHide: () -> Unit,
+    onGtidEntered: (entry: BuzzCardTap) -> Unit,
+) {
     var gtid by remember { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = {
