@@ -70,8 +70,8 @@ android {
         applicationId = "org.robojackets.apiary"
         minSdk = 24 // FIXME: this is temporary to workaround a Compose bug (https://issuetracker.google.com/issues/194289155)
         targetSdk = 30
-        versionCode = 5
-        versionName = "0.4.0-alpha01"
+        versionCode = 6
+        versionName = "0.4.0-alpha02"
         vectorDrawables {
             useSupportLibrary = true
         }
