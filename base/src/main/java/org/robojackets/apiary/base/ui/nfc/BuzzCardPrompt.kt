@@ -181,7 +181,7 @@ fun ManualGtidEntryPrompt(
         title = { Text(text = "Manual GTID entry", style = MaterialTheme.typography.h5) },
         text = {
             Column {
-                Text("Type the entire GTID, starting with 9")
+                Text("Type the entire 9-digit GTID, starting with 90")
                 OutlinedTextField(
                     value = gtid,
                     onValueChange = { enteredGtid ->
