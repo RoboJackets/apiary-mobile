@@ -87,12 +87,15 @@ class AttendanceViewModel @Inject constructor(
                 "MyRoboJackets Android - ${tap.source}"
             ).getOrThrow()
 
+            if (lastAttendee.value?.tap?.gtid != tap.gtid) {
+                totalAttendees.value += 1
+            }
+
             lastAttendee.value = AttendanceStoreResult(
                 tap = tap,
                 name = storeResult.attendance.attendee.name
             )
             screenState.value = ReadyForTap
-            totalAttendees.value += 1
         }
     }
 
