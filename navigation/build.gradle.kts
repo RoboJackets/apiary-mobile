@@ -12,7 +12,8 @@ hilt {
 }
 
 dependencies {
-    // Other modules (none right now)
+    // Other modules
+    implementation(project(mapOf("path" to ":base")))
 
     // Dependencies
     coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)

@@ -15,7 +15,7 @@ import org.robojackets.apiary.auth.model.LoginStatus.ERROR
 import org.robojackets.apiary.auth.model.LoginStatus.NOT_STARTED
 import org.robojackets.apiary.base.AppEnvironment
 import org.robojackets.apiary.base.GlobalSettings
-import org.robojackets.apiary.navigation.NavigationDirections
+import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationManager
 import javax.inject.Inject
 
@@ -59,7 +59,7 @@ class AuthenticationViewModel @Inject constructor(
     }
 
     fun navigateToAttendance() {
-        navigationManager.navigate(NavigationDirections.Attendance)
+        navigationManager.navigate(NavigationActions.Attendance.authToAttendance())
         return
     }
 

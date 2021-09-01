@@ -20,7 +20,7 @@ import org.robojackets.apiary.auth.network.UserRepository
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.repository.ServerInfoRepository
 import org.robojackets.apiary.base.ui.theme.webNavBarBackground
-import org.robojackets.apiary.navigation.NavigationDirections
+import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationManager
 import javax.inject.Inject
 
@@ -77,7 +77,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun navigateToLogin() {
-        navigationManager.navigate(NavigationDirections.Authentication)
+        navigationManager.navigate(NavigationActions.Authentication.anyScreenToAuthentication())
     }
 
     fun logout() {
