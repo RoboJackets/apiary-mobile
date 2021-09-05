@@ -93,7 +93,7 @@ class AttendanceViewModel @Inject constructor(
 
             lastAttendee.value = AttendanceStoreResult(
                 tap = tap,
-                name = storeResult.attendance.attendee.name
+                name = storeResult.attendance.attendee?.name ?: "Non-member"
             )
             screenState.value = ReadyForTap
         }
@@ -102,12 +102,16 @@ class AttendanceViewModel @Inject constructor(
     fun loadAttendables() {
         loadingAttendables.value = true
         viewModelScope.launch {
-            val teams = meetingsRepository.getTeams().getOrElse(TeamsHolder()).teams
-                .filter { it.attendable }
-                .sortedBy { it.name }
-            val events = meetingsRepository.getEvents().getOrElse(EventsHolder()).events
-            attendableTeams.value = teams
-            attendableEvents.value = events
+            if (attendableTeams.value.isNullOrEmpty()) {
+                val teams = meetingsRepository.getTeams().getOrElse(TeamsHolder()).teams
+                    .filter { it.attendable }
+                    .sortedBy { it.name }
+                attendableTeams.value = teams
+            }
+            if (attendableEvents.value.isNullOrEmpty()) {
+                val events = meetingsRepository.getEvents().getOrElse(EventsHolder()).events
+                attendableEvents.value = events
+            }
             loadingAttendables.value = false
         }
     }

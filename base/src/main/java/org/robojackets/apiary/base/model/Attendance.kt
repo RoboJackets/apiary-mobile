@@ -9,5 +9,5 @@ data class AttendanceHolder(
 
 @JsonClass(generateAdapter = true)
 data class Attendance(
-    val attendee: BasicUser
+    val attendee: BasicUser?
 )

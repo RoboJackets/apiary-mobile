@@ -50,7 +50,7 @@ sealed class Screen(
     val imgContentDescriptor: String
 ) {
     object Attendance :
-        Screen(NavigationDestinations.attendance, R.string.attendance, Icons.Outlined.Contactless, "Contactless")
+        Screen(NavigationDestinations.attendableSelection, R.string.attendance, Icons.Outlined.Contactless, "contactless")
 
     object Settings :
         Screen(NavigationDestinations.settings, R.string.settings, Icons.Filled.Settings, "settings")

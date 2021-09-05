@@ -18,7 +18,6 @@ import org.robojackets.apiary.base.model.Attendable
 import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.model.Event
 import org.robojackets.apiary.base.model.Team
-import org.robojackets.apiary.base.ui.util.ContentPadding
 
 @ExperimentalMaterialApi
 @Composable
@@ -28,6 +27,28 @@ private fun AttendableSelection(
     events: List<Event>,
     onAttendableSelected: (attendable: Attendable) -> Unit
 ) {
+//    var selectedTabIndex by remember { mutableStateOf(0) }
+//    val tabTitles = listOf("Teams", "Events")
+//
+//    Column {
+//        TabRow(selectedTabIndex) {
+//            tabTitles.forEachIndexed { index, title ->
+//                Tab(
+//                    selected = selectedTabIndex == index,
+//                    onClick = { selectedTabIndex = index },
+//                    text = { Text(title) }
+//                )
+//            }
+//        }
+//        ContentPadding {
+//            Text(
+//                modifier = Modifier.align(CenterHorizontally),
+//                text = "${tabTitles[selectedTabIndex]} tab selected",
+//                style = MaterialTheme.typography.body1
+//            )
+//        }
+//    }
+
     if (loading) {
         Text("Loading...")
     } else {
@@ -65,15 +86,13 @@ fun AttendableSelectionScreen(
         onDispose { }
     }
 
-    ContentPadding {
-        AttendableSelection(
-            state.loadingAttendables,
-            state.attendableTeams,
-            state.attendableEvents,
-            onAttendableSelected = {
-                viewModel.saveAttendableSelection(it)
-            }
-        )
-    }
+    AttendableSelection(
+        state.loadingAttendables,
+        state.attendableTeams,
+        state.attendableEvents,
+        onAttendableSelected = {
+            viewModel.saveAttendableSelection(it)
+        }
+    )
 }
 
