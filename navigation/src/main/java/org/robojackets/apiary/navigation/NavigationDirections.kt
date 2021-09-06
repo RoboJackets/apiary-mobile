@@ -7,6 +7,7 @@ object NavigationDestinations {
     const val authentication = "authentication"
     const val settings = "settings"
     const val attendanceSubgraph = "attendance"
+    const val attendableTypeSelection = "attendableTypeSelection"
     const val attendableSelection = "attendableSelection"
     const val attendance = "attendanceMain"
 }
@@ -43,6 +44,12 @@ object NavigationActions {
                 .build()
         }
 
+        fun attendableTypeSelectToAttendableSelect(
+            attendableType: String
+        ) = object : NavigationAction {
+            override val destination = "${NavigationDestinations.attendableSelection}/$attendableType"
+        }
+
         fun attendableSelectionToAttendance(
             attendableType: String,
             attendableId: Int,
@@ -50,8 +57,8 @@ object NavigationActions {
             override val destination = "${NavigationDestinations.attendance}/$attendableType/$attendableId"
         }
 
-        fun attendanceToAttendableSelection() = object : NavigationAction {
-            override val destination = NavigationDestinations.attendableSelection
+        fun attendanceToAttendableTypeSelect() = object : NavigationAction {
+            override val destination = NavigationDestinations.attendableTypeSelection
             override val navOptions: NavOptions
                 get() = NavOptions.Builder()
                     .setPopUpTo(NavigationDestinations.attendance, inclusive = true)

@@ -17,7 +17,7 @@ fun ContactlessIcon(
     tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
 ) {
     Icon(
-        painter = painterResource(id = R.drawable.ic_outline_contactless_24),
+        painter = painterResource(id = R.drawable.ic_outline_contactless_24dp),
         contentDescription = "NFC symbol",
         modifier = modifier,
         tint = tint
@@ -76,3 +76,28 @@ fun PendingIcon(
     )
 }
 
+@Composable
+fun GroupsIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_groups_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = "groups"
+    )
+}
+
+@Composable
+fun EventIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_event_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = "event"
+    )
+}

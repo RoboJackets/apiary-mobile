@@ -27,12 +27,14 @@ class AuthHeaderInterceptor constructor(
                     }
 
                     requestBuilder.addHeader("Authorization", "Bearer $accessToken")
+
                     continuation.resume(Unit)
                 }
             }
         }
 
         requestBuilder.header("Accept", "application/json")
+        authStateManager.replace(authStateManager.current)
         return chain.proceed(requestBuilder.build())
     }
 }

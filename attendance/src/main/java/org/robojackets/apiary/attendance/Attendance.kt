@@ -1,14 +1,15 @@
 package org.robojackets.apiary.attendance
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -32,6 +33,19 @@ private fun Attendance(
     onBuzzcardTap: (buzzcardTap: BuzzCardTap) -> Unit,
     onNavigateToAttendableSelection: () -> Unit,
 ) {
+    if (viewState.selectedAttendable == null) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+                .fillMaxHeight()
+        ) {
+            CircularProgressIndicator()
+        }
+
+        return
+    }
+
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -39,31 +53,30 @@ private fun Attendance(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column(Modifier.fillMaxWidth()) {
-            Row(
-                verticalAlignment = CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+            Text("Recording attendance for ${viewState.selectedAttendable?.name}")
+            Text("Last attendee: ${viewState.lastAttendee?.name ?: "None"}")
+
+            Button(
+                onClick = {
+                    onNavigateToAttendableSelection()
+                },
+                Modifier
+                    .align(CenterHorizontally)
+                    .padding(top = 8.dp)
             ) {
-                Text("Recording attendance for ${viewState.selectedAttendable?.name}")
-                TextButton(
-                    onClick = {
-                        onNavigateToAttendableSelection()
-                    },
-                ) {
-                    Text("Change")
-                }
+                Text("Change team or event")
+            }
+
+
+            when (viewState.totalAttendees) {
+                5 -> Text("🔥 5 attendees recorded. You're on a roll!")
+                10 -> Text("👑 10 attendees. You're awesome!")
+                25 -> Text("🎸 25 attendees! You're a rockstar!")
+                50 -> Text("🎉 50 attendees! Is this GI?")
+                100 -> Text("💯 100 ATTENDEES! Go give yourself a prize!")
             }
         }
-
-        Text("Last attendee: ${viewState.lastAttendee?.name ?: "None"}")
-
-        when (viewState.totalAttendees) {
-            5 -> Text("🔥 5 attendees recorded. You're on a roll!")
-            10 -> Text("👑 10 attendees. You're awesome!")
-            25 -> Text("🎸 25 attendees! You're a rockstar!")
-            50 -> Text("🎉 50 attendees! Is this GI?")
-            100 -> Text("💯 100 ATTENDEES! Go give yourself a prize!")
-        }
-
+        
         BuzzCardPrompt(
             hidePrompt = viewState.screenState == Loading,
             nfcLib = nfcLib,

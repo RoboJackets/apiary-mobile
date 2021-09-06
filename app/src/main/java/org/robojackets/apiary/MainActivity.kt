@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.robojackets.apiary.attendance.AttendanceScreen
 import org.robojackets.apiary.attendance.ui.AttendableSelectionScreen
+import org.robojackets.apiary.attendance.ui.AttendableTypeSelectionScreen
 import org.robojackets.apiary.auth.AuthStateManager
 import org.robojackets.apiary.auth.AuthenticationScreen
 import org.robojackets.apiary.auth.oauth2.AuthManager
@@ -128,16 +129,8 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect("navigation") {
                     navigationManager.sharedFlow.onEach {
                         Log.d("MainActivity", "Nav command to ${it.destination}")
-                        it.parcelableArguments.forEach { arg ->
-                            Log.d("MainActivity", "Putting parcelable ${arg.key} on the back stack")
-                            navController.currentBackStackEntry?.arguments?.putParcelable(
-                                arg.key,
-                                arg.value
-                            )
-                        }
                         navController.navigate(it.destination, it.navOptions)
-                    }
-                        .launchIn(this)
+                    }.launchIn(this)
                 }
 
                 // A surface container using the 'background' color from the theme
@@ -211,8 +204,20 @@ class MainActivity : ComponentActivity() {
                 AuthenticationScreen(hiltViewModel(), authManager)
             }
 
-            navigation(NavigationDestinations.attendableSelection, NavigationDestinations.attendanceSubgraph) {
-                composable(NavigationDestinations.attendableSelection) {
+            navigation(
+                startDestination = NavigationDestinations.attendableTypeSelection,
+                route = NavigationDestinations.attendanceSubgraph
+            ) {
+                composable(NavigationDestinations.attendableTypeSelection) {
+                    AttendableTypeSelectionScreen(hiltViewModel())
+                }
+
+                composable(
+                    route = "${NavigationDestinations.attendableSelection}/{attendableType}",
+                    arguments = listOf(
+                        navArgument("attendableType") { type = NavType.StringType}
+                    ),
+                ) {
                     AttendableSelectionScreen(hiltViewModel())
                 }
 

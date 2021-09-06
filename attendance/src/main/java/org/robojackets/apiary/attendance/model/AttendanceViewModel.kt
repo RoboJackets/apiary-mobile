@@ -118,7 +118,7 @@ class AttendanceViewModel @Inject constructor(
     }
 
     fun navigateToAttendableSelection() {
-        navManager.navigate(NavigationActions.Attendance.attendanceToAttendableSelection())
+        navManager.navigate(NavigationActions.Attendance.attendanceToAttendableTypeSelect())
     }
 
     fun saveAttendableSelection(attendable: Attendable) {
