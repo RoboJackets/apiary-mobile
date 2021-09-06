@@ -8,6 +8,11 @@ data class TeamsHolder(
 )
 
 @JsonClass(generateAdapter = true)
+data class TeamHolder(
+    val team: Team,
+)
+
+@JsonClass(generateAdapter = true)
 data class Team(
     val id: Int,
     val name: String,

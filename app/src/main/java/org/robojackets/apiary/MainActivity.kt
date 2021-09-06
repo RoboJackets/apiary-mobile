@@ -25,6 +25,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import androidx.navigation.navigation
 import com.nxp.nfclib.NxpNfcLib
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -50,10 +51,20 @@ sealed class Screen(
     val imgContentDescriptor: String
 ) {
     object Attendance :
-        Screen(NavigationDestinations.attendableSelection, R.string.attendance, Icons.Outlined.Contactless, "contactless")
+        Screen(
+            NavigationDestinations.attendanceSubgraph,
+            R.string.attendance,
+            Icons.Outlined.Contactless,
+            "contactless"
+        )
 
     object Settings :
-        Screen(NavigationDestinations.settings, R.string.settings, Icons.Filled.Settings, "settings")
+        Screen(
+            NavigationDestinations.settings,
+            R.string.settings,
+            Icons.Filled.Settings,
+            "settings"
+        )
 }
 
 @AndroidEntryPoint
@@ -119,9 +130,12 @@ class MainActivity : ComponentActivity() {
                         Log.d("MainActivity", "Nav command to ${it.destination}")
                         it.parcelableArguments.forEach { arg ->
                             Log.d("MainActivity", "Putting parcelable ${arg.key} on the back stack")
-                            navController.currentBackStackEntry?.arguments?.putParcelable(arg.key, arg.value)
+                            navController.currentBackStackEntry?.arguments?.putParcelable(
+                                arg.key,
+                                arg.value
+                            )
                         }
-                        navController.navigate(it.destination)
+                        navController.navigate(it.destination, it.navOptions)
                     }
                         .launchIn(this)
                 }
@@ -130,14 +144,15 @@ class MainActivity : ComponentActivity() {
                 Surface(color = MaterialTheme.colors.background) {
                     Scaffold(
                         topBar = {
-                                 TopAppBar(
-                                     title = {
-                                         Text(
-                                             text = "MyRoboJackets",
-                                             style = MaterialTheme.typography.h5,
-                                             fontWeight = FontWeight.W800)
-                                         },
-                                 )
+                            TopAppBar(
+                                title = {
+                                    Text(
+                                        text = "MyRoboJackets",
+                                        style = MaterialTheme.typography.h5,
+                                        fontWeight = FontWeight.W800
+                                    )
+                                },
+                            )
                         },
                         bottomBar = {
                             val current = currentRoute(navController)
@@ -183,8 +198,9 @@ class MainActivity : ComponentActivity() {
     @ExperimentalMaterialApi
     @Composable
     private fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifier) {
-        val startDestination = if (!authStateManager.current.isAuthorized) NavigationDestinations.authentication
-            else NavigationDestinations.attendableSelection
+        val startDestination =
+            if (!authStateManager.current.isAuthorized) NavigationDestinations.authentication
+            else NavigationDestinations.attendanceSubgraph
 
         NavHost(
             navController = navController,
@@ -194,23 +210,28 @@ class MainActivity : ComponentActivity() {
             composable(NavigationDestinations.authentication) {
                 AuthenticationScreen(hiltViewModel(), authManager)
             }
-            composable(
-                route = "${NavigationDestinations.attendance}/{attendableType}/{attendableId}",
-                arguments = listOf(
-                    navArgument("attendableType") { type = NavType.StringType },
-                    navArgument("attendableId") { type = NavType.IntType },
-                )
-            ) {
-                val attendableType = it.arguments?.get("attendableType")
-                val attendableId = it.arguments?.get("attendableId")
-                Log.d("MainActivity", "navArguments attendableType $attendableType")
-                Log.d("MainActivity", "navArguments attendableId $attendableId")
-                AttendanceScreen(hiltViewModel(), nfcLib, AttendableType.valueOf(attendableType as String),
-                    attendableId as Int
-                )
-            }
-            composable(NavigationDestinations.attendableSelection) {
-                AttendableSelectionScreen(hiltViewModel())
+
+            navigation(NavigationDestinations.attendableSelection, NavigationDestinations.attendanceSubgraph) {
+                composable(NavigationDestinations.attendableSelection) {
+                    AttendableSelectionScreen(hiltViewModel())
+                }
+
+                composable(
+                    route = "${NavigationDestinations.attendance}/{attendableType}/{attendableId}",
+                    arguments = listOf(
+                        navArgument("attendableType") { type = NavType.StringType },
+                        navArgument("attendableId") { type = NavType.IntType },
+                    )
+                ) {
+                    val attendableType = it.arguments?.get("attendableType")
+                    val attendableId = it.arguments?.get("attendableId")
+
+                    AttendanceScreen(
+                        hiltViewModel(), nfcLib, AttendableType.valueOf(attendableType as String),
+                        attendableId as Int
+                    )
+                }
+
             }
             composable(NavigationDestinations.settings) {
                 SettingsScreen(hiltViewModel())

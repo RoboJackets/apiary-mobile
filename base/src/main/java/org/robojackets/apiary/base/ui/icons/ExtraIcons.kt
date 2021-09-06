@@ -63,3 +63,16 @@ fun CreditCardIcon(
     )
 }
 
+@Composable
+fun PendingIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_pending_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = "pending"
+    )
+}
+

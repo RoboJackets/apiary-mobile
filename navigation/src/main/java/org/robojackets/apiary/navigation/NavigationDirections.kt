@@ -6,8 +6,9 @@ import androidx.navigation.NavOptions
 object NavigationDestinations {
     const val authentication = "authentication"
     const val settings = "settings"
+    const val attendanceSubgraph = "attendance"
     const val attendableSelection = "attendableSelection"
-    const val attendance = "attendance"
+    const val attendance = "attendanceMain"
 }
 
 object NavigationActions {
@@ -25,7 +26,7 @@ object NavigationActions {
         fun bottomNavTabs(destination: String, graphStartId: Int) = object : NavigationAction {
             override val destination = destination
             override val navOptions = NavOptions.Builder()
-                .setPopUpTo(graphStartId, true, saveState = true)
+                .setPopUpTo(graphStartId, false, saveState = true)
                 .setLaunchSingleTop(true)
                 .setRestoreState(true)
                 .build()
@@ -34,7 +35,7 @@ object NavigationActions {
 
     object Attendance {
         fun authToAttendance() = object : NavigationAction {
-            override val destination = NavigationDestinations.attendableSelection
+            override val destination = NavigationDestinations.attendanceSubgraph
             override val navOptions = NavOptions.Builder()
                 .setPopUpTo(0, true)
                 .setLaunchSingleTop(true)
@@ -47,13 +48,14 @@ object NavigationActions {
             attendableId: Int,
         ) = object : NavigationAction {
             override val destination = "${NavigationDestinations.attendance}/$attendableType/$attendableId"
-            override val navOptions = NavOptions.Builder()
-                .setPopUpTo(NavigationDestinations.attendance, inclusive = true)
-                .build()
         }
 
         fun attendanceToAttendableSelection() = object : NavigationAction {
             override val destination = NavigationDestinations.attendableSelection
+            override val navOptions: NavOptions
+                get() = NavOptions.Builder()
+                    .setPopUpTo(NavigationDestinations.attendance, inclusive = true)
+                    .build()
         }
     }
 }

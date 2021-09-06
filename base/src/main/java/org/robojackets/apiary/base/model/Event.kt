@@ -8,6 +8,11 @@ data class EventsHolder(
 )
 
 @JsonClass(generateAdapter = true)
+data class EventHolder(
+    val event: Event
+)
+
+@JsonClass(generateAdapter = true)
 data class Event(
     val id: Int,
     val name: String,

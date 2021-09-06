@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skydoves.sandwich.getOrElse
+import com.skydoves.sandwich.getOrNull
 import com.skydoves.sandwich.getOrThrow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -124,8 +125,33 @@ class AttendanceViewModel @Inject constructor(
         navManager.navigate(NavigationActions.Attendance.attendableSelectionToAttendance(attendable.type.toString(), attendable.id))
     }
 
-    fun saveAttendableSelectionToState(attendable: Attendable) {
-        selectedAttendable.value = attendable
+    suspend fun getAttendableInfo(attendableType: AttendableType, attendableId: Int) {
+        when (attendableType) {
+            AttendableType.Team -> {
+                val team = meetingsRepository.getTeam(attendableId).getOrNull()?.team
+
+                team?.let {
+                    selectedAttendable.value = Attendable(
+                            attendableId,
+                            team.name,
+                            "",
+                            AttendableType.Team,
+                        )
+                }
+            }
+            AttendableType.Event -> {
+                val event = meetingsRepository.getEvent(attendableId).getOrNull()?.event
+
+                event?.let {
+                    selectedAttendable.value = Attendable(
+                        attendableId,
+                        event.name,
+                        "",
+                        AttendableType.Event,
+                    )
+                }
+            }
+        }
     }
 }
 
