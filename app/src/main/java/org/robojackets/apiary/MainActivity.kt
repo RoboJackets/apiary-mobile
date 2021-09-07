@@ -5,7 +5,10 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -14,11 +17,14 @@ import androidx.compose.material.icons.outlined.Contactless
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -38,6 +44,8 @@ import org.robojackets.apiary.auth.AuthenticationScreen
 import org.robojackets.apiary.auth.oauth2.AuthManager
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.model.AttendableType
+import org.robojackets.apiary.base.ui.IconWithText
+import org.robojackets.apiary.base.ui.icons.WarningIcon
 import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
 import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationDestinations
@@ -137,15 +145,35 @@ class MainActivity : ComponentActivity() {
                 Surface(color = MaterialTheme.colors.background) {
                     Scaffold(
                         topBar = {
-                            TopAppBar(
-                                title = {
-                                    Text(
-                                        text = "MyRoboJackets",
-                                        style = MaterialTheme.typography.h5,
-                                        fontWeight = FontWeight.W800
-                                    )
-                                },
-                            )
+                            Column {
+                                TopAppBar(
+                                    title = {
+                                        Text(
+                                            text = "MyRoboJackets",
+                                            style = MaterialTheme.typography.h5,
+                                            fontWeight = FontWeight.W800
+                                        )
+                                    },
+                                )
+
+                                if (!settings.appEnv.production) {
+                                    Box(
+                                        Modifier.fillMaxWidth()
+                                            .background(MaterialTheme.colors.error)
+                                            .align(CenterHorizontally)
+                                            .padding(vertical = 4.dp)
+                                    ) {
+                                        IconWithText(
+                                            icon = { WarningIcon(tint = Color.White) },
+                                            text = { Text(
+                                                "Non-production instance",
+                                                modifier = Modifier.padding(start = 4.dp),
+                                                color = Color.White
+                                            ) }
+                                        )
+                                    }
+                                }
+                            }
                         },
                         bottomBar = {
                             val current = currentRoute(navController)
@@ -218,7 +246,12 @@ class MainActivity : ComponentActivity() {
                         navArgument("attendableType") { type = NavType.StringType}
                     ),
                 ) {
-                    AttendableSelectionScreen(hiltViewModel())
+                    val attendableType = it.arguments?.get("attendableType")
+
+                    AttendableSelectionScreen(
+                        hiltViewModel(),
+                        AttendableType.valueOf(attendableType as String)
+                    )
                 }
 
                 composable(

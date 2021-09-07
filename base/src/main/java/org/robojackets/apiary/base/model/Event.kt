@@ -18,4 +18,13 @@ data class Event(
     val name: String,
 //    val startTime: Instant,
 //    val endTime: Instant
-)
+) {
+    fun toAttendable(): Attendable {
+        return Attendable(
+            id,
+            name,
+            "",
+            AttendableType.Event,
+        )
+    }
+}

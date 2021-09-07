@@ -100,16 +100,16 @@ class AttendanceViewModel @Inject constructor(
         }
     }
 
-    fun loadAttendables() {
+    fun loadAttendables(attendableType: AttendableType) {
         loadingAttendables.value = true
         viewModelScope.launch {
-            if (attendableTeams.value.isNullOrEmpty()) {
+            if (attendableType == AttendableType.Team && attendableTeams.value.isNullOrEmpty()) {
                 val teams = meetingsRepository.getTeams().getOrElse(TeamsHolder()).teams
                     .filter { it.attendable }
                     .sortedBy { it.name }
                 attendableTeams.value = teams
             }
-            if (attendableEvents.value.isNullOrEmpty()) {
+            if (attendableType == AttendableType.Event && attendableEvents.value.isNullOrEmpty()) {
                 val events = meetingsRepository.getEvents().getOrElse(EventsHolder()).events
                 attendableEvents.value = events
             }
@@ -121,7 +121,7 @@ class AttendanceViewModel @Inject constructor(
         navManager.navigate(NavigationActions.Attendance.attendanceToAttendableTypeSelect())
     }
 
-    fun saveAttendableSelection(attendable: Attendable) {
+    fun onAttendableSelected(attendable: Attendable) {
         navManager.navigate(NavigationActions.Attendance.attendableSelectionToAttendance(attendable.type.toString(), attendable.id))
     }
 
@@ -131,24 +131,14 @@ class AttendanceViewModel @Inject constructor(
                 val team = meetingsRepository.getTeam(attendableId).getOrNull()?.team
 
                 team?.let {
-                    selectedAttendable.value = Attendable(
-                            attendableId,
-                            team.name,
-                            "",
-                            AttendableType.Team,
-                        )
+                    selectedAttendable.value = it.toAttendable()
                 }
             }
             AttendableType.Event -> {
                 val event = meetingsRepository.getEvent(attendableId).getOrNull()?.event
 
                 event?.let {
-                    selectedAttendable.value = Attendable(
-                        attendableId,
-                        event.name,
-                        "",
-                        AttendableType.Event,
-                    )
+                    selectedAttendable.value = it.toAttendable()
                 }
             }
         }

@@ -22,25 +22,25 @@ fun AttendableTypeSelectionScreen(
             Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()) {
-            Text("What do you want to take attendance for?", style = MaterialTheme.typography.h4)
+            Text("What do you want to take attendance for?", style = MaterialTheme.typography.h5)
             Spacer(Modifier.defaultMinSize(minHeight = 16.dp))
             Divider()
             ListItem(
-                icon = { GroupsIcon(Modifier.size(64.dp)) },
+                icon = { GroupsIcon(Modifier.size(36.dp)) },
                 modifier = Modifier
-                    .defaultMinSize(minHeight = 160.dp)
+                    .defaultMinSize(minHeight = 80.dp)
                     .clickable { viewModel.navigateToAttendableSelection(AttendableType.Team) }
             ) {
-                Text("Team", style = MaterialTheme.typography.h4)
+                Text("Team", style = MaterialTheme.typography.h6)
             }
             Divider()
             ListItem(
-                icon = { EventIcon(Modifier.size(64.dp)) },
+                icon = { EventIcon(Modifier.size(36.dp)) },
                 modifier = Modifier
-                    .defaultMinSize(minHeight = 160.dp)
+                    .defaultMinSize(minHeight = 80.dp)
                     .clickable { viewModel.navigateToAttendableSelection(AttendableType.Event) }
             ) {
-                Text("Event", style = MaterialTheme.typography.h4)
+                Text("Event", style = MaterialTheme.typography.h6)
             }
             Divider()
         }

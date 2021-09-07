@@ -1,73 +1,44 @@
 package org.robojackets.apiary.attendance.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ListItem
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.robojackets.apiary.attendance.model.AttendanceViewModel
-import org.robojackets.apiary.base.model.Attendable
 import org.robojackets.apiary.base.model.AttendableType
-import org.robojackets.apiary.base.model.Event
-import org.robojackets.apiary.base.model.Team
+import org.robojackets.apiary.base.ui.util.ContentPadding
 
 @ExperimentalMaterialApi
 @Composable
-private fun AttendableSelection(
-    loading: Boolean,
-    teams: List<Team>,
-    events: List<Event>,
-    onAttendableSelected: (attendable: Attendable) -> Unit
+private fun <T> AttendableList(
+    attendables: List<T>,
+    onAttendableSelected: (attendable: T) -> Unit,
+    title: @Composable () -> Unit,
+    attendableContent: @Composable (attendable: T) -> Unit,
 ) {
-//    var selectedTabIndex by remember { mutableStateOf(0) }
-//    val tabTitles = listOf("Teams", "Events")
-//
-//    Column {
-//        TabRow(selectedTabIndex) {
-//            tabTitles.forEachIndexed { index, title ->
-//                Tab(
-//                    selected = selectedTabIndex == index,
-//                    onClick = { selectedTabIndex = index },
-//                    text = { Text(title) }
-//                )
-//            }
-//        }
-//        ContentPadding {
-//            Text(
-//                modifier = Modifier.align(CenterHorizontally),
-//                text = "${tabTitles[selectedTabIndex]} tab selected",
-//                style = MaterialTheme.typography.body1
-//            )
-//        }
-//    }
-
-    if (loading) {
-        Text("Loading...")
-    } else {
-        Column {
-            Text("Teams")
-            LazyColumn {
-                itemsIndexed(teams) { idx, team ->
-                    ListItem(
-                        Modifier.clickable {
-                            onAttendableSelected(
-                                Attendable(team.id, team.name, "", AttendableType.Team)
-                            )
-                        }
-                    ) {
-                        Text(team.name)
+    Column {
+        title()
+        LazyColumn {
+            itemsIndexed(attendables) { idx, attendable ->
+                ListItem(
+                    Modifier.clickable {
+                        onAttendableSelected(attendable)
                     }
-                    if (idx < teams.size - 1) {
-                        Divider()
-                    }
+                ) {
+                    attendableContent(attendable)
+                }
+                if (idx < attendables.size - 1) {
+                    Divider()
                 }
             }
         }
@@ -77,22 +48,53 @@ private fun AttendableSelection(
 @ExperimentalMaterialApi
 @Composable
 fun AttendableSelectionScreen(
-    viewModel: AttendanceViewModel
+    viewModel: AttendanceViewModel,
+    attendableType: AttendableType,
 ) {
     val state by viewModel.state.collectAsState()
 
-    DisposableEffect(Unit) {
-        viewModel.loadAttendables()
+    DisposableEffect(attendableType) {
+        viewModel.loadAttendables(attendableType)
         onDispose { }
     }
 
-    AttendableSelection(
-        state.loadingAttendables,
-        state.attendableTeams,
-        state.attendableEvents,
-        onAttendableSelected = {
-            viewModel.saveAttendableSelection(it)
+    ContentPadding {
+        if (state.loadingAttendables) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+                    .fillMaxHeight()
+            ) {
+                CircularProgressIndicator()
+            }
         }
-    )
+        when (attendableType) {
+            AttendableType.Team -> {
+                AttendableList(
+                    attendables = state.attendableTeams,
+                    onAttendableSelected = {
+                        viewModel.onAttendableSelected(it.toAttendable())
+                    },
+                    title = { Text("Select a team", style = MaterialTheme.typography.h5) },
+                    attendableContent = {
+                        Text(it.name)
+                    }
+                )
+            }
+            AttendableType.Event -> {
+                AttendableList(
+                    attendables = state.attendableEvents,
+                    onAttendableSelected = {
+                        viewModel.onAttendableSelected(it.toAttendable())
+                    },
+                    title = { Text("Select an event", style = MaterialTheme.typography.h5) },
+                    attendableContent = {
+                        Text(it.name)
+                    }
+                )
+            }
+        }
+    }
 }
 
