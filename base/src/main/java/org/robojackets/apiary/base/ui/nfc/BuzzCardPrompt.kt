@@ -75,7 +75,10 @@ fun BuzzCardPrompt(
                     // a string containing "gtid=proxID", such as "901234567=123456"
                     buzzString = String(buzzData, StandardCharsets.UTF_8)
 
-                    val buzzStringRegex = Regex("90[0-9]{7}=[0-9]{6}.*")
+                    // In some cases (e.g., GTRI badges) the proxID is fewer than 6 characters
+                    // Since we don't care about the proxID, the regex just checks
+                    // for the GTID and =
+                    val buzzStringRegex = Regex("90[0-9]{7}=.*")
 
                     if (!buzzStringRegex.matches(buzzString)) {
                         error = InvalidBuzzCardData
