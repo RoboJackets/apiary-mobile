@@ -17,6 +17,7 @@ dependencies {
 
     // Dependencies
     coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+    implementation(AndroidToolDependencies.timber)
 
     implementation(AndroidXDependencies.androidx_navigation_compose)
 

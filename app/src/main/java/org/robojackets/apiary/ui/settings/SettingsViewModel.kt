@@ -2,7 +2,6 @@ package org.robojackets.apiary.ui.settings
 
 import android.content.ComponentName
 import android.net.Uri
-import android.util.Log
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
@@ -12,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skydoves.sandwich.getOrThrow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.sentry.Sentry
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.robojackets.apiary.auth.AuthStateManager
@@ -22,7 +22,9 @@ import org.robojackets.apiary.base.repository.ServerInfoRepository
 import org.robojackets.apiary.base.ui.theme.webNavBarBackground
 import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationManager
+import timber.log.Timber
 import javax.inject.Inject
+import io.sentry.protocol.User as SentryUser
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -44,10 +46,10 @@ class SettingsViewModel @Inject constructor(
             client: CustomTabsClient
         ) {
             customTabsClient = client
-            Log.d("SettingsViewModel", "Custom tabs warmup")
+            Timber.d("Custom tabs warmup")
             val session = customTabsClient?.newSession(null)
             customTabsClient?.warmup(0) // Flags is "reserved for future use"
-            Log.d("SettingsViewModel", "session: $session")
+            Timber.d("session: " + session)
             session?.mayLaunchUrl(privacyPolicyUrl, null, null)
         }
 
@@ -117,8 +119,12 @@ class SettingsViewModel @Inject constructor(
             if (user.value == null) {
                 try {
                     user.value = userRepository.getLoggedInUserInfo().getOrThrow().user
+                    val sentryUser = SentryUser()
+                    sentryUser.id = user.value?.id.toString()
+                    sentryUser.username = user.value?.uid
+                    Sentry.setUser(sentryUser)
                 } catch (e: Exception) {
-                    Log.e("SettingsViewModel", "User info API error", e)
+                    Timber.e(e, "User info API error")
                 }
             }
         }

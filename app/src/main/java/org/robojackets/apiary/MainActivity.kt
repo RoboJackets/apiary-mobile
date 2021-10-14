@@ -1,7 +1,6 @@
 package org.robojackets.apiary
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
@@ -51,6 +50,7 @@ import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationDestinations
 import org.robojackets.apiary.navigation.NavigationManager
 import org.robojackets.apiary.ui.settings.SettingsScreen
+import timber.log.Timber
 import javax.inject.Inject
 
 sealed class Screen(
@@ -136,7 +136,7 @@ class MainActivity : ComponentActivity() {
                 // Based on https://medium.com/@Syex/jetpack-compose-navigation-architecture-with-viewmodels-1de467f19e1c
                 LaunchedEffect("navigation") {
                     navigationManager.sharedFlow.onEach {
-                        Log.d("MainActivity", "Nav command to ${it.destination}")
+                        Timber.d("Nav command to " + it.destination)
                         navController.navigate(it.destination, it.navOptions)
                     }.launchIn(this)
                 }
@@ -158,7 +158,8 @@ class MainActivity : ComponentActivity() {
 
                                 if (!settings.appEnv.production) {
                                     Box(
-                                        Modifier.fillMaxWidth()
+                                        Modifier
+                                            .fillMaxWidth()
                                             .background(MaterialTheme.colors.error)
                                             .align(CenterHorizontally)
                                             .padding(vertical = 4.dp)
@@ -166,7 +167,7 @@ class MainActivity : ComponentActivity() {
                                         IconWithText(
                                             icon = { WarningIcon(tint = Color.White) },
                                             text = { Text(
-                                                "Non-production instance",
+                                                "Non-production server",
                                                 modifier = Modifier.padding(start = 4.dp),
                                                 color = Color.White
                                             ) }
@@ -279,7 +280,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("MainActivity", "onDestroy")
+        Timber.d("onDestroy")
         // The AppAuth AuthenticationService has to be properly cleaned up to avoid
         // crashes. This `dispose` call works alongside Hilt, which destroys the single AuthManager
         // instance when this Activity is destroyed.

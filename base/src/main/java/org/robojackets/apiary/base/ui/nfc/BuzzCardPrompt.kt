@@ -1,7 +1,6 @@
 package org.robojackets.apiary.base.ui.nfc
 
 import android.nfc.NfcAdapter
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,6 +24,7 @@ import org.robojackets.apiary.base.ui.icons.WarningIcon
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.*
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource.*
 import org.robojackets.apiary.base.ui.theme.danger
+import timber.log.Timber
 import java.nio.charset.StandardCharsets
 
 /**
@@ -82,7 +82,7 @@ fun BuzzCardPrompt(
 
                     if (!buzzStringRegex.matches(buzzString)) {
                         error = InvalidBuzzCardData
-                        Log.e(tag, "Unexpected BuzzCard buzzString format: $buzzString")
+                        Timber.e("Unexpected BuzzCard buzzString format: $buzzString")
                         return@enableReaderMode
                     }
 
@@ -91,17 +91,17 @@ fun BuzzCardPrompt(
 
                     if (!gtidRegex.matches(gtid)) {
                         error = InvalidBuzzCardData
-                        Log.e(tag, "Unexpected BuzzCard GTID format: $gtid")
+                        Timber.e("Unexpected BuzzCard GTID format: $gtid")
                     }
 
                     error = null
                     onBuzzCardTap(BuzzCardTap(gtid.toInt()))
                 } else {
-                    Log.i(tag, "Unknown card type ($cardType) presented")
+                    Timber.i("Unknown card type ($cardType) presented")
                     error = NotABuzzCard
                 }
             } catch (e: NxpNfcLibException) {
-                Log.w(tag, "NxpNfcLib exception occurred while processing this NFC tag", e)
+                Timber.w(e, "NxpNfcLib exception occurred while processing this NFC tag")
                 error = when (e.localizedMessage) {
                     "Wrong CLA" -> NotABuzzCard
                     "Tag was lost." -> TagLost
@@ -109,11 +109,7 @@ fun BuzzCardPrompt(
                     else -> UnknownNfcError
                 }
             } catch (e: NumberFormatException) {
-                Log.e(
-                    tag,
-                    "GTID string from (probably a) BuzzCard could not be parsed as an Int",
-                    e
-                )
+                Timber.e(e, "GTID string from (probably a) BuzzCard could not be parsed as an Int")
                 error = InvalidBuzzCardData
             }
         },

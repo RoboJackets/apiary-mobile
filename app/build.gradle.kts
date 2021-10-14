@@ -17,7 +17,10 @@ dependencies {
 
     // Dependencies
     coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+    implementation(AndroidToolDependencies.gson) // For Sentry
     implementation(AndroidToolDependencies.open_source_licenses)
+    implementation(AndroidToolDependencies.sentry)
+    implementation(AndroidToolDependencies.sentry_timber_tree)
     implementation(AndroidToolDependencies.timber)
 
     implementation(AndroidXDependencies.androidx_activity_compose)

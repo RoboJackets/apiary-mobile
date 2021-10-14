@@ -1,6 +1,5 @@
 package org.robojackets.apiary.auth.model
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +16,7 @@ import org.robojackets.apiary.base.AppEnvironment
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationManager
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -78,12 +78,12 @@ class AuthenticationViewModel @Inject constructor(
     }
 
     fun recordAuthError(error: AuthorizationException?) {
-        Log.e(TAG, "An authentication error was caught", error)
+        Timber.e(error, "An authentication error was caught")
         recordAuthError(error?.errorDescription ?: "Unknown error")
     }
 
     fun recordAuthError(errorMessage: String) {
-        Log.i(TAG, "Recording auth error: $errorMessage")
+        Timber.i("Recording auth error: " + errorMessage)
         loginStatus.value = ERROR
         loginErrorMessage.value = errorMessage
     }

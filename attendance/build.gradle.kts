@@ -15,6 +15,7 @@ dependencies {
 
     // Dependencies
     coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+    implementation(AndroidToolDependencies.timber)
 
     implementation(ComposeDependencies.compose_material)
     implementation(ComposeDependencies.compose_ui)

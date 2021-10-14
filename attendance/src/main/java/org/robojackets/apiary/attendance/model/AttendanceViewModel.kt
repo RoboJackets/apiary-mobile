@@ -1,6 +1,5 @@
 package org.robojackets.apiary.attendance.model
 
-import android.util.Log
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.SavedStateHandle
@@ -20,6 +19,7 @@ import org.robojackets.apiary.base.repository.MeetingsRepository
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
 import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationManager
+import timber.log.Timber
 import javax.inject.Inject
 
 @Suppress("MagicNumber")
@@ -74,7 +74,7 @@ class AttendanceViewModel @Inject constructor(
 
     fun recordScan(tap: BuzzCardTap) {
         if (screenState.value == Loading) {
-            Log.d("AttendanceScreen", "Ignoring BuzzCard tap because another one is currently being processed")
+            Timber.d("Ignoring BuzzCard tap because another one is currently being processed")
             return
         }
 

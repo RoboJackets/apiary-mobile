@@ -23,6 +23,7 @@ file.  Do **not** commit this file to version control.
 ```groovy
 taplinxKey=KEY_HERE
 taplinxOfflineKey=OFFLINE_KEY_HERE
+sentryDsn=SENTRY_DSN_HERE
 ```
 
 ### Repository structure

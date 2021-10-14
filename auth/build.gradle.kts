@@ -18,6 +18,7 @@ dependencies {
 
     // Dependencies
     coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+    implementation(AndroidToolDependencies.timber)
 
     implementation(AndroidXDependencies.androidx_activity_compose)
     implementation(AndroidXDependencies.androidx_lifecycle_runtime_ktx)
