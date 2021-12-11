@@ -48,7 +48,7 @@ object AndroidXDependencies {
         const val androidx_appcompat_version = "1.3.1"
         const val androidx_browser_version = "1.3.0"
         const val androidx_lifecycle_runtime_ktx_version = "2.3.1"
-        const val androidx_navigation_compose_version = "2.4.0-alpha06"
+        const val androidx_navigation_compose_version = "2.4.0-alpha07"
     }
 
     const val androidx_activity_compose =
