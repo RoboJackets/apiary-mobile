@@ -1,10 +1,7 @@
 package org.robojackets.apiary.attendance.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
@@ -14,8 +11,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import org.robojackets.apiary.attendance.model.AttendanceViewModel
 import org.robojackets.apiary.base.model.AttendableType
+import org.robojackets.apiary.base.ui.IconWithText
+import org.robojackets.apiary.base.ui.icons.WarningIcon
+import org.robojackets.apiary.base.ui.theme.danger
 import org.robojackets.apiary.base.ui.util.ContentPadding
 
 @ExperimentalMaterialApi
@@ -63,10 +65,26 @@ fun AttendableSelectionScreen(
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .fillMaxHeight()
             ) {
                 CircularProgressIndicator()
+            }
+        } else if (state.error != null) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ) {
+                IconWithText({ WarningIcon(tint = danger) }, state.error ?: "An unknown error occurred", TextAlign.Center)
+                Button(onClick = {
+                    viewModel.loadAttendables(attendableType)
+                }, modifier = Modifier.padding(top = 8.dp)) {
+                    Text("Retry")
+                }
             }
         }
         when (attendableType) {

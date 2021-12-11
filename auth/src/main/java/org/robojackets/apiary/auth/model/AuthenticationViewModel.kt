@@ -83,7 +83,7 @@ class AuthenticationViewModel @Inject constructor(
     }
 
     fun recordAuthError(errorMessage: String) {
-        Timber.i("Recording auth error: " + errorMessage)
+        Timber.i("Recording auth error: $errorMessage")
         loginStatus.value = ERROR
         loginErrorMessage.value = errorMessage
     }

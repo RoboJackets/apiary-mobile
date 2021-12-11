@@ -47,8 +47,8 @@ fun BuzzCardPrompt(
     hidePrompt: Boolean,
     nfcLib: NxpNfcLib,
     onBuzzCardTap: (buzzCardTap: BuzzCardTap) -> Unit,
+    externalError: BuzzCardPromptExternalError?,
 ) {
-    val tag = "BuzzCardPrompt"
     var error by remember { mutableStateOf<BuzzCardPromptError?>(null) }
     val nfcPresenceDelayCheckMs = 50 // the minimum number of ms allowed between successive NFC
     // tag reads. Lower is better, but too low seems to cause an increase in NFC read errors when
@@ -127,12 +127,16 @@ fun BuzzCardPrompt(
     var showGtidPrompt by remember { mutableStateOf(false) }
     Column {
         if (!hidePrompt) {
-            when (error) {
-                null -> BuzzCardReadyForTap()
-                TagLost -> NfcTagLostError()
-                NotABuzzCard -> NfcNotABuzzCardError()
-                InvalidBuzzCardData -> NfcInvalidBuzzCardDataError()
-                UnknownNfcError -> NfcReadUnknownError()
+            if (externalError != null) {
+                ExternalError(externalError)
+            } else {
+                when (error) {
+                    null -> BuzzCardReadyForTap()
+                    TagLost -> NfcTagLostError()
+                    NotABuzzCard -> NfcNotABuzzCardError()
+                    InvalidBuzzCardData -> NfcInvalidBuzzCardDataError()
+                    UnknownNfcError -> NfcReadUnknownError()
+                }
             }
             Button(
                 onClick = { showGtidPrompt = true },
@@ -268,6 +272,15 @@ fun NfcReadUnknownError() {
     ) {
         IconWithText(icon = { WarningIcon(tint = danger) }, text = "Unknown NFC read error")
     }
+}
+
+@Composable
+fun ExternalError(externalError: BuzzCardPromptExternalError) {
+    ActionPrompt(
+        icon = { ContactlessIcon(Modifier.size(114.dp), tint = danger) },
+        title = externalError.title,
+        subtitle = externalError.message,
+    )
 }
 
 // Unused for now but useful once NFC disabled support is added back
