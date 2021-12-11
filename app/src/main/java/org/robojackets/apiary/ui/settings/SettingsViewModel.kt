@@ -114,6 +114,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught",)
     fun getUser() {
         viewModelScope.launch {
             if (user.value == null) {

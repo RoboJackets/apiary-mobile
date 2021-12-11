@@ -8,6 +8,7 @@ import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationManager
 import javax.inject.Inject
 
+@Suppress("UnusedPrivateMember")
 @HiltViewModel
 class AttendableTypeSelectionViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,

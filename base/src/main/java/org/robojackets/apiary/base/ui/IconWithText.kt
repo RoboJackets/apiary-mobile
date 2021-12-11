@@ -26,7 +26,6 @@ fun IconWithText(
     }
 }
 
-
 @Composable
 fun IconWithText(
     icon: @Composable () -> Unit,

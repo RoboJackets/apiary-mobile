@@ -47,6 +47,7 @@ private fun <T> AttendableList(
     }
 }
 
+@Suppress("LongMethod")
 @ExperimentalMaterialApi
 @Composable
 fun AttendableSelectionScreen(
@@ -79,7 +80,11 @@ fun AttendableSelectionScreen(
                     .fillMaxWidth()
                     .fillMaxHeight()
             ) {
-                IconWithText({ WarningIcon(tint = danger) }, state.error ?: "An unknown error occurred", TextAlign.Center)
+                IconWithText(
+                    { WarningIcon(tint = danger) },
+                    state.error ?: "An unknown error occurred",
+                    TextAlign.Center
+                )
                 Button(onClick = {
                     viewModel.loadAttendables(attendableType)
                 }, modifier = Modifier.padding(top = 8.dp)) {
@@ -115,4 +120,3 @@ fun AttendableSelectionScreen(
         }
     }
 }
-

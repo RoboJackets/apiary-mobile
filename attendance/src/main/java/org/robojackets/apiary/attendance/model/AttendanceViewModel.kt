@@ -105,15 +105,16 @@ class AttendanceViewModel @Inject constructor(
             }
             .onError {
                 Timber.e(this.toString(), "Error occurred while recording attendance")
-                error.value = "The last tap was successful, but we couldn't save the data. Check your internet connection and try again."
+                error.value = "The last tap was successful, but we couldn't save the data. " +
+                        "Check your internet connection and try again."
                 screenState.value = ReadyForTap
             }
             .onException {
                 Timber.e(this.message, "Exception occurred while recording attendance")
-                error.value = "The last tap was successful, but we couldn't save the data. Check your internet connection and try again."
+                error.value = "The last tap was successful, but we couldn't save the data. " +
+                        "Check your internet connection and try again."
                 screenState.value = ReadyForTap
             }
-
         }
     }
 
@@ -154,7 +155,12 @@ class AttendanceViewModel @Inject constructor(
     }
 
     fun onAttendableSelected(attendable: Attendable) {
-        navManager.navigate(NavigationActions.Attendance.attendableSelectionToAttendance(attendable.type.toString(), attendable.id))
+        navManager.navigate(
+            NavigationActions.Attendance.attendableSelectionToAttendance(
+                attendable.type.toString(),
+                attendable.id
+            )
+        )
     }
 
     fun getAttendableInfo(attendableType: AttendableType, attendableId: Int) {
@@ -179,8 +185,6 @@ class AttendanceViewModel @Inject constructor(
                         )
                         error.value = "Unable to fetch team info"
                     }
-
-
                 }
                 AttendableType.Event -> {
                     meetingsRepository.getEvent(attendableId).onSuccess {

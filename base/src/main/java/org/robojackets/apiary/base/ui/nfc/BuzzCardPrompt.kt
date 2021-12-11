@@ -155,10 +155,10 @@ fun BuzzCardPrompt(
             },
             onHide = { showGtidPrompt = false },
         )
-
     }
 }
 
+@Suppress("MagicNumber")
 @Composable
 fun ManualGtidEntryPrompt(
     onHide: () -> Unit,

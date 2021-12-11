@@ -1,3 +1,4 @@
+@file:Suppress("Filename", "MatchingDeclarationName")
 package org.robojackets.apiary.base.model
 
 // Based on https://medium.com/codex/kotlin-sealed-classes-for-better-handling-of-api-response-6aa1fbd23c76

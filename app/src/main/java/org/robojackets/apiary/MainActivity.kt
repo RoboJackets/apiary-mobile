@@ -196,7 +196,7 @@ class MainActivity : ComponentActivity() {
                                                 } == true,
                                             onClick = {
                                                 navigationManager.navigate(
-                                                    NavigationActions.BottomNavTabs.bottomNavTabs(
+                                                    NavigationActions.BottomNavTabs.withinBottomNavTabs(
                                                         screen.navigationDestination,
                                                         navController.graph.findStartDestination().id
                                                     )
@@ -244,7 +244,7 @@ class MainActivity : ComponentActivity() {
                 composable(
                     route = "${NavigationDestinations.attendableSelection}/{attendableType}",
                     arguments = listOf(
-                        navArgument("attendableType") { type = NavType.StringType}
+                        navArgument("attendableType") { type = NavType.StringType }
                     ),
                 ) {
                     val attendableType = it.arguments?.get("attendableType")
@@ -270,7 +270,6 @@ class MainActivity : ComponentActivity() {
                         attendableId as Int
                     )
                 }
-
             }
             composable(NavigationDestinations.settings) {
                 SettingsScreen(hiltViewModel())

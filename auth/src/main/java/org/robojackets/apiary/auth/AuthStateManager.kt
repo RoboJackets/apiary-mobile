@@ -94,7 +94,7 @@ class AuthStateManager @Inject constructor(
             try {
                 AuthState.jsonDeserialize(currentState)
             } catch (ex: JSONException) {
-                Timber.w("Failed to deserialize stored auth state - discarding")
+                Timber.w(ex, "Failed to deserialize stored auth state - discarding")
                 AuthState()
             }
         } finally {
@@ -121,7 +121,6 @@ class AuthStateManager @Inject constructor(
     companion object {
         private val INSTANCE_REF: AtomicReference<WeakReference<AuthStateManager>> =
             AtomicReference(WeakReference(null))
-        private const val TAG = "AuthStateManager"
         private const val STORE_NAME = "AuthState"
         private const val KEY_STATE = "state"
         @AnyThread
@@ -134,5 +133,4 @@ class AuthStateManager @Inject constructor(
             return manager
         }
     }
-
 }

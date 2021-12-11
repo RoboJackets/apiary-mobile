@@ -24,7 +24,7 @@ object NavigationActions {
 
     object BottomNavTabs {
         // graphStartId: example navController.graph.findStartDestination().id
-        fun bottomNavTabs(destination: String, graphStartId: Int) = object : NavigationAction {
+        fun withinBottomNavTabs(destination: String, graphStartId: Int) = object : NavigationAction {
             override val destination = destination
             override val navOptions = NavOptions.Builder()
                 .setPopUpTo(graphStartId, false, saveState = true)

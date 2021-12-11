@@ -40,6 +40,7 @@ private fun getExternalError(error: String?): BuzzCardPromptExternalError? {
     return null
 }
 
+@Suppress("LongMethod", "MagicNumber")
 @Composable
 private fun Attendance(
     viewState: AttendanceState,
@@ -90,7 +91,7 @@ private fun Attendance(
                 100 -> Text("💯 100 ATTENDEES! Go give yourself a prize!")
             }
         }
-        
+
         BuzzCardPrompt(
             hidePrompt = viewState.screenState != ReadyForTap,
             nfcLib = nfcLib,
@@ -136,7 +137,11 @@ fun AttendanceScreen(
                     .fillMaxWidth()
                     .fillMaxHeight()
             ) {
-                IconWithText({ WarningIcon(tint = danger) }, state.error ?: "An unknown error occurred", TextAlign.Center)
+                IconWithText(
+                    { WarningIcon(tint = danger) },
+                    state.error ?: "An unknown error occurred",
+                    TextAlign.Center
+                )
                 Button(onClick = {
                     viewModel.getAttendableInfo(attendableType, attendableId)
                 }, modifier = Modifier.padding(top = 8.dp)) {
