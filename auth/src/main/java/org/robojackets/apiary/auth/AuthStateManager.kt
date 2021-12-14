@@ -2,7 +2,6 @@ package org.robojackets.apiary.auth
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.annotation.AnyThread
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
@@ -10,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import net.openid.appauth.*
 import org.json.JSONException
+import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.ReentrantLock
@@ -94,7 +94,7 @@ class AuthStateManager @Inject constructor(
             try {
                 AuthState.jsonDeserialize(currentState)
             } catch (ex: JSONException) {
-                Log.w(TAG, "Failed to deserialize stored auth state - discarding")
+                Timber.w(ex, "Failed to deserialize stored auth state - discarding")
                 AuthState()
             }
         } finally {
@@ -121,7 +121,6 @@ class AuthStateManager @Inject constructor(
     companion object {
         private val INSTANCE_REF: AtomicReference<WeakReference<AuthStateManager>> =
             AtomicReference(WeakReference(null))
-        private const val TAG = "AuthStateManager"
         private const val STORE_NAME = "AuthState"
         private const val KEY_STATE = "state"
         @AnyThread
@@ -134,5 +133,4 @@ class AuthStateManager @Inject constructor(
             return manager
         }
     }
-
 }

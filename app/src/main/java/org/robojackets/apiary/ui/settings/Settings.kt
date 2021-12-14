@@ -34,11 +34,11 @@ import org.robojackets.apiary.base.ui.util.MadeWithLove
 @Suppress("LongMethod")
 @Composable
  private fun Settings(
-    appEnv: AppEnvironment,
-    user: UserInfo?,
-    onLogout: () -> Unit,
-    onOpenPrivacyPolicy: () -> Unit,
-    onOpenMakeAWish: () -> Unit,
+     appEnv: AppEnvironment,
+     user: UserInfo?,
+     onLogout: () -> Unit,
+     onOpenPrivacyPolicy: () -> Unit,
+     onOpenMakeAWish: () -> Unit,
  ) {
     val context = LocalContext.current
 

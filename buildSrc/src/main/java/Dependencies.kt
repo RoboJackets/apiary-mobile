@@ -48,7 +48,7 @@ object AndroidXDependencies {
         const val androidx_appcompat_version = "1.3.1"
         const val androidx_browser_version = "1.3.0"
         const val androidx_lifecycle_runtime_ktx_version = "2.3.1"
-        const val androidx_navigation_compose_version = "2.4.0-alpha06"
+        const val androidx_navigation_compose_version = "2.4.0-alpha07"
     }
 
     const val androidx_activity_compose =
@@ -107,6 +107,8 @@ object AndroidToolDependencies {
         const val krate_version = "1.1.0"
         const val open_source_licenses_version = "17.0.0"
         const val timber_version = "5.0.0"
+        const val gson_version = "2.8.8"
+        const val sentry_version = "5.2.2"
     }
 
     const val android_tools_desugar_jdk =
@@ -115,6 +117,9 @@ object AndroidToolDependencies {
     const val open_source_licenses =
         "com.google.android.gms:play-services-oss-licenses:${Versions.open_source_licenses_version}"
     const val timber = "com.jakewharton.timber:timber:${Versions.timber_version}"
+    const val gson = "com.google.code.gson:gson:${Versions.gson_version}"
+    const val sentry = "io.sentry:sentry-android:${Versions.sentry_version}"
+    const val sentry_timber_tree = "io.sentry:sentry-android-timber:${Versions.sentry_version}"
 }
 
 object NetworkDependencies {

@@ -1,7 +1,6 @@
 package org.robojackets.apiary.base.ui.nfc
 
 import android.nfc.NfcAdapter
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,6 +24,7 @@ import org.robojackets.apiary.base.ui.icons.WarningIcon
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.*
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource.*
 import org.robojackets.apiary.base.ui.theme.danger
+import timber.log.Timber
 import java.nio.charset.StandardCharsets
 
 /**
@@ -47,8 +47,8 @@ fun BuzzCardPrompt(
     hidePrompt: Boolean,
     nfcLib: NxpNfcLib,
     onBuzzCardTap: (buzzCardTap: BuzzCardTap) -> Unit,
+    externalError: BuzzCardPromptExternalError?,
 ) {
-    val tag = "BuzzCardPrompt"
     var error by remember { mutableStateOf<BuzzCardPromptError?>(null) }
     val nfcPresenceDelayCheckMs = 50 // the minimum number of ms allowed between successive NFC
     // tag reads. Lower is better, but too low seems to cause an increase in NFC read errors when
@@ -75,11 +75,14 @@ fun BuzzCardPrompt(
                     // a string containing "gtid=proxID", such as "901234567=123456"
                     buzzString = String(buzzData, StandardCharsets.UTF_8)
 
-                    val buzzStringRegex = Regex("90[0-9]{7}=[0-9]{6}.*")
+                    // In some cases (e.g., GTRI badges) the proxID is fewer than 6 characters
+                    // Since we don't care about the proxID, the regex just checks
+                    // for the GTID and =
+                    val buzzStringRegex = Regex("90[0-9]{7}=.*")
 
                     if (!buzzStringRegex.matches(buzzString)) {
                         error = InvalidBuzzCardData
-                        Log.e(tag, "Unexpected BuzzCard buzzString format: $buzzString")
+                        Timber.e("Unexpected BuzzCard buzzString format: $buzzString")
                         return@enableReaderMode
                     }
 
@@ -88,17 +91,17 @@ fun BuzzCardPrompt(
 
                     if (!gtidRegex.matches(gtid)) {
                         error = InvalidBuzzCardData
-                        Log.e(tag, "Unexpected BuzzCard GTID format: $gtid")
+                        Timber.e("Unexpected BuzzCard GTID format: $gtid")
                     }
 
                     error = null
                     onBuzzCardTap(BuzzCardTap(gtid.toInt()))
                 } else {
-                    Log.i(tag, "Unknown card type ($cardType) presented")
+                    Timber.i("Unknown card type ($cardType) presented")
                     error = NotABuzzCard
                 }
             } catch (e: NxpNfcLibException) {
-                Log.w(tag, "NxpNfcLib exception occurred while processing this NFC tag", e)
+                Timber.w(e, "NxpNfcLib exception occurred while processing this NFC tag")
                 error = when (e.localizedMessage) {
                     "Wrong CLA" -> NotABuzzCard
                     "Tag was lost." -> TagLost
@@ -106,11 +109,7 @@ fun BuzzCardPrompt(
                     else -> UnknownNfcError
                 }
             } catch (e: NumberFormatException) {
-                Log.e(
-                    tag,
-                    "GTID string from (probably a) BuzzCard could not be parsed as an Int",
-                    e
-                )
+                Timber.e(e, "GTID string from (probably a) BuzzCard could not be parsed as an Int")
                 error = InvalidBuzzCardData
             }
         },
@@ -128,12 +127,16 @@ fun BuzzCardPrompt(
     var showGtidPrompt by remember { mutableStateOf(false) }
     Column {
         if (!hidePrompt) {
-            when (error) {
-                null -> BuzzCardReadyForTap()
-                TagLost -> NfcTagLostError()
-                NotABuzzCard -> NfcNotABuzzCardError()
-                InvalidBuzzCardData -> NfcInvalidBuzzCardDataError()
-                UnknownNfcError -> NfcReadUnknownError()
+            if (externalError != null) {
+                ExternalError(externalError)
+            } else {
+                when (error) {
+                    null -> BuzzCardReadyForTap()
+                    TagLost -> NfcTagLostError()
+                    NotABuzzCard -> NfcNotABuzzCardError()
+                    InvalidBuzzCardData -> NfcInvalidBuzzCardDataError()
+                    UnknownNfcError -> NfcReadUnknownError()
+                }
             }
             Button(
                 onClick = { showGtidPrompt = true },
@@ -152,10 +155,10 @@ fun BuzzCardPrompt(
             },
             onHide = { showGtidPrompt = false },
         )
-
     }
 }
 
+@Suppress("MagicNumber")
 @Composable
 fun ManualGtidEntryPrompt(
     onHide: () -> Unit,
@@ -269,6 +272,15 @@ fun NfcReadUnknownError() {
     ) {
         IconWithText(icon = { WarningIcon(tint = danger) }, text = "Unknown NFC read error")
     }
+}
+
+@Composable
+fun ExternalError(externalError: BuzzCardPromptExternalError) {
+    ActionPrompt(
+        icon = { ContactlessIcon(Modifier.size(114.dp), tint = danger) },
+        title = externalError.title,
+        subtitle = externalError.message,
+    )
 }
 
 // Unused for now but useful once NFC disabled support is added back

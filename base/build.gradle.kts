@@ -13,6 +13,8 @@ dependencies {
     // Dependencies
     coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
     api(AndroidToolDependencies.krate)
+    implementation(AndroidToolDependencies.sentry)
+    implementation(AndroidToolDependencies.timber)
 
     implementation(ComposeDependencies.compose_foundation)
     implementation(ComposeDependencies.compose_material)
@@ -41,7 +43,7 @@ hilt {
 }
 
 android {
-    compileSdk = 30
+    compileSdk = 31
     defaultConfig {
         minSdk = 24
         targetSdk = 30

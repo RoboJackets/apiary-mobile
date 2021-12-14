@@ -17,7 +17,10 @@ dependencies {
 
     // Dependencies
     coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+    implementation(AndroidToolDependencies.gson) // For Sentry
     implementation(AndroidToolDependencies.open_source_licenses)
+    implementation(AndroidToolDependencies.sentry)
+    implementation(AndroidToolDependencies.sentry_timber_tree)
     implementation(AndroidToolDependencies.timber)
 
     implementation(AndroidXDependencies.androidx_activity_compose)
@@ -65,13 +68,13 @@ android {
         create("release") {
         }
     }
-    compileSdk = 30
+    compileSdk = 31
     defaultConfig {
         applicationId = "org.robojackets.apiary"
         minSdk = 24 // FIXME: this is temporary to workaround a Compose bug (https://issuetracker.google.com/issues/194289155)
         targetSdk = 30
-        versionCode = 6
-        versionName = "0.4.0-alpha02"
+        versionCode = 9
+        versionName = "1.0.0-rc01"
         vectorDrawables {
             useSupportLibrary = true
         }

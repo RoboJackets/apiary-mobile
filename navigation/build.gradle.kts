@@ -12,10 +12,12 @@ hilt {
 }
 
 dependencies {
-    // Other modules (none right now)
+    // Other modules
+    implementation(project(mapOf("path" to ":base")))
 
     // Dependencies
     coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+    implementation(AndroidToolDependencies.timber)
 
     implementation(AndroidXDependencies.androidx_navigation_compose)
 
@@ -29,7 +31,7 @@ dependencies {
 }
 
 android {
-    compileSdk = 30
+    compileSdk = 31
     defaultConfig {
         minSdk = 24
         targetSdk = 30

@@ -18,6 +18,7 @@ dependencies {
 
     // Dependencies
     coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
+    implementation(AndroidToolDependencies.timber)
 
     implementation(AndroidXDependencies.androidx_activity_compose)
     implementation(AndroidXDependencies.androidx_lifecycle_runtime_ktx)
@@ -51,7 +52,7 @@ dependencies {
 }
 
 android {
-    compileSdk = 30
+    compileSdk = 31
     defaultConfig {
         minSdk = 24
         targetSdk = 30
