@@ -1,9 +1,9 @@
 object ComposeDependencies {
     object Versions {
-        const val accompanist_version = "0.16.1"
-        const val compose_settings_version = "0.3.0"
-        const val compose_version = "1.0.1"
-        const val lifecycle_viewmodel_compose_version = "1.0.0-alpha07"
+        const val accompanist_version = "0.20.3"
+        const val compose_settings_version = "0.7.2"
+        const val compose_version = "1.0.5"
+        const val lifecycle_viewmodel_compose_version = "2.4.0"
     }
 
     const val accompanist =
@@ -23,7 +23,7 @@ object ComposeDependencies {
         "androidx.compose.runtime:runtime-livedata:${Versions.compose_version}"
 
     const val compose_settings =
-        "com.github.alorma:compose-settings:${Versions.compose_settings_version}"
+        "com.github.alorma:compose-settings-ui:${Versions.compose_settings_version}"
 
     const val compose_ui = "androidx.compose.ui:ui:${Versions.compose_version}"
     const val compose_ui_test = "androidx.compose.ui:ui-test-junit4:${Versions.compose_version}"
@@ -105,21 +105,21 @@ object AndroidToolDependencies {
     object Versions {
         const val android_tools_desugar_version = "1.1.5"
         const val krate_version = "1.1.0"
+        const val gson_version = "2.8.9"
         const val open_source_licenses_version = "17.0.0"
+        const val sentry_version = "5.5.0"
         const val timber_version = "5.0.0"
-        const val gson_version = "2.8.8"
-        const val sentry_version = "5.2.2"
     }
 
     const val android_tools_desugar_jdk =
         "com.android.tools:desugar_jdk_libs:${Versions.android_tools_desugar_version}"
+    const val gson = "com.google.code.gson:gson:${Versions.gson_version}"
     const val krate = "hu.autsoft:krate:${Versions.krate_version}"
     const val open_source_licenses =
         "com.google.android.gms:play-services-oss-licenses:${Versions.open_source_licenses_version}"
-    const val timber = "com.jakewharton.timber:timber:${Versions.timber_version}"
-    const val gson = "com.google.code.gson:gson:${Versions.gson_version}"
     const val sentry = "io.sentry:sentry-android:${Versions.sentry_version}"
     const val sentry_timber_tree = "io.sentry:sentry-android-timber:${Versions.sentry_version}"
+    const val timber = "com.jakewharton.timber:timber:${Versions.timber_version}"
 }
 
 object NetworkDependencies {
