@@ -9,9 +9,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <meta-data android:name="google_analytics_adid_collection_enabled"
-        android:value="false" />
-
     <application
         android:allowBackup="false"
         tools:replace="android:allowBackup,android:theme"
@@ -22,6 +19,8 @@
         android:name="org.robojackets.apiary.ApiaryMobileApplication"
         >
         <meta-data android:name="io.sentry.dsn" android:value="${sentryDsn}" />
+        <meta-data android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
         <activity
             android:name="org.robojackets.apiary.MainActivity"
             android:exported="true"
@@ -34,6 +33,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- This is here because the NXP TapLinx Android library has not been updated for SDK 31
+        (Android 12) and does not explicitly specify the android:exported property, which is required
+        in SDK 31.  The MissingClass ignore is added because AnalyticsReceiver is a dependency only available
+        within the TapLinx SDK.
+        -->
+        <receiver
+            android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+            android:exported="false"
+            tools:ignore="MissingClass">
+        </receiver>
     </application>
 
 </manifest>
