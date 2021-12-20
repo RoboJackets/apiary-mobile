@@ -19,6 +19,13 @@ allprojects {
         google()
         mavenCentral()
     }
+    configurations {
+        all {
+            exclude("com.google.android.gms", "play-services-ads-identifier")
+            exclude("com.google.android.gms", "play-services-measurement")
+            exclude("com.google.android.gms", "play-services-measurement-sdk")
+        }
+    }
 }
 
 plugins {
