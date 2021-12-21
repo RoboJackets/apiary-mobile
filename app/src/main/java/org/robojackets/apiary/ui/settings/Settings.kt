@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.alorma.settings.composables.SettingsMenuLink
+import com.alorma.compose.settings.ui.SettingsMenuLink
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import org.robojackets.apiary.BuildConfig
 import org.robojackets.apiary.auth.model.UserInfo

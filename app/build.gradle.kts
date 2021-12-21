@@ -71,10 +71,10 @@ android {
     compileSdk = 31
     defaultConfig {
         applicationId = "org.robojackets.apiary"
-        minSdk = 24 // FIXME: this is temporary to workaround a Compose bug (https://issuetracker.google.com/issues/194289155)
-        targetSdk = 30
-        versionCode = 9
-        versionName = "1.0.0-rc01"
+        minSdk = 21
+        targetSdk = 31
+        versionCode = 12
+        versionName = "1.0.0"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -97,7 +97,7 @@ android {
         jvmTarget = "1.8"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.0.0"
+        kotlinCompilerExtensionVersion = "1.0.5"
     }
     hilt {
         enableExperimentalClasspathAggregation = true
