@@ -15,18 +15,10 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## Android
 
-### android helloWorld
+### android testConnectionToGooglePlay
 
 ```sh
-[bundle exec] fastlane android helloWorld
-```
-
-Hello World
-
-### android testing1
-
-```sh
-[bundle exec] fastlane android testing1
+[bundle exec] fastlane android testConnectionToGooglePlay
 ```
 
 
@@ -54,14 +46,6 @@ Creates a Sentry release for this version and associates Git commits
 ```
 
 Upload a release to Google Play internal app sharing
-
-### android releaseToInternalTest
-
-```sh
-[bundle exec] fastlane android releaseToInternalTest
-```
-
-Propose a new release to the internal test track
 
 ### android deploy
 

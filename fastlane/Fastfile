@@ -16,11 +16,6 @@ require("json")
 default_platform(:android)
 
 platform :android do
-  desc "Hello World"
-  lane :helloWorld do
-    puts("Hello, World!")
-  end
-
   lane :testConnectionToGooglePlay do
     validate_play_store_json_key(
       json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"]
@@ -93,11 +88,5 @@ platform :android do
         "accept": "application/vnd.github.v3+json"
       }
     )
-  end
-
-  desc "Deploy a new version to the Google Play"
-  lane :deploy do
-    gradle(task: "clean assembleRelease")
-    upload_to_play_store
   end
 end

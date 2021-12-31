@@ -35,7 +35,7 @@ resources:
   name: apiary-mobile
   public: true
   source:
-    branch: main
+    branch: evan/ci # TODO: change back to main
     password: (("github.com"/token.token))
     uri: https://github.com/RoboJackets/apiary-mobile
     username: x-access-token
@@ -76,13 +76,18 @@ jobs:
           inputs:
           - name: apiary-mobile
           platform: linux
+          params:
+            GOOGLE_PLAY_PRIVATE_KEY: ((kv/google-play-private-key))
+            IS_CI: true
           run:
             args:
             - -exc
             - |
               cd apiary-mobile
               chmod u+x gradlew
-              fastlane
+              gem install bundler:2.3.1
+              bundle install --quiet
+              bundle exec fastlane test
             path: sh
         image: android-build-box
         tags:
