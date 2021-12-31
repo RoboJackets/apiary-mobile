@@ -10,3 +10,8 @@
 .cxx
 local.properties
 /app/release/
+fastlane/metadata
+fastlane/.env
+fastlane/report.xml
+*-pkey.json
+*-private-key.json
