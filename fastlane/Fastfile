@@ -57,11 +57,9 @@ platform :android do
 
   desc "Upload a release to Google Play internal app sharing"
   lane :uploadToInternalAppSharing do |lane, options|
-    # version_output = JSON.parse(sh("gitversion"))
-    # full_sem_ver = version_output["FullSemVer"]
-    # version_name = full_sem_ver.gsub("+", "-")
-
-    version_name = "test"
+    version_output = JSON.parse(sh("gitversion"))
+    full_sem_ver = version_output["FullSemVer"]
+    version_name = full_sem_ver.gsub("+", "-")
 
     gradle(
       task: "bundle",
@@ -75,15 +73,16 @@ platform :android do
 
     upload_urls = upload_to_play_store_internal_app_sharing(
       package_name: "org.robojackets.apiary",
+      json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"]
       aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
     )
     github_api(
       api_token: ENV["GITHUB_API_TOKEN"],
       http_method: "POST",
       body: {
-        body: "[Download PR build v#{BUILD_VERSION_NAME}](#{upload_urls[1]})<br><br><em>PR builds are unsigned and always use version code 1. Follow [these steps](https://support.google.com/googleplay/android-developer/answer/9844679#on) to enable installing them on your device.</em>"
+        body: "[Download PR build v#{version_name}](#{upload_urls[1]})<br><br><em>PR builds are unsigned and always use version code 1. Follow [these steps](https://support.google.com/googleplay/android-developer/answer/9844679#on) to enable installing them on your device.</em>"
       },
-      path: "/repos/robojackets/apiary-mobile/issues/45/comments",
+      path: "/repos/robojackets/apiary-mobile/issues/#{options[:pr_number]}/comments",
       headers: {
         "accept": "application/vnd.github.v3+json"
       }
