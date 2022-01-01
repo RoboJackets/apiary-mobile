@@ -57,7 +57,9 @@ platform :android do
 
   desc "Upload a release to Google Play internal app sharing"
   lane :uploadToInternalAppSharing do |lane, options|
-    version_output = JSON.parse(sh("gitversion"))
+    Dir.chdir("..") do
+      version_output = JSON.parse(sh("gitversion"))
+    end
     full_sem_ver = version_output["FullSemVer"]
     version_name = full_sem_ver.gsub("+", "-")
 
