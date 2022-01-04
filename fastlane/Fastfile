@@ -87,8 +87,8 @@ platform :android do
       aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
     )
 
-    puts("Upload urls:")
-    puts(upload_urls)
+    puts("Upload url: #{upload_urls[1]}")
+    puts( "[Download PR build v#{version_name}](#{upload_urls[1]})<br><br><em>PR builds are unsigned and always use version code 1. Follow [these steps](https://support.google.com/googleplay/android-developer/answer/9844679#on) to enable installing them on your device.</em>")
 
     github_api(
       api_token: ENV["GITHUB_API_TOKEN"],
