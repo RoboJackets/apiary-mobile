@@ -86,6 +86,10 @@ platform :android do
       json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"],
       aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
     )
+
+    puts("Upload urls:")
+    puts(upload_urls)
+
     github_api(
       api_token: ENV["GITHUB_API_TOKEN"],
       api_bearer: ENV["GITHUB_API_BEARER_TOKEN"],
