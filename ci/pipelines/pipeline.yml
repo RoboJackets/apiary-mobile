@@ -226,7 +226,7 @@ jobs:
             - -exc
             - |
                 export GRADLE_USER_HOME=$(pwd)/.gradle
-                echo $GRADLE_USER_HOME
+
                 cd pull-request
                 chmod u+x gradlew
                 echo taplinxKey=((apiary-android-secrets.taplinxKey)) >> local.properties
@@ -236,50 +236,50 @@ jobs:
                 gem install bundler:2.3.1
                 bundle config set --local path vendor
                 bundle install --quiet
-                wget https://github.com/GitTools/GitVersion/releases/download/5.8.1/gitversion-linux-x64-5.8.1.tar.gz
+                wget -q https://github.com/GitTools/GitVersion/releases/download/5.8.1/gitversion-linux-x64-5.8.1.tar.gz
                 tar -xf gitversion-linux-x64-5.8.1.tar.gz
             path: sh
 
-    - task: run-tests
-      config:
-        inputs:
-        - name: pull-request
-        outputs:
-        - name: pull-request
-        platform: linux
-        run:
-          args:
-          - -exc
-          - |
-            cd pull-request
+    # - task: run-tests
+    #   config:
+    #     inputs:
+    #     - name: pull-request
+    #     outputs:
+    #     - name: pull-request
+    #     platform: linux
+    #     run:
+    #       args:
+    #       - -exc
+    #       - |
+    #         cd pull-request
 
-            export GRADLE_USER_HOME=$(pwd)/.gradle
+    #         export GRADLE_USER_HOME=$(pwd)/.gradle
 
-            bundle exec fastlane test
-          path: sh
-      image: android-build-box
-      tags:
-        - large
-      on_abort:
-        put: tests-check
-        inputs:
-          - tests-check
-        params:
-          conclusion: cancelled
-      on_error:
-        put: tests-check
-        inputs:
-          - tests-check
-        params:
-          conclusion: action_required
-      on_failure:
-        put: tests-check
-        inputs:
-          - tests-check
-        params:
-          conclusion: failure
-          summary: Review the output within Concourse.
-          title: Tests failed
+    #         bundle exec fastlane test
+    #       path: sh
+    #   image: android-build-box
+    #   tags:
+    #     - large
+    #   on_abort:
+    #     put: tests-check
+    #     inputs:
+    #       - tests-check
+    #     params:
+    #       conclusion: cancelled
+    #   on_error:
+    #     put: tests-check
+    #     inputs:
+    #       - tests-check
+    #     params:
+    #       conclusion: action_required
+    #   on_failure:
+    #     put: tests-check
+    #     inputs:
+    #       - tests-check
+    #     params:
+    #       conclusion: failure
+    #       summary: Review the output within Concourse.
+    #       title: Tests failed
     
     - put: tests-check
       params:
@@ -299,6 +299,7 @@ jobs:
         params:
           IS_CI: true
           GOOGLE_PLAY_PRIVATE_KEY: ((apiary-android-secrets.google-play-private-key))
+          GITHUB_API_BEARER_TOKEN: (("github.com"/token.token))
         run:
           args:
           - -exc

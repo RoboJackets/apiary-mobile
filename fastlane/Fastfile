@@ -88,6 +88,7 @@ platform :android do
     )
     github_api(
       api_token: ENV["GITHUB_API_TOKEN"],
+      api_bearer: ENV["GITHUB_API_BEARER_TOKEN"],
       http_method: "POST",
       body: {
         body: "[Download PR build v#{version_name}](#{upload_urls[1]})<br><br><em>PR builds are unsigned and always use version code 1. Follow [these steps](https://support.google.com/googleplay/android-developer/answer/9844679#on) to enable installing them on your device.</em>"
