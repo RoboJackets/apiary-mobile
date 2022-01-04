@@ -14,12 +14,38 @@ resource_types:
   tags:
   - resources
   type: registry-image
+
 - name: pull-request
   source:
     repository: teliaoss/github-pr-resource
   tags:
   - resources
   type: registry-image
+
+- name: github-webhook
+  defaults:
+    github_token: (("github.com"/token.token))
+    resources:
+      apiary-mobile:
+        events:
+        - push
+        github_uri: https://github.com/RoboJackets/apiary-mobile
+      pull-request:
+        events:
+        - push
+        - pull_request
+        github_uri: https://github.com/RoboJackets/apiary-mobile
+    webhook_token: ((webhook-token))
+  source:
+    aws_access_key_id: ((aws/sts/ecr.access_key))
+    aws_region: us-east-1
+    aws_secret_access_key: ((aws/sts/ecr.secret_key))
+    aws_session_token: ((aws/sts/ecr.security_token))
+    repository: robojackets/concourse-github-webhook-resource
+  tags:
+  - resources
+  type: registry-image
+
 resources:
 - check_every: 1h0m0s
   icon: android
@@ -31,6 +57,7 @@ resources:
   tags:
   - resources
   type: registry-image
+
 - icon: github
   name: apiary-mobile
   public: true
@@ -43,6 +70,7 @@ resources:
   - resources
   type: git
   webhook_token: ((webhook-token))
+
 - icon: source-pull
   name: pull-request
   public: true
@@ -53,6 +81,26 @@ resources:
   tags:
   - resources
   type: pull-request
+  webhook_token: ((webhook-token))
+
+- name: tests-check
+  type: github-check
+  icon: check
+  public: true
+  source:
+    check_name: Apiary Android Tests
+    resource_name: tests-check
+  tags:
+    - resources
+
+- icon: webhook
+  name: webhooks
+  public: true
+  source: null
+  tags:
+  - resources
+  type: github-webhook
+  
 
 jobs:
   - name: build-main
@@ -67,31 +115,67 @@ jobs:
               format: trim
               load_var: commit
               reveal: true
+            - put: tests-check
+              inputs: []
           - get: android-build-box
             tags:
               - large
             timeout: 5m
-      - task: print-gradle-version
+      
+      - task: run-tests
         config:
           inputs:
           - name: apiary-mobile
           platform: linux
-          params:
-            GOOGLE_PLAY_PRIVATE_KEY: ((kv/google-play-private-key))
-            IS_CI: true
           run:
             args:
             - -exc
             - |
               cd apiary-mobile
               chmod u+x gradlew
+              echo taplinxKey=((kv/apiary-android-secrets.taplinxKey)) >> local.properties
+              echo taplinxOfflineKey=((kv/apiary-android-secrets.taplinxOfflineKey)) >> local.properties
+              echo sentryDsn=((kv/apiary-android-secrets.sentryDsn)) >> local.properties
+              
               gem install bundler:2.3.1
               bundle install --quiet
+
               bundle exec fastlane test
             path: sh
         image: android-build-box
         tags:
           - large
+        on_abort:
+          put: tests-check
+          inputs:
+            - tests-check
+          params:
+            conclusion: cancelled
+        on_error:
+          put: tests-check
+          inputs:
+            - tests-check
+          params:
+            conclusion: action_required
+        on_failure:
+          put: tests-check
+          inputs:
+            - tests-check
+          params:
+            conclusion: failure
+            summary: Review the output within Concourse.
+            title: Tests failed
+      
+      - put: tests-check
+        params:
+          conclusion: success
+          summary: Tests ran successfully
+          title: Tests passed
+        inputs:
+          - tests-check
+
+      - put: webhooks
+        inputs: []
 
   - name: build-pull-request
     public: true
@@ -108,30 +192,123 @@ jobs:
               version: every
             - in_parallel:
                 steps:
-                - file: pull-request/.git/resource/head_sha
-                  format: trim
-                  load_var: commit
-                  reveal: true
-                - file: pull-request/.git/resource/pr
-                  format: trim
-                  load_var: pull_request_key
-                  reveal: true
+                - do:
+                  - file: pull-request/.git/resource/head_sha
+                    format: trim
+                    load_var: commit
+                    reveal: true
+                  - file: pull-request/.git/resource/pr
+                    format: trim
+                    load_var: pull_request_key
+                    reveal: true
+                  - put: tests-check
+                    inputs: []
           - get: android-build-box
             tags:
               - large
             timeout: 5m
-    - task: print-gradle-version
+
+    - task: prepare-env
+      image: android-build-box
+      tags:
+        - large
+      config:
+        inputs:
+          - name: pull-request
+        outputs:
+          - name: pull-request
+        platform: linux
+        params:
+            IS_CI: true
+            GOOGLE_PLAY_PRIVATE_KEY: ((apiary-android-secrets.google-play-private-key))
+        run:
+            args:
+            - -exc
+            - |
+                export GRADLE_USER_HOME=$(pwd)/.gradle
+                echo $GRADLE_USER_HOME
+                cd pull-request
+                chmod u+x gradlew
+                echo taplinxKey=((apiary-android-secrets.taplinxKey)) >> local.properties
+                echo taplinxOfflineKey=((apiary-android-secrets.taplinxOfflineKey)) >> local.properties
+                echo sentryDsn=((apiary-android-secrets.sentryDsn)) >> local.properties
+                
+                gem install bundler:2.3.1
+                bundle config set --local path vendor
+                bundle install --quiet
+                wget https://github.com/GitTools/GitVersion/releases/download/5.8.1/gitversion-linux-x64-5.8.1.tar.gz
+                tar -xf gitversion-linux-x64-5.8.1.tar.gz
+            path: sh
+
+    # - task: run-tests
+    #   config:
+    #     inputs:
+    #     - name: pull-request
+    #     outputs:
+    #     - name: pull-request
+    #     platform: linux
+    #     run:
+    #       args:
+    #       - -exc
+    #       - |
+    #         cd pull-request
+              # set gradle home
+    #         export GRADLE_USER_HOME=$(pwd)/.gradle
+    #         bundle exec fastlane test
+    #       path: sh
+    #   image: android-build-box
+    #   tags:
+    #     - large
+    #   on_abort:
+    #     put: tests-check
+    #     inputs:
+    #       - tests-check
+    #     params:
+    #       conclusion: cancelled
+    #   on_error:
+    #     put: tests-check
+    #     inputs:
+    #       - tests-check
+    #     params:
+    #       conclusion: action_required
+    #   on_failure:
+    #     put: tests-check
+    #     inputs:
+    #       - tests-check
+    #     params:
+    #       conclusion: failure
+    #       summary: Review the output within Concourse.
+    #       title: Tests failed
+    
+    - put: tests-check
+      params:
+        conclusion: success
+        summary: Tests ran successfully
+        title: Tests passed
+      inputs:
+        - tests-check
+
+    - task: upload-pr-build
       config:
         inputs:
         - name: pull-request
-        params:
-          PULL_REQUEST_KEY: ((.:pull_request_key))
         platform: linux
+        params:
+          IS_CI: true
+          GOOGLE_PLAY_PRIVATE_KEY: ((apiary-android-secrets.google-play-private-key))
         run:
           args:
           - -exc
-          - ./gradlew --version
+          - |
+            cd pull-request
+
+            export GRADLE_USER_HOME=$(pwd)/.gradle
+
+            bundle exec fastlane uploadToInternalAppSharing pr_number:((.:pull_request_key))
           path: sh
       image: android-build-box
       tags:
         - large
+
+    - put: webhooks
+      inputs: []
