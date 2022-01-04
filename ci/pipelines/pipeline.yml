@@ -240,45 +240,46 @@ jobs:
                 tar -xf gitversion-linux-x64-5.8.1.tar.gz
             path: sh
 
-    # - task: run-tests
-    #   config:
-    #     inputs:
-    #     - name: pull-request
-    #     outputs:
-    #     - name: pull-request
-    #     platform: linux
-    #     run:
-    #       args:
-    #       - -exc
-    #       - |
-    #         cd pull-request
-              # set gradle home
-    #         export GRADLE_USER_HOME=$(pwd)/.gradle
-    #         bundle exec fastlane test
-    #       path: sh
-    #   image: android-build-box
-    #   tags:
-    #     - large
-    #   on_abort:
-    #     put: tests-check
-    #     inputs:
-    #       - tests-check
-    #     params:
-    #       conclusion: cancelled
-    #   on_error:
-    #     put: tests-check
-    #     inputs:
-    #       - tests-check
-    #     params:
-    #       conclusion: action_required
-    #   on_failure:
-    #     put: tests-check
-    #     inputs:
-    #       - tests-check
-    #     params:
-    #       conclusion: failure
-    #       summary: Review the output within Concourse.
-    #       title: Tests failed
+    - task: run-tests
+      config:
+        inputs:
+        - name: pull-request
+        outputs:
+        - name: pull-request
+        platform: linux
+        run:
+          args:
+          - -exc
+          - |
+            cd pull-request
+
+            export GRADLE_USER_HOME=$(pwd)/.gradle
+
+            bundle exec fastlane test
+          path: sh
+      image: android-build-box
+      tags:
+        - large
+      on_abort:
+        put: tests-check
+        inputs:
+          - tests-check
+        params:
+          conclusion: cancelled
+      on_error:
+        put: tests-check
+        inputs:
+          - tests-check
+        params:
+          conclusion: action_required
+      on_failure:
+        put: tests-check
+        inputs:
+          - tests-check
+        params:
+          conclusion: failure
+          summary: Review the output within Concourse.
+          title: Tests failed
     
     - put: tests-check
       params:
@@ -291,6 +292,8 @@ jobs:
     - task: upload-pr-build
       config:
         inputs:
+        - name: pull-request
+        outputs:
         - name: pull-request
         platform: linux
         params:
