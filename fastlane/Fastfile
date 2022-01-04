@@ -87,15 +87,23 @@ platform :android do
       aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
     )
 
-    puts("Upload url: #{upload_urls[1]}")
-    puts( "[Download PR build v#{version_name}](#{upload_urls[1]})<br><br><em>PR builds are unsigned and always use version code 1. Follow [these steps](https://support.google.com/googleplay/android-developer/answer/9844679#on) to enable installing them on your device.</em>")
+    upload_url = nil
+
+    # The result of the upload_to_play_store_internal_app_sharing is differnt on Windows vs. Ubuntu
+    # If the result is an array, then it also uploaded the APK and the AAB link will be the second element in the array
+    # Otherwise, it only uploaded the AAB and returned the link as a string
+    if upload_urls.instance_of?(String)
+      upload_url = upload_urls
+    elsif upload_urls.instance_of?(Array)
+        upload_url = upload_urls[1]
+    end
 
     github_api(
       api_token: ENV["GITHUB_API_TOKEN"],
       api_bearer: ENV["GITHUB_API_BEARER_TOKEN"],
       http_method: "POST",
       body: {
-        body: "[Download PR build v#{version_name}](#{upload_urls[1]})<br><br><em>PR builds are unsigned and always use version code 1. Follow [these steps](https://support.google.com/googleplay/android-developer/answer/9844679#on) to enable installing them on your device.</em>"
+        body: "[Download PR build v#{version_name}](#{upload_url})<br><br><em>PR builds are unsigned and always use version code 1. Follow [these steps](https://support.google.com/googleplay/android-developer/answer/9844679#on) to enable installing them on your device.</em>"
       },
       path: "/repos/robojackets/apiary-mobile/issues/#{options[:pr_number]}/comments",
       headers: {
