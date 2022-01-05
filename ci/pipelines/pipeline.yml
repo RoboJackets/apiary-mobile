@@ -183,6 +183,7 @@ jobs:
     - in_parallel:
           steps:
           - do:
+            - get: apiary-mobile # This is used to get known versions of the task files to run in the repo rather than just running the versions in a pull request
             - get: pull-request
               params:
                 integration_tool: checkout
@@ -212,34 +213,12 @@ jobs:
       image: android-build-box
       tags:
         - large
-      config:
-        inputs:
-          - name: pull-request
-        outputs:
-          - name: pull-request
-        platform: linux
-        params:
-            IS_CI: true
-            GOOGLE_PLAY_PRIVATE_KEY: ((apiary-android-secrets.google-play-private-key))
-        run:
-            args:
-            - -exc
-            - |
-                export GRADLE_USER_HOME=$(pwd)/.gradle
-
-                cd pull-request
-                chmod u+x gradlew
-                echo taplinxKey=((apiary-android-secrets.taplinxKey)) >> local.properties
-                echo taplinxOfflineKey=((apiary-android-secrets.taplinxOfflineKey)) >> local.properties
-                echo sentryDsn=((apiary-android-secrets.sentryDsn)) >> local.properties
-                
-                gem install bundler:2.3.1
-                bundle config set --local path vendor
-                bundle install --quiet
-                wget -q https://github.com/GitTools/GitVersion/releases/download/5.8.1/gitversion-linux-x64-5.8.1.tar.gz
-                tar -xf gitversion-linux-x64-5.8.1.tar.gz
-            path: sh
-
+      file: apiary-mobile/ci/pipelines/tasks/prep-env.yml # For safety, this step will NOT run an updated version of task code in the pull request
+      input_mapping:
+        source: pull-request
+      output_mapping:
+        source: pull-request
+        
     # - task: run-tests
     #   config:
     #     inputs:
