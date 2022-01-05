@@ -1,0 +1,18 @@
+# prepare-env task or equivalent should be run before using this
+inputs:
+- name: source
+
+outputs:
+- name: source
+
+platform: linux
+run:
+    args:
+    - -exc
+    - |
+        export GRADLE_USER_HOME=$(pwd)/.gradle
+
+        cd source
+
+        bundle exec fastlane test
+    path: sh

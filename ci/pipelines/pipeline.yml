@@ -122,29 +122,25 @@ jobs:
               - large
             timeout: 5m
       
-      - task: run-tests
-        config:
-          inputs:
-          - name: apiary-mobile
-          platform: linux
-          run:
-            args:
-            - -exc
-            - |
-              cd apiary-mobile
-              chmod u+x gradlew
-              echo taplinxKey=((kv/apiary-android-secrets.taplinxKey)) >> local.properties
-              echo taplinxOfflineKey=((kv/apiary-android-secrets.taplinxOfflineKey)) >> local.properties
-              echo sentryDsn=((kv/apiary-android-secrets.sentryDsn)) >> local.properties
-              
-              gem install bundler:2.3.1
-              bundle install --quiet
-
-              bundle exec fastlane test
-            path: sh
+      - task: prepare-env
         image: android-build-box
         tags:
           - large
+        file: apiary-mobile/ci/pipelines/tasks/prep-env.yml # For safety, this step will NOT run an updated version of task code in the pull request
+        input_mapping:
+          source: pull-request
+        output_mapping:
+          source: pull-request
+
+      - task: run-tests
+        image: android-build-box
+        tags:
+          - large
+        file: apiary-mobile/ci/pipelines/tasks/run-tests.yml # For safety, this step will NOT run an updated version of task code in the pull request
+        input_mapping:
+          source: pull-request
+        output_mapping:
+          source: pull-request
         on_abort:
           put: tests-check
           inputs:
@@ -218,47 +214,36 @@ jobs:
         source: pull-request
       output_mapping:
         source: pull-request
-        
-    # - task: run-tests
-    #   config:
-    #     inputs:
-    #     - name: pull-request
-    #     outputs:
-    #     - name: pull-request
-    #     platform: linux
-    #     run:
-    #       args:
-    #       - -exc
-    #       - |
-    #         cd pull-request
 
-    #         export GRADLE_USER_HOME=$(pwd)/.gradle
-
-    #         bundle exec fastlane test
-    #       path: sh
-    #   image: android-build-box
-    #   tags:
-    #     - large
-    #   on_abort:
-    #     put: tests-check
-    #     inputs:
-    #       - tests-check
-    #     params:
-    #       conclusion: cancelled
-    #   on_error:
-    #     put: tests-check
-    #     inputs:
-    #       - tests-check
-    #     params:
-    #       conclusion: action_required
-    #   on_failure:
-    #     put: tests-check
-    #     inputs:
-    #       - tests-check
-    #     params:
-    #       conclusion: failure
-    #       summary: Review the output within Concourse.
-    #       title: Tests failed
+    - task: run-tests
+      image: android-build-box
+      tags:
+        - large
+      file: apiary-mobile/ci/pipelines/tasks/run-tests.yml # For safety, this step will NOT run an updated version of task code in the pull request
+      input_mapping:
+        source: pull-request
+      output_mapping:
+        source: pull-request
+      on_abort:
+        put: tests-check
+        inputs:
+          - tests-check
+        params:
+          conclusion: cancelled
+      on_error:
+        put: tests-check
+        inputs:
+          - tests-check
+        params:
+          conclusion: action_required
+      on_failure:
+        put: tests-check
+        inputs:
+          - tests-check
+        params:
+          conclusion: failure
+          summary: Review the output within Concourse.
+          title: Tests failed
     
     - put: tests-check
       params:
