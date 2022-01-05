@@ -111,4 +111,51 @@ platform :android do
       }
     )
   end
+
+  desc "Upload a new, signed production release to the internal test track"
+  lane :uploadToInternalTest do |options|
+    version_output = nil
+    begin
+      version_output = JSON.parse(sh("gitversion"))
+    rescue # fallback in case GitVersion is locally installed
+      Dir.chdir("..") do
+        version_output = JSON.parse(sh("./gitversion"))
+      end
+    end
+    full_sem_ver = version_output["FullSemVer"]
+    version_name = full_sem_ver.gsub("+", "-")
+
+    current_max_version_code = google_play_track_version_codes(
+      track: "internal",
+      package_name: "org.robojackets.apiary",
+      json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"]
+    ).max()
+
+    gradle(
+      task: "bundle",
+      build_type: "Release",
+      print_command: false,
+      properties: {
+        "android.injected.version.code" => current_max_version_code + 1,
+        "android.injected.version.name" => version_name,
+        "android.injected.signing.store.file" => options[:jksPath],
+        "android.injected.signing.store.password" => options[:signingStorePassword],
+        "android.injected.signing.key.alias" => options[:signingKeyAlias],
+        "android.injected.signing.key.password" => options[:signingKeyPassword],
+      }
+    )
+
+    upload_to_play_store(
+      package_name: "org.robojackets.apiary",
+      release_status: "draft",
+      track: "internal",
+      json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"],
+      aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
 end

@@ -1,0 +1,20 @@
+inputs:
+- name: source
+
+outputs:
+- name: source
+
+platform: linux
+params:
+    IS_CI: true
+    GOOGLE_PLAY_PRIVATE_KEY: ((apiary-android-secrets.google-play-private-key))
+run:
+    args:
+    - -exc
+    - |
+        cd source
+        export GRADLE_USER_HOME=$(pwd)/.gradle
+        echo ((apiary-android-secrets.apiaryMobileJks)) | base64 -d > apiary-mobile.jks
+
+        ls
+    path: sh
