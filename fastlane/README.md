@@ -47,6 +47,14 @@ Creates a Sentry release for this version and associates Git commits
 
 Upload a release to Google Play internal app sharing
 
+### android uploadToInternalTest
+
+```sh
+[bundle exec] fastlane android uploadToInternalTest
+```
+
+Upload a new, signed production release to the internal test track
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

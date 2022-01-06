@@ -46,6 +46,13 @@ resource_types:
   - resources
   type: registry-image
 
+- name: git-tag
+  type: registry-image
+  source:
+    repository: sarquella/concourse-git-tag-resource
+  tags:
+    - resources
+
 resources:
 - check_every: 1h0m0s
   icon: android
@@ -84,6 +91,17 @@ resources:
   type: pull-request
   webhook_token: ((webhook-token))
 
+- name: tagged-release
+  type: git-tag
+  icon: tag
+  source:
+    uri: https://github.com/RoboJackets/apiary-mobile
+    username: x-access-token
+    password: (("github.com"/token.token))
+    tag_filter: v*
+  tags:
+    - resources
+
 - name: tests-check
   type: github-check
   icon: check
@@ -104,6 +122,16 @@ resources:
   tags:
     - resources
 
+- name: internal-test-upload-check
+  type: github-check
+  icon: check
+  public: true
+  source:
+    check_name: Internal Test Draft Release
+    resource_name: internal-test-upload-check
+  tags:
+    - resources
+
 - icon: webhook
   name: webhooks
   public: true
@@ -114,6 +142,91 @@ resources:
   
 
 jobs:
+  - name: build-release
+    public: true
+    plan:
+      - in_parallel:
+          steps:
+            - get: tagged-release
+              trigger: true
+            - get: android-build-box
+              tags:
+                - large
+              timeout: 5m
+            - do:
+              - task: get-commit-sha
+                config:
+                  platform: linux
+                  image_resource:
+                    type: registry-image
+                    source:
+                      repository: alpine/git
+                  inputs:
+                  - name: tagged-release
+                  outputs:
+                  - name: commit-sha
+
+                  run:
+                    path: sh
+                    args:
+                    - -e
+                    - -x
+                    - -c
+                    - >-
+                        git -C tagged-release rev-parse HEAD > commit-sha/value
+              - load_var: commit
+                file: commit-sha/value
+                format: trim
+                reveal: true
+              - put: internal-test-upload-check
+                inputs: []
+      - task: prepare-env
+        image: android-build-box
+        tags:
+          - large
+        file: tagged-release/ci/pipelines/tasks/prepare-env.yml
+        input_mapping:
+          source: tagged-release
+        output_mapping:
+          source: tagged-release
+      - task: internal-test-build
+        image: android-build-box
+        tags:
+          - large
+        file: tagged-release/ci/pipelines/tasks/internal-test-build.yml
+        input_mapping:
+          source: tagged-release
+        output_mapping:
+          source: tagged-release
+        on_abort:
+          put: internal-test-upload-check
+          inputs:
+            - internal-test-upload-check
+          params:
+            conclusion: cancelled
+        on_error:
+          put: internal-test-upload-check
+          inputs:
+            - internal-test-upload-check
+          params:
+            conclusion: action_required
+        on_failure:
+          put: internal-test-upload-check
+          inputs:
+            - internal-test-upload-check
+          params:
+            conclusion: failure
+            summary: Review the output within Concourse.
+            title: Draft build upload failed
+
+      - put: internal-test-upload-check
+        params:
+          conclusion: success
+          summary: Created a new draft release on the internal test track in Google Play
+          title: Draft release created
+        inputs:
+          - internal-test-upload-check
+
   - name: build-main
     public: true
     plan:
