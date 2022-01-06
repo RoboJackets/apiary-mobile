@@ -53,6 +53,15 @@ resource_types:
   tags:
     - resources
 
+- defaults:
+    url: ((slack-webhook))
+  name: slack
+  source:
+    repository: mockersf/concourse-slack-notifier
+  tags:
+  - resources
+  type: registry-image
+
 resources:
 - check_every: 1h0m0s
   icon: android
@@ -69,7 +78,7 @@ resources:
   name: apiary-mobile
   public: true
   source:
-    branch: evan/ci # TODO: change back to main
+    branch: main
     password: (("github.com"/token.token))
     uri: https://github.com/RoboJackets/apiary-mobile
     username: x-access-token
@@ -139,10 +148,43 @@ resources:
   tags:
   - resources
   type: github-webhook
+
+- icon: slack
+  name: slack
+  public: true
+  source: null
+  tags:
+  - resources
+  type: slack
   
 
 jobs:
   - name: build-release
+    on_abort:
+      inputs: []
+      params:
+        alert_type: aborted
+        mode: normal
+      put: slack
+    on_error:
+      inputs: []
+      params:
+        alert_type: failed
+        message: Task error, review logs
+        mode: normal
+      put: slack
+    on_failure:
+      inputs: []
+      params:
+        alert_type: failed
+        mode: normal
+      put: slack
+    on_success:
+      inputs: []
+      params:
+        alert_type: success
+        mode: normal
+      put: slack
     public: true
     plan:
       - in_parallel:
@@ -229,6 +271,31 @@ jobs:
 
   - name: build-main
     public: true
+    on_abort:
+      inputs: []
+      params:
+        alert_type: aborted
+        mode: normal
+      put: slack
+    on_error:
+      inputs: []
+      params:
+        alert_type: failed
+        message: Task error, review logs
+        mode: normal
+      put: slack
+    on_failure:
+      inputs: []
+      params:
+        alert_type: failed
+        mode: normal
+      put: slack
+    on_success:
+      inputs: []
+      params:
+        alert_type: success
+        mode: normal
+      put: slack
     plan:
       - in_parallel:
           steps:
