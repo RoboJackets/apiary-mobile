@@ -5,14 +5,17 @@ inputs:
 outputs:
 - name: source
 
+caches:
+- path: source/vendor
+- path: source/.gradle
+
 platform: linux
 run:
+    dir: source
     args:
     - -exc
     - |
-        export GRADLE_USER_HOME=$(pwd)/.gradle
-
-        cd source
+        export GRADLE_USER_HOME=../$(pwd)/.gradle
 
         bundle exec fastlane test
     path: sh

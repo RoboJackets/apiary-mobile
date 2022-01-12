@@ -4,17 +4,20 @@ inputs:
 outputs:
 - name: pull-request
 
+caches:
+- path: pull-request/vendor
+- path: pull-request/.gradle
+
 platform: linux
 params:
     IS_CI: true
     GOOGLE_PLAY_PRIVATE_KEY: ((apiary-android-secrets.google-play-private-key))
     GITHUB_API_BEARER_TOKEN: (("github.com"/token.token))
 run:
+    dir: pull-request
     args:
     - -exc
     - |
-        cd pull-request
-
         export GRADLE_USER_HOME=$(pwd)/.gradle
 
         bundle exec fastlane uploadToInternalAppSharing pr_number:((.:pull_request_key))

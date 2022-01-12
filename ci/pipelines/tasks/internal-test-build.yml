@@ -4,16 +4,20 @@ inputs:
 outputs:
 - name: source
 
+caches:
+- path: source/vendor
+- path: source/.gradle
+
 platform: linux
 params:
     IS_CI: true
     GOOGLE_PLAY_PRIVATE_KEY: ((apiary-android-secrets.google-play-private-key))
     KEYSTORE_BASE_64: ((apiary-android-secrets.apiaryMobileJks))
 run:
+    dir: source
     args:
     - -exc
     - |
-        cd source
         export GRADLE_USER_HOME=$(pwd)/.gradle
         printf '%s' $KEYSTORE_BASE_64 | base64 -d > apiary-mobile.jks
 
