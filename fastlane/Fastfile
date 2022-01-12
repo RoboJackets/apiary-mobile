@@ -89,7 +89,7 @@ platform :android do
 
     upload_url = nil
 
-    # The result of the upload_to_play_store_internal_app_sharing is differnt on Windows vs. Ubuntu
+    # The result of the upload_to_play_store_internal_app_sharing is different on Windows vs. Ubuntu
     # If the result is an array, then it also uploaded the APK and the AAB link will be the second element in the array
     # Otherwise, it only uploaded the AAB and returned the link as a string
     if upload_urls.instance_of?(String)
