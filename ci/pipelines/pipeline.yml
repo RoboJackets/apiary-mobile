@@ -116,7 +116,7 @@ resources:
   icon: check
   public: true
   source:
-    check_name: Apiary Android Tests
+    check_name: Tests
     resource_name: tests-check
   tags:
     - resources
@@ -144,7 +144,6 @@ resources:
 - icon: webhook
   name: webhooks
   public: true
-  source: null
   tags:
   - resources
   type: github-webhook
@@ -152,7 +151,6 @@ resources:
 - icon: slack
   name: slack
   public: true
-  source: null
   tags:
   - resources
   type: slack
@@ -203,6 +201,7 @@ jobs:
                     type: registry-image
                     source:
                       repository: alpine/git
+                      tag: latest
                   inputs:
                   - name: tagged-release
                   outputs:
