@@ -219,8 +219,6 @@ jobs:
                 file: commit-sha/value
                 format: trim
                 reveal: true
-              - put: internal-test-upload-check
-                inputs: []
       - task: prepare-env
         image: android-build-box
         tags:
@@ -230,6 +228,8 @@ jobs:
           source: tagged-release
         output_mapping:
           source: tagged-release
+      - put: internal-test-upload-check
+        inputs: []
       - task: internal-test-build
         image: android-build-box
         tags:
@@ -305,8 +305,6 @@ jobs:
               format: trim
               load_var: commit
               reveal: true
-            - put: tests-check
-              inputs: []
           - get: android-build-box
             tags:
               - large
@@ -321,6 +319,9 @@ jobs:
           source: apiary-mobile
         output_mapping:
           source: apiary-mobile
+
+      - put: tests-check
+        inputs: []
 
       - task: run-tests
         image: android-build-box
@@ -387,10 +388,6 @@ jobs:
                     format: trim
                     load_var: pull_request_key
                     reveal: true
-                  - put: tests-check
-                    inputs: []
-                  - put: pr-build-check
-                    inputs: []
           - get: android-build-box
             tags:
               - large
@@ -405,6 +402,9 @@ jobs:
         source: pull-request
       output_mapping:
         source: pull-request
+
+    - put: tests-check
+      inputs: []
 
     - task: run-tests
       image: android-build-box
@@ -436,13 +436,18 @@ jobs:
           summary: Review the output within Concourse.
           title: Tests failed
     
-    - put: tests-check
-      params:
-        conclusion: success
-        summary: Tests ran successfully
-        title: Tests passed
-      inputs:
-        - tests-check
+    - in_parallel:
+        steps:
+          - do:
+            - put: tests-check
+              params:
+                conclusion: success
+                summary: Tests ran successfully
+                title: Tests passed
+              inputs:
+                - tests-check
+            - put: pr-build-check
+              inputs: []
 
     - task: upload-pr-build
       file: pull-request/ci/pipelines/tasks/pr-build.yml
@@ -477,6 +482,3 @@ jobs:
         title: PR build created
       inputs:
         - pr-build-check
-
-    - put: webhooks
-      inputs: []
