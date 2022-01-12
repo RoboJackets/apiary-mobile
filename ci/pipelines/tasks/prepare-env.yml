@@ -23,6 +23,7 @@ run:
         echo taplinxOfflineKey=((apiary-android-secrets.taplinxOfflineKey)) >> local.properties
         echo sentryDsn=((apiary-android-secrets.sentryDsn)) >> local.properties
         
+        bundle config
         gem install bundler:2.3.1
         bundle install --quiet
         wget -q https://github.com/GitTools/GitVersion/releases/download/5.8.1/gitversion-linux-x64-5.8.1.tar.gz
