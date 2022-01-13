@@ -4,6 +4,10 @@ inputs:
 outputs:
 - name: source
 
+caches:
+- path: source/vendor
+- path: source/.gradle
+
 platform: linux
 params:
     IS_CI: true
