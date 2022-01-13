@@ -4,10 +4,6 @@ inputs:
 outputs:
 - name: pull-request
 
-caches:
-- path: pull-request/vendor
-- path: pull-request/.gradle
-
 platform: linux
 params:
     IS_CI: true

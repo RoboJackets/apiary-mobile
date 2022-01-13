@@ -5,10 +5,6 @@ inputs:
 outputs:
 - name: source
 
-caches:
-- path: source/vendor
-- path: source/.gradle
-
 platform: linux
 run:
     dir: source
