@@ -155,7 +155,6 @@ resources:
   - resources
   type: slack
   
-
 jobs:
   - name: build-release
     on_abort:
