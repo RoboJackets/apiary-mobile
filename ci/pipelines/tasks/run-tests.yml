@@ -11,6 +11,5 @@ run:
     args:
     - -exc
     - |
-        export GRADLE_USER_HOME=$(pwd)/.gradle
         bundle exec fastlane test
     path: sh

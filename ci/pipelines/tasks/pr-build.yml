@@ -14,7 +14,5 @@ run:
     args:
     - -exc
     - |
-        export GRADLE_USER_HOME=$(pwd)/.gradle
-
         bundle exec fastlane uploadToInternalAppSharing pr_number:((.:pull_request_key))
     path: sh
