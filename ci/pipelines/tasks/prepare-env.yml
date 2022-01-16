@@ -1,0 +1,19 @@
+inputs:
+- name: source
+
+outputs:
+- name: source
+
+platform: linux
+params:
+    IS_CI: true
+run:
+    dir: source
+    args:
+    - -exc
+    - |
+        chmod u+x gradlew
+        echo taplinxKey=((apiary-android-secrets.taplinxKey)) >> local.properties
+        echo taplinxOfflineKey=((apiary-android-secrets.taplinxOfflineKey)) >> local.properties
+        echo sentryDsn=((apiary-android-secrets.sentryDsn)) >> local.properties
+    path: sh
