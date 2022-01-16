@@ -157,7 +157,18 @@ resources:
   tags:
   - resources
   type: slack
-  
+
+groups:
+  - name: main
+    jobs:
+    - build-main
+  - name: release
+    jobs:
+    - build-release
+  - name: pull-request
+    jobs:
+    - build-pull-request
+
 jobs:
   - name: build-release
     on_abort:
@@ -311,7 +322,7 @@ jobs:
             tags:
               - large
             timeout: 5m
-      
+
       - task: prepare-env
         image: android-build-box
         tags:
@@ -354,7 +365,7 @@ jobs:
             conclusion: failure
             summary: Review the output within Concourse.
             title: Tests failed
-      
+
       - put: tests-check
         params:
           conclusion: success
@@ -437,7 +448,7 @@ jobs:
           conclusion: failure
           summary: Review the output within Concourse.
           title: Tests failed
-    
+
     - in_parallel:
         steps:
           - do:
