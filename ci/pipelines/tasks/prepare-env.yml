@@ -18,4 +18,6 @@ run:
         echo taplinxKey=((apiary-android-secrets.taplinxKey)) >> local.properties
         echo taplinxOfflineKey=((apiary-android-secrets.taplinxOfflineKey)) >> local.properties
         echo sentryDsn=((apiary-android-secrets.sentryDsn)) >> local.properties
+
+        bundle config set --local path /usr/local/bundle
     path: sh
