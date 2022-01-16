@@ -17,7 +17,10 @@ ENV PATH $BUNDLE_BIN:$PATH
 RUN mkdir -p "$GEM_HOME" "$BUNDLE_BIN" \
 	&& chmod 777 "$GEM_HOME" "$BUNDLE_BIN"
 
-RUN gem install bundler && \
+COPY Gemfile Gemfile.lock fastlane /tmp/build/
+
+RUN cd /tmp/build && \
+	gem install bundler && \
     bundle install && \
     wget -q https://github.com/GitTools/GitVersion/releases/download/5.8.1/gitversion-linux-x64-5.8.1.tar.gz && \
     tar -xf gitversion-linux-x64-5.8.1.tar.gz && \
