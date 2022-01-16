@@ -6,6 +6,9 @@ FROM ${base_image}
 LABEL maintainer="RoboJackets <hello@robojackets.org>"
 LABEL description="Image for building and analyzing the MyRoboJackets Android app"
 
+# Gradle setup
+ENV GRADLE_USER_HOME /usr/local/.gradle
+
 # Ruby env setup based on https://github.com/starkandwayne/dockerfiles/blob/master/concourse-ruby/2.6/Dockerfile
 # Basically, install Ruby gems globally
 ENV GEM_HOME /usr/local/bundle
@@ -17,7 +20,8 @@ ENV PATH $BUNDLE_BIN:$PATH
 RUN mkdir -p "$GEM_HOME" "$BUNDLE_BIN" \
 	&& chmod 777 "$GEM_HOME" "$BUNDLE_BIN"
 
-COPY Gemfile Gemfile.lock fastlane /tmp/build/
+COPY fastlane/ /tmp/build/fastlane/
+COPY Gemfile Gemfile.lock /tmp/build/
 
 RUN cd /tmp/build && \
 	gem install bundler && \
