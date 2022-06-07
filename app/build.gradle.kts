@@ -68,11 +68,11 @@ android {
         create("release") {
         }
     }
-    compileSdk = 31
+    compileSdk = 32
     defaultConfig {
         applicationId = "org.robojackets.apiary"
         minSdk = 21
-        targetSdk = 31
+        targetSdk = 32
         versionCode = 12
         versionName = "1.0.0"
         vectorDrawables {
@@ -97,8 +97,9 @@ android {
         jvmTarget = "1.8"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.0.5"
+        kotlinCompilerExtensionVersion = "1.2.0-beta03"
     }
+    namespace = "org.robojackets.apiary"
     hilt {
         enableExperimentalClasspathAggregation = true
     }

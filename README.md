@@ -1,6 +1,6 @@
 # apiary-mobile
 
-The companion mobile app for MyRoboJackets
+The companion Android app for MyRoboJackets
 
 ## Local development
 
