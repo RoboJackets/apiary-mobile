@@ -1,0 +1,161 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+require("json")
+default_platform(:android)
+
+platform :android do
+  lane :testConnectionToGooglePlay do
+    validate_play_store_json_key(
+      json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"]
+    )
+  end
+
+  desc "Runs all the tests"
+  lane :test do
+    gradle(
+      task: "test",
+      build_type: "Release",
+    )
+  end
+
+  desc "Creates a Sentry release for this version and associates Git commits"
+  lane :createSentryRelease do
+    sentry_check_cli_installed()
+    #     gradle(task: "clean assembleRelease")
+    version_name = android_get_version_name(
+        gradle_file: "app/build.gradle.kts"
+    )
+    version_code = android_get_version_code(
+        gradle_file: "app/build.gradle.kts"
+    )
+    sentry_create_release(
+        auth_token: ENV["SENTRY_AUTH_TOKEN"],
+        org_slug: "robojackets",
+        project_slug: "apiary-android",
+        version: "#{version_name}+#{version_code}",
+        app_identifier: "org.robojackets.apiary",
+        finalize: true
+    )
+#     sentry_set_commits(
+#         auth_token: "",
+#         org_slug: "robojackets",
+#         project_slug: "apiary-android",
+#         version: "#{version_name}+#{version_code}",
+#         app_identifier: "org.robojackets.apiary",
+#         auto: true
+#     )
+  end
+
+  desc "Upload a release to Google Play internal app sharing"
+  lane :uploadToInternalAppSharing do |options|
+    version_output = nil
+    begin
+      version_output = JSON.parse(sh("gitversion"))
+    rescue # fallback in case GitVersion is locally installed
+      Dir.chdir("..") do
+        version_output = JSON.parse(sh("./gitversion"))
+      end
+    end
+    full_sem_ver = version_output["FullSemVer"]
+    version_name = full_sem_ver.gsub("+", "-")
+
+    gradle(
+      task: "bundle",
+      build_type: "Release",
+      print_command: true,
+      properties: {
+        "android.injected.version.code" => 1,
+        "android.injected.version.name" => version_name,
+      }
+    )
+
+    upload_urls = upload_to_play_store_internal_app_sharing(
+      package_name: "org.robojackets.apiary",
+      json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"],
+      aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
+    )
+
+    upload_url = nil
+
+    # The result of the upload_to_play_store_internal_app_sharing is different on Windows vs. Ubuntu
+    # If the result is an array, then it also uploaded the APK and the AAB link will be the second element in the array
+    # Otherwise, it only uploaded the AAB and returned the link as a string
+    if upload_urls.instance_of?(String)
+      upload_url = upload_urls
+    elsif upload_urls.instance_of?(Array)
+        upload_url = upload_urls[1]
+    end
+
+    github_api(
+      api_token: ENV["GITHUB_API_TOKEN"],
+      api_bearer: ENV["GITHUB_API_BEARER_TOKEN"],
+      http_method: "POST",
+      body: {
+        body: "[Download PR build v#{version_name}](#{upload_url})<br><br><em>PR builds are unsigned and always use version code 1. Follow [these steps](https://support.google.com/googleplay/android-developer/answer/9844679#on) to enable installing them on your device.</em>"
+      },
+      path: "/repos/robojackets/apiary-mobile/issues/#{options[:pr_number]}/comments",
+      headers: {
+        "accept": "application/vnd.github.v3+json"
+      }
+    )
+  end
+
+  desc "Upload a new, signed production release to the internal test track"
+  lane :uploadToInternalTest do |options|
+    version_output = nil
+    begin
+      version_output = JSON.parse(sh("gitversion"))
+    rescue # fallback in case GitVersion is locally installed
+      Dir.chdir("..") do
+        version_output = JSON.parse(sh("./gitversion"))
+      end
+    end
+    full_sem_ver = version_output["FullSemVer"]
+    version_name = full_sem_ver.gsub("+", "-")
+
+    current_max_version_code = google_play_track_version_codes(
+      track: "internal",
+      package_name: "org.robojackets.apiary",
+      json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"]
+    ).max()
+
+    gradle(
+      task: "bundle",
+      build_type: "Release",
+      print_command: false,
+      properties: {
+        "android.injected.version.code" => current_max_version_code + 1,
+        "android.injected.version.name" => version_name,
+        "android.injected.signing.store.file" => options[:jksPath],
+        "android.injected.signing.store.password" => options[:signingStorePassword],
+        "android.injected.signing.key.alias" => options[:signingKeyAlias],
+        "android.injected.signing.key.password" => options[:signingKeyPassword],
+      }
+    )
+
+    upload_to_play_store(
+      package_name: "org.robojackets.apiary",
+      release_status: "draft",
+      track: "internal",
+      json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"],
+      aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end

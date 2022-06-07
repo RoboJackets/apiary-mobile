@@ -1,0 +1,15 @@
+# prepare-env task or equivalent should be run before using this
+inputs:
+- name: source
+
+outputs:
+- name: source
+
+platform: linux
+run:
+    dir: source
+    args:
+    - -exc
+    - |
+        bundle exec fastlane test
+    path: sh

@@ -45,8 +45,8 @@ tasks.register("clean", Delete::class) {
 }
 
 val projectSource = file(projectDir)
-val configFile = files("$rootDir/config/detekt/detekt.yml")
-val baselineFile = file("$rootDir/config/detekt/baseline.xml")
+val configFile = files("$rootDir/ci/detekt/detekt.yml")
+val baselineFile = file("$rootDir/ci/detekt/baseline.xml")
 val kotlinFiles = "**/*.kt"
 val resourceFiles = "**/resources/**"
 val buildFiles = "**/build/**"

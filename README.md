@@ -84,3 +84,19 @@ _(*nix)_
 ```
 
 The detektAutoFix parameter will automatically fix simple issues.
+
+### Fastlane
+
+We use Fastlane to automate steps of the Android release process, in combination with Concourse CI.
+
+To install Fastlane, you'll need Ruby with the development kit installed.  On Windows, install
+the latest 64-bit version of Ruby+Devkit from https://rubyinstaller.org/downloads/.
+
+You can install the Fastlane dependencies by running `bundle install` from the root of this repository.
+
+#### Additional Fastlane dependencies/notes
+ - When running any Fastlane lane on Windows that requires `sentry-cli`, bear in mind that sometimes
+`which sentry-cli` is run. `which` does not exist on Windows, but the similarly named `where`
+command does, so you can get around any errors stemming from this by aliasing the command `where`
+to `which`.
+ - You need to install [GitVersion](https://github.com/GitTools/GitVersion) yourself.
