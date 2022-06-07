@@ -45,10 +45,10 @@ dependencies {
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 32
     defaultConfig {
         minSdk = 21
-        targetSdk = 31
+        targetSdk = 32
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -70,7 +70,7 @@ android {
         jvmTarget = "1.8"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.0.5"
+        kotlinCompilerExtensionVersion = "1.2.0-beta03"
     }
     hilt {
         enableExperimentalClasspathAggregation = true
