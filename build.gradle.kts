@@ -5,12 +5,12 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31")
-        classpath("com.android.tools.build:gradle:7.1.3")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.38.1")
-        classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21")
+        classpath("com.android.tools.build:gradle:7.2.1")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.40.1")
+        classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
         classpath("com.google.gms:google-services:4.3.10")
-        classpath("com.google.android.gms:oss-licenses-plugin:0.10.4")
+        classpath("com.google.android.gms:oss-licenses-plugin:0.10.5")
     }
 }
 

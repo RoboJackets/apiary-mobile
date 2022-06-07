@@ -59,6 +59,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.2.0-beta03"
     }
+    namespace = "org.robojackets.apiary.navigation"
     hilt {
         enableExperimentalClasspathAggregation = true
     }
