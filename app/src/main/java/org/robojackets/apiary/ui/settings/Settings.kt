@@ -30,6 +30,7 @@ import org.robojackets.apiary.auth.model.UserInfo
 import org.robojackets.apiary.base.AppEnvironment
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.MadeWithLove
+import org.robojackets.apiary.base.ui.util.UpdateStatus
 
 @Suppress("LongMethod")
 @Composable
@@ -77,6 +78,14 @@ import org.robojackets.apiary.base.ui.util.MadeWithLove
                 subtitle = { Text(
                     text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
                 ) },
+                onClick = {}
+            )
+            SettingsMenuLink(
+                icon = { Icon(Icons.Outlined.Update, contentDescription = "update") },
+                title = { Text("App update status") },
+                subtitle = {
+                    UpdateStatus()
+                },
                 onClick = {}
             )
             SettingsMenuLink(
