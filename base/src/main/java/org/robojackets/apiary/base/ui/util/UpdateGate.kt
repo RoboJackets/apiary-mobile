@@ -1,11 +1,14 @@
 package org.robojackets.apiary.base.ui.util
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import com.google.android.play.core.appupdate.AppUpdateInfo
+import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.ktx.AppUpdateResult
 import com.google.android.play.core.ktx.clientVersionStalenessDays
 import com.google.android.play.core.ktx.updatePriority
+import kotlinx.coroutines.launch
 import se.warting.inappupdate.compose.rememberInAppUpdateState
 import timber.log.Timber
 
@@ -47,24 +50,58 @@ fun isImmediateUpdateRequired(priority: Int, staleness: Int): Boolean {
 @Composable
 fun UpdateGate(content: @Composable () -> Unit) {
     val updateState = rememberInAppUpdateState()
-
+    val scope = rememberCoroutineScope()
+    val ignoreUpdate by remember { mutableStateOf(false) }
     Timber.i("UpdateGate!")
     Timber.i(updateState.appUpdateResult.toString())
-    when (val result = updateState.appUpdateResult) {
-        is AppUpdateResult.NotAvailable -> content()
-        is AppUpdateResult.Available -> {
-            val priority = result.updateInfo.updatePriority
-            val staleness = result.updateInfo.clientVersionStalenessDays ?: 0
-            if (isImmediateUpdateRequired(priority, staleness)) {
-                Text("Immediate update proposed")
-            } else if (isFlexibleUpdateRequired(priority, staleness)) {
-                Text("Flexible update proposed")
-            } else {
-                content()
+
+    if (ignoreUpdate) {
+        content()
+    } else {
+        when (val result = updateState.appUpdateResult) {
+            is AppUpdateResult.NotAvailable -> content()
+            is AppUpdateResult.Available -> {
+                val priority = result.updateInfo.updatePriority
+                val staleness = result.updateInfo.clientVersionStalenessDays ?: 0
+
+                val immediateAllowed =
+                    result.updateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+                val flexibleAllowed = result.updateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
+
+                // Fallback to flexible if an immediate update is desired but not allowed
+                val immediateRequired =
+                    immediateAllowed && isImmediateUpdateRequired(priority, staleness)
+                val flexibleRequired =
+                    flexibleAllowed && (immediateRequired || isFlexibleUpdateRequired(priority,
+                        staleness))
+
+                Text(text = "Immediate: $immediateAllowed, flexible: $flexibleAllowed")
+
+                when {
+                    immediateRequired -> {
+                        Text("Time for an immediate update")
+                    }
+                    flexibleRequired -> {
+                        ContentPadding {
+                            Column {
+                                Text("A flexible update is available. Do you want to install it now?")
+                            }
+                        }
+
+                    }
+                    else -> content()
+                }
+            }
+            is AppUpdateResult.InProgress -> Text("An app update is in progress. Please wait...")
+            is AppUpdateResult.Downloaded -> {
+                Text("An app update has been downloaded and is ready to install. Please wait...")
+                LaunchedEffect(result) {
+                    scope.launch {
+                        result.completeUpdate()
+                    }
+                }
             }
         }
-        is AppUpdateResult.InProgress -> content()
-        is AppUpdateResult.Downloaded -> content()
     }
 }
 @Composable
