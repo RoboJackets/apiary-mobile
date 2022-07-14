@@ -1,8 +1,13 @@
 package org.robojackets.apiary.base.ui.util
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.ktx.AppUpdateResult
@@ -47,11 +52,21 @@ fun isImmediateUpdateRequired(priority: Int, staleness: Int): Boolean {
     }
 }
 
+// https://stackoverflow.com/a/68423182
+fun Context.getActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.getActivity()
+    else -> null
+}
+
+const val UPDATE_REQUEST_CODE = 1999
+
 @Composable
 fun UpdateGate(content: @Composable () -> Unit) {
     val updateState = rememberInAppUpdateState()
     val scope = rememberCoroutineScope()
-    val ignoreUpdate by remember { mutableStateOf(false) }
+    var ignoreUpdate by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     Timber.i("UpdateGate!")
     Timber.i(updateState.appUpdateResult.toString())
 
@@ -62,7 +77,7 @@ fun UpdateGate(content: @Composable () -> Unit) {
             is AppUpdateResult.NotAvailable -> content()
             is AppUpdateResult.Available -> {
                 val priority = result.updateInfo.updatePriority
-                val staleness = result.updateInfo.clientVersionStalenessDays ?: 0
+                val staleness = result.updateInfo.clientVersionStalenessDays ?: -1
 
                 val immediateAllowed =
                     result.updateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
@@ -72,8 +87,8 @@ fun UpdateGate(content: @Composable () -> Unit) {
                 val immediateRequired =
                     immediateAllowed && isImmediateUpdateRequired(priority, staleness)
                 val flexibleRequired =
-                    flexibleAllowed && (immediateRequired || isFlexibleUpdateRequired(priority,
-                        staleness))
+                    flexibleAllowed //  && (immediateRequired || isFlexibleUpdateRequired(priority,
+                        // staleness))
 
                 Text(text = "Immediate: $immediateAllowed, flexible: $flexibleAllowed")
 
@@ -85,6 +100,24 @@ fun UpdateGate(content: @Composable () -> Unit) {
                         ContentPadding {
                             Column {
                                 Text("A flexible update is available. Do you want to install it now?")
+                                Text("Update priority: $priority")
+                                Text("Update staleness: $staleness")
+
+                                Button(onClick = {
+                                    // Small nuance here: Avoid some complexity by doing an immediate
+                                    // update - and basically just treat "flexible" as letting the
+                                    // user defer the update.
+                                    context.getActivity()
+                                        ?.let { result.startImmediateUpdate(it, UPDATE_REQUEST_CODE) }
+                                }) {
+                                    Text("Install update")
+                                }
+
+                                Button(onClick = {
+                                    ignoreUpdate = true
+                                }) {
+                                    Text("Ignore")
+                                }
                             }
                         }
 
@@ -111,7 +144,9 @@ fun UpdateStatus() {
     when (val result = updateState.appUpdateResult) {
         is AppUpdateResult.NotAvailable -> Text("Not available")
         is AppUpdateResult.Available -> {
-            if (isUpdateRequired(result.updateInfo)) Text("Available and required")  else Text("Available but not required")
+            val priority = result.updateInfo.updatePriority
+            val staleness = result.updateInfo.clientVersionStalenessDays ?: -1
+            if (isUpdateRequired(result.updateInfo)) Text("Available and required, priority: $priority, staleness: $staleness")  else Text("Available but not required, priority: $priority, staleness: $staleness")
         }
         is AppUpdateResult.InProgress -> Text("In progress")
         is AppUpdateResult.Downloaded -> Text("Downloaded")
