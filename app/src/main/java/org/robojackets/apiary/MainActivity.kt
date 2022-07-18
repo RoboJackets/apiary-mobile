@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -134,7 +133,6 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val context = LocalContext.current
             Apiary_MobileTheme {
                 window.statusBarColor = MaterialTheme.colors.primaryVariant.toArgb()
                 val navController = rememberNavController()

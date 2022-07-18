@@ -26,7 +26,7 @@ fun isUpdateRequired(appUpdateInfo: AppUpdateInfo): Boolean {
     return false
 }
 
-fun isFlexibleUpdateRequired(priority: Int, staleness: Int): Boolean {
+fun isImmediateUpdateOptional(priority: Int, staleness: Int): Boolean {
     return when (priority) {
         0, 1, 2 -> staleness >= 14
         3 -> staleness >= 4
@@ -81,28 +81,24 @@ fun UpdateGate(content: @Composable () -> Unit) {
 
                 val immediateAllowed =
                     result.updateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
-                val flexibleAllowed = result.updateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
 
-                // Fallback to flexible if an immediate update is desired but not allowed
                 val immediateRequired =
                     immediateAllowed && isImmediateUpdateRequired(priority, staleness)
-                val flexibleRequired =
-                    flexibleAllowed //  && (immediateRequired || isFlexibleUpdateRequired(priority,
-                        // staleness))
+                val immediateOptional = immediateAllowed && isImmediateUpdateOptional(priority, staleness)
 
-                Text(text = "Immediate: $immediateAllowed, flexible: $flexibleAllowed")
+                Text(text = "Immediate required: $immediateAllowed, optional: $immediateOptional")
 
                 when {
                     immediateRequired -> {
-                        Text("Time for an immediate update")
+                        Text("Let's update before we continue")
                     }
-                    flexibleRequired -> {
+                    immediateOptional -> {
                         ContentPadding {
                             Column {
-                                Text("A flexible update is available. Do you want to install it now?")
+                                Text("An update is available. Do you want to install it now?")
                                 Text("Update priority: $priority")
                                 Text("Update staleness: $staleness")
-
+                                // TODO: add the remaining code snippet here: https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#immediate
                                 Button(onClick = {
                                     // Small nuance here: Avoid some complexity by doing an immediate
                                     // update - and basically just treat "flexible" as letting the
