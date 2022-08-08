@@ -10,6 +10,7 @@ object NavigationDestinations {
     const val attendableTypeSelection = "attendableTypeSelection"
     const val attendableSelection = "attendableSelection"
     const val attendance = "attendanceMain"
+    const val testBottomSheet = "sheet"
 }
 
 object NavigationActions {
@@ -31,6 +32,12 @@ object NavigationActions {
                 .setLaunchSingleTop(true)
                 .setRestoreState(true)
                 .build()
+        }
+    }
+
+    object BottomSheets {
+        fun anyScreenToTestBottomSheet() = object : NavigationAction {
+            override val destination = NavigationDestinations.testBottomSheet
         }
     }
 

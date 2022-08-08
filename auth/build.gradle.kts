@@ -26,7 +26,7 @@ dependencies {
 
     implementation(AuthDependencies.appauth)
 
-    implementation(ComposeDependencies.accompanist)
+    implementation(ComposeDependencies.accompanist_systemuicontroller)
     implementation(ComposeDependencies.compose_foundation)
     implementation(ComposeDependencies.compose_material)
     implementation(ComposeDependencies.compose_ui)

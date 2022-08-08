@@ -6,30 +6,28 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Contactless
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.*
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import androidx.navigation.navigation
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.ModalBottomSheetLayout
+import com.google.accompanist.navigation.material.bottomSheet
+import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.nxp.nfclib.NxpNfcLib
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -44,7 +42,7 @@ import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.ui.nfc.NfcRequired
 import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
-import org.robojackets.apiary.base.ui.util.UpdateGate
+import org.robojackets.apiary.base.ui.update.UpdateGate
 import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationDestinations
 import org.robojackets.apiary.navigation.NavigationManager
@@ -57,7 +55,7 @@ sealed class Screen(
     val navigationDestination: String,
     @StringRes val resourceId: Int,
     val icon: ImageVector,
-    val imgContentDescriptor: String
+    val imgContentDescriptor: String,
 ) {
     object Attendance :
         Screen(
@@ -113,6 +111,7 @@ class MainActivity : ComponentActivity() {
         nfcLib.registerActivity(this, BuildConfig.taplinxKey, BuildConfig.taplinxOfflineKey)
     }
 
+    @OptIn(ExperimentalMaterialNavigationApi::class)
     @ExperimentalMaterialApi
     @Suppress("LongMethod")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,57 +135,65 @@ class MainActivity : ComponentActivity() {
             Apiary_MobileTheme {
                 window.statusBarColor = MaterialTheme.colors.primaryVariant.toArgb()
                 val navController = rememberNavController()
+                val bottomSheetNavigator = rememberBottomSheetNavigator()
+                navController.navigatorProvider += bottomSheetNavigator
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
 
+                var navReady by remember { mutableStateOf(false)}
                 // Based on https://medium.com/@Syex/jetpack-compose-navigation-architecture-with-viewmodels-1de467f19e1c
                 LaunchedEffect("navigation") {
                     navigationManager.sharedFlow.onEach {
                         Timber.d("Nav command to " + it.destination)
                         navController.navigate(it.destination, it.navOptions)
                     }.launchIn(this)
+                    navReady = true
                 }
 
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    UpdateGate {
-                        Scaffold(
-                            topBar = { AppTopBar(settings.appEnv.production) },
-                            bottomBar = {
-                                val current = currentRoute(navController)
-                                if (nfcEnabled && current != NavigationDestinations.authentication) {
-                                    BottomNavigation {
-                                        navItems.forEach { screen ->
-                                            BottomNavigationItem(
-                                                icon = {
-                                                    Icon(
-                                                        screen.icon,
-                                                        contentDescription = screen.imgContentDescriptor
-                                                    )
-                                                },
-                                                label = { Text(stringResource(screen.resourceId)) },
-                                                selected = currentDestination
-                                                    ?.hierarchy
-                                                    ?.any {
-                                                        it.route == screen.navigationDestination
-                                                    } == true,
-                                                onClick = {
-                                                    navigationManager.navigate(
-                                                        NavigationActions.BottomNavTabs.withinBottomNavTabs(
-                                                            screen.navigationDestination,
-                                                            navController.graph.findStartDestination().id
+                    ModalBottomSheetLayout(bottomSheetNavigator) {
+                        UpdateGate(navReady = navReady, onShowOptionalSheet = {
+                            navigationManager.navigate(NavigationActions.BottomSheets.anyScreenToTestBottomSheet())
+                        }) {
+                            Scaffold(
+                                topBar = { AppTopBar(settings.appEnv.production) },
+                                bottomBar = {
+                                    val current = currentRoute(navController)
+                                    if (nfcEnabled && current != NavigationDestinations.authentication) {
+                                        BottomNavigation {
+                                            navItems.forEach { screen ->
+                                                BottomNavigationItem(
+                                                    icon = {
+                                                        Icon(
+                                                            screen.icon,
+                                                            contentDescription = screen.imgContentDescriptor
                                                         )
-                                                    )
-                                                }
-                                            )
+                                                    },
+                                                    label = { Text(stringResource(screen.resourceId)) },
+                                                    selected = currentDestination
+                                                        ?.hierarchy
+                                                        ?.any {
+                                                            it.route == screen.navigationDestination
+                                                        } == true,
+                                                    onClick = {
+                                                        navigationManager.navigate(
+                                                            NavigationActions.BottomNavTabs.withinBottomNavTabs(
+                                                                screen.navigationDestination,
+                                                                navController.graph.findStartDestination().id
+                                                            )
+                                                        )
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
                                 }
-                            }
-                        ) { innerPadding ->
-                            Box(modifier = Modifier.padding(innerPadding)) {
-                                NfcRequired(nfcEnabled = nfcEnabled) {
-                                    AppNavigation(navController)
+                            ) { innerPadding ->
+                                Box(modifier = Modifier.padding(innerPadding)) {
+                                    NfcRequired(nfcEnabled = nfcEnabled) {
+                                        AppNavigation(navController)
+                                    }
                                 }
                             }
                         }
@@ -196,9 +203,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalMaterialNavigationApi::class)
     @ExperimentalMaterialApi
     @Composable
-    private fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifier) {
+    private fun AppNavigation(
+        navController: NavHostController,
+        modifier: Modifier = Modifier,
+    ) {
         val startDestination =
             if (!authStateManager.current.isAuthorized) NavigationDestinations.authentication
             else NavigationDestinations.attendanceSubgraph
@@ -245,7 +256,9 @@ class MainActivity : ComponentActivity() {
                     val attendableId = it.arguments?.get("attendableId")
 
                     AttendanceScreen(
-                        hiltViewModel(), nfcLib, AttendableType.valueOf(attendableType as String),
+                        hiltViewModel(),
+                        nfcLib,
+                        AttendableType.valueOf(attendableType as String),
                         attendableId as Int
                     )
                 }
@@ -253,7 +266,15 @@ class MainActivity : ComponentActivity() {
             composable(NavigationDestinations.settings) {
                 SettingsScreen(hiltViewModel())
             }
+            bottomSheet(route = "sheet") {
+                Column(Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(.5F)) {
+                    Text("Hello, World! bottom sheet edition")
+                }
+            }
         }
+
     }
 
     override fun onDestroy() {

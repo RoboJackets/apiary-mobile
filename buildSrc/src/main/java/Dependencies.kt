@@ -1,13 +1,15 @@
 object ComposeDependencies {
     object Versions {
-        const val accompanist_version = "0.23.1"
+        const val accompanist_version = "0.25.0"
         const val compose_settings_version = "0.7.2"
         const val compose_version = "1.1.1"
         const val lifecycle_viewmodel_compose_version = "2.4.1"
     }
 
-    const val accompanist =
+    const val accompanist_systemuicontroller =
         "com.google.accompanist:accompanist-systemuicontroller:${Versions.accompanist_version}"
+    const val accompanist_nav_material =
+        "com.google.accompanist:accompanist-navigation-material:${Versions.accompanist_version}"
 
     const val compose_foundation =
         "androidx.compose.foundation:foundation:${Versions.compose_version}"

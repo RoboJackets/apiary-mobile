@@ -1,49 +1,59 @@
 package org.robojackets.apiary.base.ui.update
 
-import android.content.res.Configuration.*
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.robojackets.apiary.base.ui.icons.UpdateIcon
-import org.robojackets.apiary.base.ui.util.ContentPadding
 
-@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
-fun RequiredUpdatePrompt() {
+fun RequiredUpdatePrompt(
+    onTriggerUpdate: () -> Unit,
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxHeight(),
     ) {
-        UpdateIcon(Modifier.size(72.dp))
-        Text("Install update to continue", style = MaterialTheme.typography.h3)
-        Text("Wow! It's getting a little dusty in here! Before we continue, we need you to " +
-                "install the latest version of MyRoboJackets Android.")
-        Button(onClick = {}) {
+        UpdateIcon(Modifier.padding(bottom = 18.dp).size(96.dp))
+        Text("Update to continue", style = MaterialTheme.typography.h4)
+        Text("To continue using MyRoboJackets, install the latest version. It'll only take a minute.",
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(24.dp)
+            )
+        Button(onClick = onTriggerUpdate) {
             Text("Download and install update")
         }
-        Text(
-            "Due to the priority/age of this update, we need you to install it now."
-        )
-
-//        Text()
+        Spacer(Modifier.fillMaxHeight(0.55F))
     }
 }
 
 @Composable
-fun UpdateAvailable(
-    required: Boolean,
+fun OptionalUpdatePrompt(
     onTriggerUpdate: () -> Unit,
     onIgnoreUpdate: () -> Unit,
 ) {
-    ContentPadding {
-
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxHeight(),
+    ) {
+        UpdateIcon(Modifier.padding(bottom = 9.dp).size(48.dp))
+        Text("Update available", style = MaterialTheme.typography.h5)
+        Text("Install the latest version of MyRoboJackets for the latest features and bug fixes. It'll only take a minute.",
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(8.dp)
+        )
+        Button(onClick = onTriggerUpdate) {
+            Text("Download and install update")
+        }
+        Button(onClick = onIgnoreUpdate) {
+            Text("Remind me later")
+        }
     }
 }

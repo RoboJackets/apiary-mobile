@@ -1,10 +1,8 @@
-package org.robojackets.apiary.base.ui.util
+package org.robojackets.apiary.base.ui.update
 
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
@@ -62,19 +60,31 @@ fun Context.getActivity(): Activity? = when (this) {
 const val UPDATE_REQUEST_CODE = 1999
 
 @Composable
-fun UpdateGate(content: @Composable () -> Unit) {
+fun UpdateGate(navReady: Boolean, onShowOptionalSheet: () -> Unit, content: @Composable () -> Unit) {
     val updateState = rememberInAppUpdateState()
     val scope = rememberCoroutineScope()
     var ignoreUpdate by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Timber.i("UpdateGate!")
     Timber.i(updateState.appUpdateResult.toString())
-
+    Timber.i("ignoreUpdate: $ignoreUpdate")
     if (ignoreUpdate) {
         content()
     } else {
         when (val result = updateState.appUpdateResult) {
-            is AppUpdateResult.NotAvailable -> content()
+            is AppUpdateResult.NotAvailable -> {
+                content()
+                LaunchedEffect(navReady) {
+                    if (!navReady) {
+                        Timber.i("not doing anything, nav not ready")
+                    } else {
+                        Timber.i("Inside launched effect")
+//                    delay(0)
+                        Timber.i("Delay finished")
+                        onShowOptionalSheet()
+                    }
+                }
+            }
             is AppUpdateResult.Available -> {
                 val priority = result.updateInfo.updatePriority
                 val staleness = result.updateInfo.clientVersionStalenessDays ?: -1
@@ -82,41 +92,22 @@ fun UpdateGate(content: @Composable () -> Unit) {
                 val immediateAllowed =
                     result.updateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
 
-                val immediateRequired =
+                val immediateRequired = false &&
                     immediateAllowed && isImmediateUpdateRequired(priority, staleness)
-                val immediateOptional = immediateAllowed && isImmediateUpdateOptional(priority, staleness)
+                val immediateOptional = true || immediateAllowed && isImmediateUpdateOptional(priority, staleness)
 
                 Text(text = "Immediate required: $immediateAllowed, optional: $immediateOptional")
 
                 when {
                     immediateRequired -> {
-                        Text("Let's update before we continue")
+                        RequiredUpdatePrompt() {
+
+                        }
                     }
                     immediateOptional -> {
-                        ContentPadding {
-                            Column {
-                                Text("An update is available. Do you want to install it now?")
-                                Text("Update priority: $priority")
-                                Text("Update staleness: $staleness")
-                                // TODO: add the remaining code snippet here: https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#immediate
-                                Button(onClick = {
-                                    // Small nuance here: Avoid some complexity by doing an immediate
-                                    // update - and basically just treat "flexible" as letting the
-                                    // user defer the update.
-                                    context.getActivity()
-                                        ?.let { result.startImmediateUpdate(it, UPDATE_REQUEST_CODE) }
-                                }) {
-                                    Text("Install update")
-                                }
-
-                                Button(onClick = {
-                                    ignoreUpdate = true
-                                }) {
-                                    Text("Ignore")
-                                }
-                            }
+                        LaunchedEffect(key1 = immediateOptional) {
+                            onShowOptionalSheet()
                         }
-
                     }
                     else -> content()
                 }
@@ -138,7 +129,7 @@ fun UpdateStatus() {
     val updateState = rememberInAppUpdateState()
 
     when (val result = updateState.appUpdateResult) {
-        is AppUpdateResult.NotAvailable -> Text("Not available")
+        is AppUpdateResult.NotAvailable -> Text("Up to date")
         is AppUpdateResult.Available -> {
             val priority = result.updateInfo.updatePriority
             val staleness = result.updateInfo.clientVersionStalenessDays ?: -1

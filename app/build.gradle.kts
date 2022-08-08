@@ -30,6 +30,7 @@ dependencies {
 
     implementation(AuthDependencies.appauth)
 
+    implementation(ComposeDependencies.accompanist_nav_material)
     implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.lifecycle_viewmodel_compose)
     implementation(ComposeDependencies.compose_ui_tooling)
@@ -73,8 +74,8 @@ android {
         applicationId = "org.robojackets.apiary"
         minSdk = 21
         targetSdk = 32
-        versionCode = 14
-        versionName = "1.0.0-test2"
+        versionCode = 17
+        versionName = "1.0.0-test5"
         vectorDrawables {
             useSupportLibrary = true
         }
