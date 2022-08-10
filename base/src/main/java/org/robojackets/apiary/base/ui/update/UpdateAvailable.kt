@@ -11,6 +11,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.android.play.core.ktx.AppUpdateResult
 import org.robojackets.apiary.base.ui.icons.UpdateIcon
+import org.robojackets.apiary.base.ui.util.getActivity
 import se.warting.inappupdate.compose.rememberInAppUpdateState
 import timber.log.Timber
 
