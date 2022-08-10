@@ -7,7 +7,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
-import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.ktx.AppUpdateResult
 import com.google.android.play.core.ktx.clientVersionStalenessDays
@@ -15,15 +14,6 @@ import com.google.android.play.core.ktx.updatePriority
 import kotlinx.coroutines.launch
 import se.warting.inappupdate.compose.rememberInAppUpdateState
 import timber.log.Timber
-
-fun isUpdateRequired(appUpdateInfo: AppUpdateInfo): Boolean {
-    Timber.i("isUpdateRequired?")
-    Timber.i("Available version: ${appUpdateInfo.availableVersionCode()}")
-    Timber.i("Priority: ${appUpdateInfo.updatePriority()}")
-    Timber.i("Staleness: ${appUpdateInfo.clientVersionStalenessDays()}")
-
-    return false
-}
 
 const val UPDATE_PRIORITY_LOWEST = 0
 const val UPDATE_PRIORITY_LOWER = 1
@@ -135,11 +125,24 @@ fun UpdateStatus() {
         is AppUpdateResult.Available -> {
             val priority = result.updateInfo.updatePriority
             val staleness = result.updateInfo.clientVersionStalenessDays ?: -1
-            if (isUpdateRequired(result.updateInfo)) Text("Optional update available, " +
-                    "priority: $priority, staleness: $staleness") else Text(
-                "Required update ready, priority: $priority, staleness: $staleness")
+
+            val immediateAllowed =
+                result.updateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+
+            val immediateRequired =
+                immediateAllowed && isImmediateUpdateRequired(priority, staleness)
+            val immediateOptional =
+                immediateAllowed && isImmediateUpdateOptional(priority, staleness)
+
+            when {
+                immediateRequired -> Text("Required update available (priority: " +
+                        "${priority}, staleness: ${staleness})")
+                immediateOptional -> Text("Update available (priority: " +
+                        "${priority}, staleness: ${staleness})")
+                else -> Text("Up to date")
+            }
         }
-        is AppUpdateResult.InProgress -> Text("In progress")
-        is AppUpdateResult.Downloaded -> Text("Downloaded")
+        is AppUpdateResult.InProgress -> Text("Update in progress")
+        is AppUpdateResult.Downloaded -> Text("Update downloaded")
     }
 }
