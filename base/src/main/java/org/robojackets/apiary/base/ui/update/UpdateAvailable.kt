@@ -47,7 +47,7 @@ fun InstallUpdateButton() {
                     Text("Close")
                 }
             },
-            title = { Text("Update failed")},
+            title = { Text("Update failed") },
             text = {
                 Text("${updateError ?: "An unknown error occurred while starting the update."}\n\nPlease try again, or post in #it-helpdesk for assistance.")
             }

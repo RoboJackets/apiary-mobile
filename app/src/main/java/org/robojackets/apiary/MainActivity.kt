@@ -142,7 +142,7 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
 
-                var navReady by remember { mutableStateOf(false)}
+                var navReady by remember { mutableStateOf(false) }
                 // Based on https://medium.com/@Syex/jetpack-compose-navigation-architecture-with-viewmodels-1de467f19e1c
                 LaunchedEffect("navigation") {
                     navigationManager.sharedFlow.onEach {
@@ -274,7 +274,6 @@ class MainActivity : ComponentActivity() {
                 })
             }
         }
-
     }
 
     override fun onDestroy() {

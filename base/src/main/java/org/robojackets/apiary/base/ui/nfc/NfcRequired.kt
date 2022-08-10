@@ -55,5 +55,4 @@ fun NfcRequired(nfcEnabled: Boolean, gatedComposable: @Composable () -> Unit) {
             }
         }
     }
-
 }
