@@ -117,7 +117,8 @@ object AndroidToolDependencies {
     const val android_tools_desugar_jdk =
         "com.android.tools:desugar_jdk_libs:${Versions.android_tools_desugar_version}"
     const val gson = "com.google.code.gson:gson:${Versions.gson_version}"
-    const val in_app_update_compose = "se.warting.in-app-update:in-app-update-compose:${Versions.in_app_update_compose_version}"
+    const val in_app_update_compose =
+        "se.warting.in-app-update:in-app-update-compose:${Versions.in_app_update_compose_version}"
     const val krate = "hu.autsoft:krate:${Versions.krate_version}"
     const val open_source_licenses =
         "com.google.android.gms:play-services-oss-licenses:${Versions.open_source_licenses_version}"
