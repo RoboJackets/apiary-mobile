@@ -86,7 +86,7 @@ fun UpdateGate(
     val scope = rememberCoroutineScope()
 
     when (val result = updateState.appUpdateResult) {
-        is AppUpdateResult.NotAvailable -> RequiredUpdatePrompt()
+        is AppUpdateResult.NotAvailable -> content()
         is AppUpdateResult.Available -> {
             val priority = result.updateInfo.updatePriority
             val staleness = result.updateInfo.clientVersionStalenessDays ?: -1
