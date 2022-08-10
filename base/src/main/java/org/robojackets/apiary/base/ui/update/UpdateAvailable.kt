@@ -14,9 +14,11 @@ import org.robojackets.apiary.base.ui.icons.UpdateIcon
 import se.warting.inappupdate.compose.rememberInAppUpdateState
 import timber.log.Timber
 
+// Just a random number so we can identify our update request later if necessary
+const val UPDATE_REQUEST_CODE = 1999
+
 fun triggerImmediateUpdate(appUpdateResult: AppUpdateResult.Available, activity: Activity) {
-    val requestCode = 1999
-    appUpdateResult.startImmediateUpdate(activity, requestCode)
+    appUpdateResult.startImmediateUpdate(activity, UPDATE_REQUEST_CODE)
 }
 
 @Composable
@@ -49,12 +51,16 @@ fun InstallUpdateButton() {
             },
             title = { Text("Update failed") },
             text = {
-                Text("${updateError ?: "An unknown error occurred while starting the update."}\n\nPlease try again, or post in #it-helpdesk for assistance.")
+                Text("${
+                    updateError ?: ("An unknown error occurred while starting the " +
+                            "update.")
+                }\n\nPlease try again, or post in #it-helpdesk for assistance.")
             }
         )
     }
 }
 
+@Suppress("MagicNumber")
 @Composable
 fun RequiredUpdatePrompt() {
     Column(
@@ -75,6 +81,7 @@ fun RequiredUpdatePrompt() {
     }
 }
 
+@Suppress("MagicNumber")
 @Composable
 fun OptionalUpdatePrompt(
     onIgnoreUpdate: () -> Unit
@@ -88,7 +95,8 @@ fun OptionalUpdatePrompt(
             .padding(bottom = 9.dp)
             .size(72.dp))
         Text("Update available", style = MaterialTheme.typography.h5)
-        Text("Install the latest version of MyRoboJackets for the latest features and bug fixes. It'll only take a minute.",
+        Text("Install the latest version of MyRoboJackets for the latest features and " +
+                "bug fixes. It'll only take a minute.",
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(20.dp)
         )

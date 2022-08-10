@@ -25,12 +25,24 @@ fun isUpdateRequired(appUpdateInfo: AppUpdateInfo): Boolean {
     return false
 }
 
+const val UPDATE_PRIORITY_LOWEST = 0
+const val UPDATE_PRIORITY_LOWER = 1
+const val UPDATE_PRIORITY_LOW = 2
+const val UPDATE_PRIORITY_MEDIUM = 3
+const val UPDATE_PRIORITY_HIGH = 4
+const val UPDATE_PRIORITY_HIGHEST = 5
+
+const val OPT_UPDATE_STALENESS_THRESHOLD_LOW_PRIORITY = 14
+const val OPT_UPDATE_STALENESS_THRESHOLD_MEDIUM_PRIORITY = 4
+
 fun isImmediateUpdateOptional(priority: Int, staleness: Int): Boolean {
     return when (priority) {
-        0, 1, 2 -> staleness >= 14
-        3 -> staleness >= 4
-        4 -> true
-        5 -> true
+        UPDATE_PRIORITY_LOWEST,
+        UPDATE_PRIORITY_LOWER,
+        UPDATE_PRIORITY_LOW -> staleness >= OPT_UPDATE_STALENESS_THRESHOLD_LOW_PRIORITY
+        UPDATE_PRIORITY_MEDIUM -> staleness >= OPT_UPDATE_STALENESS_THRESHOLD_MEDIUM_PRIORITY
+        UPDATE_PRIORITY_HIGH -> true
+        UPDATE_PRIORITY_HIGHEST -> true
         else -> {
             Timber.w("Unknown priority $priority when evaluating for flexible update")
             false
@@ -38,12 +50,18 @@ fun isImmediateUpdateOptional(priority: Int, staleness: Int): Boolean {
     }
 }
 
+const val REQ_UPDATE_STALENESS_THRESHOLD_LOW_PRIORITY = 21
+const val REQ_UPDATE_STALENESS_THRESHOLD_MEDIUM_PRIORITY = 21
+const val REQ_UPDATE_STALENESS_THRESHOLLD_HIGH_PRIORITY = 1
+
 fun isImmediateUpdateRequired(priority: Int, staleness: Int): Boolean {
     return when (priority) {
-        0, 1, 2 -> staleness >= 21
-        3 -> staleness >= 21
-        4 -> staleness >= 1
-        5 -> true
+        UPDATE_PRIORITY_LOWEST,
+        UPDATE_PRIORITY_LOWER,
+        UPDATE_PRIORITY_LOW -> staleness >= REQ_UPDATE_STALENESS_THRESHOLD_LOW_PRIORITY
+        UPDATE_PRIORITY_MEDIUM -> staleness >= REQ_UPDATE_STALENESS_THRESHOLD_MEDIUM_PRIORITY
+        UPDATE_PRIORITY_HIGH -> staleness >= REQ_UPDATE_STALENESS_THRESHOLLD_HIGH_PRIORITY
+        UPDATE_PRIORITY_HIGHEST -> true
         else -> {
             Timber.w("Unknown priority $priority when evaluating for immediate update")
             false
@@ -57,8 +75,6 @@ fun Context.getActivity(): Activity? = when (this) {
     is ContextWrapper -> baseContext.getActivity()
     else -> null
 }
-
-const val UPDATE_REQUEST_CODE = 1999
 
 @Composable
 fun UpdateGate(
@@ -117,7 +133,8 @@ fun UpdateStatus() {
         is AppUpdateResult.Available -> {
             val priority = result.updateInfo.updatePriority
             val staleness = result.updateInfo.clientVersionStalenessDays ?: -1
-            if (isUpdateRequired(result.updateInfo)) Text("Optional update available, priority: $priority, staleness: $staleness") else Text(
+            if (isUpdateRequired(result.updateInfo)) Text("Optional update available, " +
+                    "priority: $priority, staleness: $staleness") else Text(
                 "Required update ready, priority: $priority, staleness: $staleness")
         }
         is AppUpdateResult.InProgress -> Text("In progress")
