@@ -74,8 +74,8 @@ android {
         applicationId = "org.robojackets.apiary"
         minSdk = 21
         targetSdk = 32
-        versionCode = 17
-        versionName = "1.0.0-test5"
+        versionCode = 1
+        versionName = "1.0.0"
         vectorDrawables {
             useSupportLibrary = true
         }

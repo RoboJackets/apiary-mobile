@@ -102,6 +102,8 @@ fun UpdateGate(
             when {
                 immediateRequired -> RequiredUpdatePrompt()
                 immediateOptional -> {
+                    content() // If you leave off content here, the app will crash because this is
+                              // a bottom sheet
                     LaunchedEffect(navReady) {
                         if (navReady) {
                             onShowOptionalSheet()
