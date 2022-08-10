@@ -2,7 +2,6 @@ package org.robojackets.apiary.navigation
 
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,7 +12,6 @@ class NavigationManager @Inject constructor() {
     val sharedFlow = _sharedFlow.asSharedFlow()
 
     fun navigate(directions: NavigationAction) {
-        Timber.i("Navigating! ${directions.destination}")
         _sharedFlow.tryEmit(directions)
     }
 }
