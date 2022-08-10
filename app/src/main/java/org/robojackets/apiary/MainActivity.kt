@@ -6,7 +6,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -42,6 +43,7 @@ import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.ui.nfc.NfcRequired
 import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
+import org.robojackets.apiary.base.ui.update.OptionalUpdatePrompt
 import org.robojackets.apiary.base.ui.update.UpdateGate
 import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationDestinations
@@ -154,7 +156,7 @@ class MainActivity : ComponentActivity() {
                 Surface(color = MaterialTheme.colors.background) {
                     ModalBottomSheetLayout(bottomSheetNavigator) {
                         UpdateGate(navReady = navReady, onShowOptionalSheet = {
-                            navigationManager.navigate(NavigationActions.BottomSheets.anyScreenToTestBottomSheet())
+                            navigationManager.navigate(NavigationActions.BottomSheets.anyScreenToOptionalUpdatePrompt())
                         }) {
                             Scaffold(
                                 topBar = { AppTopBar(settings.appEnv.production) },
@@ -266,12 +268,10 @@ class MainActivity : ComponentActivity() {
             composable(NavigationDestinations.settings) {
                 SettingsScreen(hiltViewModel())
             }
-            bottomSheet(route = "sheet") {
-                Column(Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(.5F)) {
-                    Text("Hello, World! bottom sheet edition")
-                }
+            bottomSheet(route = "optionalUpdatePrompt") {
+                OptionalUpdatePrompt(onIgnoreUpdate = {
+                    navController.popBackStack()
+                })
             }
         }
 

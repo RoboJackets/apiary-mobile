@@ -10,7 +10,7 @@ object NavigationDestinations {
     const val attendableTypeSelection = "attendableTypeSelection"
     const val attendableSelection = "attendableSelection"
     const val attendance = "attendanceMain"
-    const val testBottomSheet = "sheet"
+    const val optionalUpdatePrompt = "optionalUpdatePrompt"
 }
 
 object NavigationActions {
@@ -36,8 +36,8 @@ object NavigationActions {
     }
 
     object BottomSheets {
-        fun anyScreenToTestBottomSheet() = object : NavigationAction {
-            override val destination = NavigationDestinations.testBottomSheet
+        fun anyScreenToOptionalUpdatePrompt() = object : NavigationAction {
+            override val destination = NavigationDestinations.optionalUpdatePrompt
         }
     }
 

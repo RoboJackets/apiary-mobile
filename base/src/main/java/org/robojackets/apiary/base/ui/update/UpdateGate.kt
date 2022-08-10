@@ -4,8 +4,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.ktx.AppUpdateResult
@@ -60,70 +61,53 @@ fun Context.getActivity(): Activity? = when (this) {
 const val UPDATE_REQUEST_CODE = 1999
 
 @Composable
-fun UpdateGate(navReady: Boolean, onShowOptionalSheet: () -> Unit, content: @Composable () -> Unit) {
+fun UpdateGate(
+    navReady: Boolean,
+    onShowOptionalSheet: () -> Unit,
+    content: @Composable () -> Unit,
+) {
     val updateState = rememberInAppUpdateState()
     val scope = rememberCoroutineScope()
-    var ignoreUpdate by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-    Timber.i("UpdateGate!")
-    Timber.i(updateState.appUpdateResult.toString())
-    Timber.i("ignoreUpdate: $ignoreUpdate")
-    if (ignoreUpdate) {
-        content()
-    } else {
-        when (val result = updateState.appUpdateResult) {
-            is AppUpdateResult.NotAvailable -> {
-                content()
-                LaunchedEffect(navReady) {
-                    if (!navReady) {
-                        Timber.i("not doing anything, nav not ready")
-                    } else {
-                        Timber.i("Inside launched effect")
-//                    delay(0)
-                        Timber.i("Delay finished")
-                        onShowOptionalSheet()
-                    }
-                }
-            }
-            is AppUpdateResult.Available -> {
-                val priority = result.updateInfo.updatePriority
-                val staleness = result.updateInfo.clientVersionStalenessDays ?: -1
 
-                val immediateAllowed =
-                    result.updateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+    when (val result = updateState.appUpdateResult) {
+        is AppUpdateResult.NotAvailable -> RequiredUpdatePrompt()
+        is AppUpdateResult.Available -> {
+            val priority = result.updateInfo.updatePriority
+            val staleness = result.updateInfo.clientVersionStalenessDays ?: -1
 
-                val immediateRequired = false &&
-                    immediateAllowed && isImmediateUpdateRequired(priority, staleness)
-                val immediateOptional = true || immediateAllowed && isImmediateUpdateOptional(priority, staleness)
+            val immediateAllowed =
+                result.updateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
 
-                Text(text = "Immediate required: $immediateAllowed, optional: $immediateOptional")
+            val immediateRequired =
+                immediateAllowed && isImmediateUpdateRequired(priority, staleness)
+            val immediateOptional =
+                immediateAllowed && isImmediateUpdateOptional(priority, staleness)
 
-                when {
-                    immediateRequired -> {
-                        RequiredUpdatePrompt() {
-
-                        }
-                    }
-                    immediateOptional -> {
-                        LaunchedEffect(key1 = immediateOptional) {
+            when {
+                immediateRequired -> RequiredUpdatePrompt()
+                immediateOptional -> {
+                    LaunchedEffect(navReady) {
+                        if (navReady) {
                             onShowOptionalSheet()
                         }
                     }
-                    else -> content()
                 }
+                else -> content()
             }
-            is AppUpdateResult.InProgress -> Text("An app update is in progress. Please wait...")
-            is AppUpdateResult.Downloaded -> {
-                Text("An app update has been downloaded and is ready to install. Please wait...")
-                LaunchedEffect(result) {
-                    scope.launch {
-                        result.completeUpdate()
-                    }
+        }
+        // TODO: Implement a nice fullscreen UI for these two states
+        is AppUpdateResult.InProgress -> Text("An app update is in progress. Please wait...")
+        is AppUpdateResult.Downloaded -> {
+            Text("An app update has been downloaded and is ready to install. Please wait...")
+            LaunchedEffect(result) {
+                scope.launch {
+                    result.completeUpdate()
                 }
             }
         }
     }
 }
+
 @Composable
 fun UpdateStatus() {
     val updateState = rememberInAppUpdateState()
@@ -133,7 +117,8 @@ fun UpdateStatus() {
         is AppUpdateResult.Available -> {
             val priority = result.updateInfo.updatePriority
             val staleness = result.updateInfo.clientVersionStalenessDays ?: -1
-            if (isUpdateRequired(result.updateInfo)) Text("Available and required, priority: $priority, staleness: $staleness")  else Text("Available but not required, priority: $priority, staleness: $staleness")
+            if (isUpdateRequired(result.updateInfo)) Text("Optional update available, priority: $priority, staleness: $staleness") else Text(
+                "Required update ready, priority: $priority, staleness: $staleness")
         }
         is AppUpdateResult.InProgress -> Text("In progress")
         is AppUpdateResult.Downloaded -> Text("Downloaded")
