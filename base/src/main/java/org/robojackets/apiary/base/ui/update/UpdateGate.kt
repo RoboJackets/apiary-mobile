@@ -1,8 +1,5 @@
 package org.robojackets.apiary.base.ui.update
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,13 +54,6 @@ fun isImmediateUpdateRequired(priority: Int, staleness: Int): Boolean {
             false
         }
     }
-}
-
-// https://stackoverflow.com/a/68423182
-fun Context.getActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.getActivity()
-    else -> null
 }
 
 @Composable
