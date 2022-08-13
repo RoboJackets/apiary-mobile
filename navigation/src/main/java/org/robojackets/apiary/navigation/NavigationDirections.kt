@@ -11,6 +11,8 @@ object NavigationDestinations {
     const val attendableSelection = "attendableSelection"
     const val attendance = "attendanceMain"
     const val optionalUpdatePrompt = "optionalUpdatePrompt"
+    const val requiredUpdatePrompt = "requiredUpdatePrompt"
+    const val updateInProgress = "updateInProgress"
 }
 
 object NavigationActions {
@@ -35,9 +37,21 @@ object NavigationActions {
         }
     }
 
-    object BottomSheets {
+    object UpdatePrompts {
         fun anyScreenToOptionalUpdatePrompt() = object : NavigationAction {
             override val destination = NavigationDestinations.optionalUpdatePrompt
+        }
+        fun anyScreenToRequiredUpdatePrompt() = object : NavigationAction {
+            override val destination = NavigationDestinations.requiredUpdatePrompt
+            override val navOptions = NavOptions.Builder()
+                .setPopUpTo(0, true)
+                .build()
+        }
+        fun anyScreenToUpdateInProgress() = object : NavigationAction {
+            override val destination = NavigationDestinations.updateInProgress
+            override val navOptions = NavOptions.Builder()
+                .setPopUpTo(0, true)
+                .build()
         }
     }
 

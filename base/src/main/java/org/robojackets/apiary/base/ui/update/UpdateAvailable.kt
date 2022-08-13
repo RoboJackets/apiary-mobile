@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.android.play.core.ktx.AppUpdateResult
 import org.robojackets.apiary.base.ui.icons.UpdateIcon
@@ -105,5 +106,24 @@ fun OptionalUpdatePrompt(
         TextButton(onClick = onIgnoreUpdate) {
             Text("Remind me later")
         }
+    }
+}
+
+@Suppress("MagicNumber")
+@Preview
+@Composable
+fun UpdateInProgress() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxHeight(),
+    ) {
+        CircularProgressIndicator(Modifier.padding(bottom = 28.dp))
+        Text("Please wait...", style = MaterialTheme.typography.h5)
+        Text("We're finishing installing an update. It'll just be a minute or two!",
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(20.dp)
+        )
+        Spacer(Modifier.fillMaxHeight(0.55F))
     }
 }

@@ -4,11 +4,16 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
 import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.ktx.AppUpdateResult
 import com.google.android.play.core.ktx.clientVersionStalenessDays
 import com.google.android.play.core.ktx.updatePriority
 import kotlinx.coroutines.launch
+import org.robojackets.apiary.base.ui.util.OnLifecycleEvent
+import org.robojackets.apiary.base.ui.util.getActivity
 import se.warting.inappupdate.compose.rememberInAppUpdateState
 import timber.log.Timber
 
@@ -56,17 +61,37 @@ fun isImmediateUpdateRequired(priority: Int, staleness: Int): Boolean {
     }
 }
 
+@Suppress("ComplexMethod")
 @Composable
 fun UpdateGate(
     navReady: Boolean,
-    onShowOptionalSheet: () -> Unit,
+    onShowRequiredUpdatePrompt: () -> Unit,
+    onShowOptionalUpdatePrompt: () -> Unit,
+    onShowUpdateInProgressScreen: () -> Unit,
     content: @Composable () -> Unit,
 ) {
+    content()
     val updateState = rememberInAppUpdateState()
     val scope = rememberCoroutineScope()
+    val result = updateState.appUpdateResult
+    val context = LocalContext.current
+    OnLifecycleEvent { owner, event ->
+        when (event) {
+            Lifecycle.Event.ON_RESUME -> {
+                if (result is AppUpdateResult.Available) {
+                    if (result.updateInfo.updateAvailability()
+                        == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                        context.getActivity()
+                            ?.let { result.startImmediateUpdate(it, UPDATE_REQUEST_CODE) }
+                    }
+                }
+            }
+            else -> Unit
+        }
+    }
 
-    when (val result = updateState.appUpdateResult) {
-        is AppUpdateResult.NotAvailable -> content()
+    when (result) {
+        is AppUpdateResult.NotAvailable -> Unit
         is AppUpdateResult.Available -> {
             val priority = result.updateInfo.updatePriority
             val staleness = result.updateInfo.clientVersionStalenessDays ?: -1
@@ -74,32 +99,47 @@ fun UpdateGate(
             val immediateAllowed =
                 result.updateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
 
-            val immediateRequired =
-                immediateAllowed && isImmediateUpdateRequired(priority, staleness)
-            val immediateOptional =
-                immediateAllowed && isImmediateUpdateOptional(priority, staleness)
+            val immediateRequired = immediateAllowed &&
+                    isImmediateUpdateRequired(priority, staleness)
+            val immediateOptional = true || immediateAllowed &&
+                    !immediateRequired &&
+                    isImmediateUpdateOptional(priority, staleness)
 
             when {
-                immediateRequired -> RequiredUpdatePrompt()
-                immediateOptional -> {
-                    content() // If you leave off content here, the app will crash because this is
-                              // a bottom sheet
+                immediateRequired -> {
                     LaunchedEffect(navReady) {
                         if (navReady) {
-                            onShowOptionalSheet()
+                            onShowRequiredUpdatePrompt()
                         }
                     }
                 }
-                else -> content()
+                immediateOptional -> {
+                    LaunchedEffect(navReady) {
+                        if (navReady) {
+                            onShowOptionalUpdatePrompt()
+                        }
+                    }
+                }
+                else -> {
+                    Timber.d("An update is available but no action is required currently")
+                    content()
+                }
             }
         }
-        // TODO: Implement a nice fullscreen UI for these two states
-        is AppUpdateResult.InProgress -> Text("An app update is in progress. Please wait...")
+        is AppUpdateResult.InProgress -> {
+            LaunchedEffect(navReady) {
+                if (navReady) {
+                    onShowUpdateInProgressScreen()
+                }
+            }
+        }
         is AppUpdateResult.Downloaded -> {
-            Text("An app update has been downloaded and is ready to install. Please wait...")
             LaunchedEffect(result) {
-                scope.launch {
-                    result.completeUpdate()
+                if (navReady) {
+                    onShowUpdateInProgressScreen()
+                    scope.launch {
+                        result.completeUpdate()
+                    }
                 }
             }
         }
@@ -119,17 +159,18 @@ fun UpdateStatus() {
             val immediateAllowed =
                 result.updateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
 
-            val immediateRequired =
-                immediateAllowed && isImmediateUpdateRequired(priority, staleness)
-            val immediateOptional =
-                immediateAllowed && isImmediateUpdateOptional(priority, staleness)
+            val immediateRequired = immediateAllowed &&
+                    isImmediateUpdateRequired(priority, staleness)
+            val immediateOptional = immediateAllowed &&
+                    !immediateRequired &&
+                    isImmediateUpdateOptional(priority, staleness)
 
             when {
                 immediateRequired -> Text("Required update available (priority: " +
-                        "${priority}, staleness: ${staleness})")
-                immediateOptional -> Text("Update available (priority: " +
-                        "${priority}, staleness: ${staleness})")
-                else -> Text("Up to date")
+                        "$priority, staleness: $staleness)")
+                immediateOptional -> Text("Optional update available (priority: " +
+                        "$priority, staleness: $staleness)")
+                else -> Text("Available")
             }
         }
         is AppUpdateResult.InProgress -> Text("Update in progress")

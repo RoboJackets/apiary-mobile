@@ -44,7 +44,9 @@ import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.ui.nfc.NfcRequired
 import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
 import org.robojackets.apiary.base.ui.update.OptionalUpdatePrompt
+import org.robojackets.apiary.base.ui.update.RequiredUpdatePrompt
 import org.robojackets.apiary.base.ui.update.UpdateGate
+import org.robojackets.apiary.base.ui.update.UpdateInProgress
 import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationDestinations
 import org.robojackets.apiary.navigation.NavigationManager
@@ -155,14 +157,29 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     ModalBottomSheetLayout(bottomSheetNavigator) {
-                        UpdateGate(navReady = navReady, onShowOptionalSheet = {
-                            navigationManager.navigate(NavigationActions.BottomSheets.anyScreenToOptionalUpdatePrompt())
-                        }) {
+                        UpdateGate(
+                            navReady = navReady,
+                            onShowRequiredUpdatePrompt = {
+                                navigationManager.navigate(
+                                    NavigationActions.UpdatePrompts.anyScreenToRequiredUpdatePrompt()
+                                )
+                            },
+                            onShowOptionalUpdatePrompt = {
+                                navigationManager.navigate(
+                                    NavigationActions.UpdatePrompts.anyScreenToOptionalUpdatePrompt()
+                                )
+                            },
+                            onShowUpdateInProgressScreen = {
+                                navigationManager.navigate(
+                                    NavigationActions.UpdatePrompts.anyScreenToUpdateInProgress()
+                                )
+                            }
+                        ) {
                             Scaffold(
                                 topBar = { AppTopBar(settings.appEnv.production) },
                                 bottomBar = {
                                     val current = currentRoute(navController)
-                                    if (nfcEnabled && current != NavigationDestinations.authentication) {
+                                    if (shouldShowBottomNav(nfcEnabled, current)) {
                                         BottomNavigation {
                                             navItems.forEach { screen ->
                                                 BottomNavigationItem(
@@ -205,6 +222,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @Composable
+    private fun shouldShowBottomNav(
+        nfcEnabled: Boolean,
+        currentScreen: String?,
+    ) = nfcEnabled &&
+            currentScreen != NavigationDestinations.authentication &&
+            currentScreen != NavigationDestinations.requiredUpdatePrompt &&
+            currentScreen != NavigationDestinations.updateInProgress
+
+    @Suppress("LongMethod")
     @OptIn(ExperimentalMaterialNavigationApi::class)
     @ExperimentalMaterialApi
     @Composable
@@ -268,7 +295,13 @@ class MainActivity : ComponentActivity() {
             composable(NavigationDestinations.settings) {
                 SettingsScreen(hiltViewModel())
             }
-            bottomSheet(route = "optionalUpdatePrompt") {
+            composable(NavigationDestinations.requiredUpdatePrompt) {
+                RequiredUpdatePrompt()
+            }
+            composable(NavigationDestinations.updateInProgress) {
+                UpdateInProgress()
+            }
+            bottomSheet(NavigationDestinations.optionalUpdatePrompt) {
                 OptionalUpdatePrompt(onIgnoreUpdate = {
                     navController.popBackStack()
                 })
