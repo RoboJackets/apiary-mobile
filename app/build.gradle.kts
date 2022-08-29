@@ -18,6 +18,7 @@ dependencies {
     // Dependencies
     coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
     implementation(AndroidToolDependencies.gson) // For Sentry
+    implementation(AndroidToolDependencies.in_app_update_compose)
     implementation(AndroidToolDependencies.open_source_licenses)
     implementation(AndroidToolDependencies.sentry)
     implementation(AndroidToolDependencies.sentry_timber_tree)
@@ -39,6 +40,7 @@ dependencies {
     implementation(ComposeDependencies.compose_material_icons_core)
     implementation(ComposeDependencies.compose_material_icons_extended)
     implementation(ComposeDependencies.compose_settings)
+
 
     implementation(HiltDependencies.hilt)
     kapt(HiltDependencies.hilt_android_compiler)

@@ -1,4 +1,4 @@
-package org.robojackets.apiary.base.ui.update
+package org.robojackets.apiary.ui.update
 
 import android.app.Activity
 import androidx.compose.foundation.layout.*
@@ -24,28 +24,42 @@ fun triggerImmediateUpdate(appUpdateResult: AppUpdateResult.Available, activity:
 }
 
 @Composable
-fun InstallUpdateButton() {
+fun InstallUpdateButton(onIgnoreUpdate: () -> Unit = {}) {
     val updateState = rememberInAppUpdateState()
+    var updateCanceled by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
     var updateError by remember { mutableStateOf<String?>(null) }
 
-    Button(onClick = {
-        val result = updateState.appUpdateResult
-        if (result is AppUpdateResult.Available) {
-            context.getActivity()?.let { triggerImmediateUpdate(result, it) } ?: run {
-                Timber.e("Context.getActivity() was null while trying to start immediate update")
-                updateError = "An update is available, but we were unable to start the update process."
-            }
-        } else {
-            Timber.e("User is in update flow but no update was available")
-            updateError = "Sorry! It seems there are no updates to install."
+    when (updateCanceled) {
+        true -> {
+            Text("Update canceled. Restart the app to try again.", textAlign = TextAlign.Center)
         }
-    }) {
-        Text("Download and install update")
+        false -> {
+            Button(onClick = {
+                val result = updateState.appUpdateResult
+                if (result is AppUpdateResult.Available) {
+                    context.getActivity()?.let { triggerImmediateUpdate(result, it) } ?: run {
+                        Timber.e("Context.getActivity() was null while trying to start immediate update")
+                        updateError = "An update is available, but we were unable to start the update process."
+                    }
+                } else {
+                    Timber.e("User is in update flow but no update was available")
+                    updateError = "Sorry! It seems there are no updates to install."
+                }
+                updateCanceled = true
+            }) {
+                Text("Download and install update")
+            }
+        }
     }
+
     if (updateError?.isNotBlank() == true) {
         AlertDialog(
-            onDismissRequest = { updateError = null },
+            onDismissRequest = {
+                updateError = null
+                onIgnoreUpdate()
+                               },
             confirmButton = {
                 TextButton(onClick = { updateError = null }) {
                     Text("Close")
@@ -102,7 +116,7 @@ fun OptionalUpdatePrompt(
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(20.dp)
         )
-        InstallUpdateButton()
+        InstallUpdateButton(onIgnoreUpdate)
         TextButton(onClick = onIgnoreUpdate) {
             Text("Remind me later")
         }

@@ -43,15 +43,15 @@ import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.ui.nfc.NfcRequired
 import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
-import org.robojackets.apiary.base.ui.update.OptionalUpdatePrompt
-import org.robojackets.apiary.base.ui.update.RequiredUpdatePrompt
-import org.robojackets.apiary.base.ui.update.UpdateGate
-import org.robojackets.apiary.base.ui.update.UpdateInProgress
 import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationDestinations
 import org.robojackets.apiary.navigation.NavigationManager
 import org.robojackets.apiary.ui.global.AppTopBar
 import org.robojackets.apiary.ui.settings.SettingsScreen
+import org.robojackets.apiary.ui.update.OptionalUpdatePrompt
+import org.robojackets.apiary.ui.update.RequiredUpdatePrompt
+import org.robojackets.apiary.ui.update.UpdateGate
+import org.robojackets.apiary.ui.update.UpdateInProgress
 import timber.log.Timber
 import javax.inject.Inject
 

@@ -1,4 +1,4 @@
-package org.robojackets.apiary.base.ui.update
+package org.robojackets.apiary.ui.update
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -126,13 +126,7 @@ fun UpdateGate(
                 }
             }
         }
-        is AppUpdateResult.InProgress -> {
-            LaunchedEffect(navReady) {
-                if (navReady) {
-                    onShowUpdateInProgressScreen()
-                }
-            }
-        }
+        is AppUpdateResult.InProgress -> Unit
         is AppUpdateResult.Downloaded -> {
             LaunchedEffect(result) {
                 if (navReady) {

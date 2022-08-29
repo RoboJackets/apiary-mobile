@@ -28,9 +28,9 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import org.robojackets.apiary.BuildConfig
 import org.robojackets.apiary.auth.model.UserInfo
 import org.robojackets.apiary.base.AppEnvironment
-import org.robojackets.apiary.base.ui.update.UpdateStatus
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.MadeWithLove
+import org.robojackets.apiary.ui.update.UpdateStatus
 
 @Suppress("LongMethod")
 @Composable

@@ -15,7 +15,6 @@ dependencies {
     api(AndroidToolDependencies.krate)
     implementation(AndroidToolDependencies.sentry)
     implementation(AndroidToolDependencies.timber)
-    implementation(AndroidToolDependencies.in_app_update_compose)
 
     implementation(ComposeDependencies.compose_foundation)
     implementation(ComposeDependencies.compose_material)
