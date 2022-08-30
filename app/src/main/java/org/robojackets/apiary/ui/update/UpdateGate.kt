@@ -101,7 +101,7 @@ fun UpdateGate(
 
             val immediateRequired = immediateAllowed &&
                     isImmediateUpdateRequired(priority, staleness)
-            val immediateOptional = true || immediateAllowed &&
+            val immediateOptional = immediateAllowed &&
                     !immediateRequired &&
                     isImmediateUpdateOptional(priority, staleness)
 
