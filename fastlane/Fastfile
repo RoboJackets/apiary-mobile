@@ -131,6 +131,9 @@ platform :android do
       json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"]
     ).max()
 
+    in_app_update_priority = File.read("../.update-priority").to_i
+    puts(in_app_update_priority)
+
     gradle(
       task: "bundle",
       build_type: "Release",
@@ -151,6 +154,7 @@ platform :android do
       track: "internal",
       json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"],
       aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
+      in_app_update_priority: in_app_update_priority,
       skip_upload_apk: true,
       skip_upload_metadata: true,
       skip_upload_changelogs: true,

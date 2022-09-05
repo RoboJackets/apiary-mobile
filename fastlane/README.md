@@ -47,6 +47,14 @@ Creates a Sentry release for this version and associates Git commits
 
 Upload a release to Google Play internal app sharing
 
+### android testLane
+
+```sh
+[bundle exec] fastlane android testLane
+```
+
+Upload a new, signed production release to the internal test track
+
 ### android uploadToInternalTest
 
 ```sh
