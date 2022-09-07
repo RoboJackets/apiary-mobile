@@ -245,6 +245,7 @@ jobs:
         inputs: []
       - task: internal-test-build
         image: android-build-box
+        timeout: 15m
         tags:
           - large
         file: tagged-release/ci/pipelines/tasks/internal-test-build.yml
