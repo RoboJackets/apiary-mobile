@@ -125,11 +125,14 @@ platform :android do
     full_sem_ver = version_output["FullSemVer"]
     version_name = full_sem_ver.gsub("+", "-")
 
+    version_code_offset = 10
     current_max_version_code = google_play_track_version_codes(
       track: "internal",
       package_name: "org.robojackets.apiary",
       json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"]
-    ).max()
+    ).max() + version_code_offset
+
+    puts(current_max_version_code)
 
     in_app_update_priority = File.read("../.update-priority").to_i
     puts(in_app_update_priority)
