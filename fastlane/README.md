@@ -31,6 +31,22 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Runs all the tests
 
+### android setVersionCode
+
+```sh
+[bundle exec] fastlane android setVersionCode
+```
+
+Update the version code
+
+### android setVersionName
+
+```sh
+[bundle exec] fastlane android setVersionName
+```
+
+Update the version code
+
 ### android createSentryRelease
 
 ```sh
@@ -47,18 +63,18 @@ Creates a Sentry release for this version and associates Git commits
 
 Upload a release to Google Play internal app sharing
 
-### android testLane
-
-```sh
-[bundle exec] fastlane android testLane
-```
-
-Upload a new, signed production release to the internal test track
-
 ### android uploadToInternalTest
 
 ```sh
 [bundle exec] fastlane android uploadToInternalTest
+```
+
+Upload a new, signed production release to the internal test track
+
+### android uploadTest
+
+```sh
+[bundle exec] fastlane android uploadTest
 ```
 
 Upload a new, signed production release to the internal test track
