@@ -44,7 +44,7 @@ fun isImmediateUpdateOptional(priority: Int, staleness: Int): Boolean {
 
 const val REQ_UPDATE_STALENESS_THRESHOLD_LOW_PRIORITY = 21
 const val REQ_UPDATE_STALENESS_THRESHOLD_MEDIUM_PRIORITY = 21
-const val REQ_UPDATE_STALENESS_THRESHOLLD_HIGH_PRIORITY = 1
+const val REQ_UPDATE_STALENESS_THRESHOLD_HIGH_PRIORITY = 1
 
 fun isImmediateUpdateRequired(priority: Int, staleness: Int): Boolean {
     return when (priority) {
@@ -52,7 +52,7 @@ fun isImmediateUpdateRequired(priority: Int, staleness: Int): Boolean {
         UPDATE_PRIORITY_LOWER,
         UPDATE_PRIORITY_LOW -> staleness >= REQ_UPDATE_STALENESS_THRESHOLD_LOW_PRIORITY
         UPDATE_PRIORITY_MEDIUM -> staleness >= REQ_UPDATE_STALENESS_THRESHOLD_MEDIUM_PRIORITY
-        UPDATE_PRIORITY_HIGH -> staleness >= REQ_UPDATE_STALENESS_THRESHOLLD_HIGH_PRIORITY
+        UPDATE_PRIORITY_HIGH -> staleness >= REQ_UPDATE_STALENESS_THRESHOLD_HIGH_PRIORITY
         UPDATE_PRIORITY_HIGHEST -> true
         else -> {
             Timber.w("Unknown priority $priority when evaluating for immediate update")
