@@ -95,7 +95,7 @@ fun UpdateGate(
         is AppUpdateResult.Available -> {
             val priority = result.updateInfo.updatePriority
             val staleness = result.updateInfo.clientVersionStalenessDays ?: -1
-
+            Timber.i("Raw priority: $priority, raw staleness: ${result.updateInfo.clientVersionStalenessDays}")
             val immediateAllowed =
                 result.updateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
 
@@ -159,12 +159,13 @@ fun UpdateStatus() {
                     !immediateRequired &&
                     isImmediateUpdateOptional(priority, staleness)
 
+            Timber.i("UpdateStatus: immediateAllowed: $immediateAllowed, immediateRequired: $immediateRequired, immediateOptional: $immediateOptional, priority: $priority, staleness: $staleness")
             when {
                 immediateRequired -> Text("Required update available (priority: " +
                         "$priority, staleness: $staleness)")
                 immediateOptional -> Text("Optional update available (priority: " +
                         "$priority, staleness: $staleness)")
-                else -> Text("Available")
+                else -> Text("Available (priority: $priority, staleness: $staleness)")
             }
         }
         is AppUpdateResult.InProgress -> Text("Update in progress")

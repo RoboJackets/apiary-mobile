@@ -20,7 +20,7 @@ class ApiaryMobileApplication : Application() {
             SentryAndroid.init(this) { options ->
                 options.addIntegration(
                     SentryTimberIntegration(
-                        minEventLevel = SentryLevel.WARNING,
+                        minEventLevel = SentryLevel.INFO, // FIXME
                         minBreadcrumbLevel = SentryLevel.INFO,
                     )
                 )
