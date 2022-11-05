@@ -39,8 +39,8 @@ import java.nio.charset.StandardCharsets
  * As an alternative, you can use the hidePrompt parameter to hide the displayed UI elements from
  * this composable, making it hidden whilst also not allowing it to be disposed.
  */
-val gtidRegex = Regex("90[0-9]{7}")
-
+val GTID_REGEX = Regex("90[0-9]{7}")
+val GTID_LENGTH = 9
 @Suppress("MagicNumber", "LongMethod", "ComplexMethod")
 @Composable
 fun BuzzCardPrompt(
@@ -77,8 +77,10 @@ fun BuzzCardPrompt(
 
                     // In some cases (e.g., GTRI badges) the proxID is fewer than 6 characters
                     // Since we don't care about the proxID, the regex just checks
-                    // for the GTID and =
-                    val buzzStringRegex = Regex("90[0-9]{7}=.*")
+                    // for the GTID and (= or 0).
+                    // - Some newer BuzzCards (after Nov 2022) use a 0 to separate the GTID and prox
+                    // ID
+                    val buzzStringRegex = Regex("90[0-9]{7}[=0].*")
 
                     if (!buzzStringRegex.matches(buzzString)) {
                         error = InvalidBuzzCardData
@@ -86,10 +88,12 @@ fun BuzzCardPrompt(
                         return@enableReaderMode
                     }
 
-                    val buzzStringParts = buzzString.split("=").toTypedArray()
-                    val gtid = buzzStringParts[0]
+                    // Since the separator between GTID and prox ID is increasingly varied and
+                    // problematic, just take the first 9 digits of the string which is (so far)
+                    // always the GTID
+                    val gtid = buzzString.take(GTID_LENGTH)
 
-                    if (!gtidRegex.matches(gtid)) {
+                    if (!GTID_REGEX.matches(gtid)) {
                         error = InvalidBuzzCardData
                         Timber.e("Unexpected BuzzCard GTID format: $gtid")
                     }
@@ -172,7 +176,7 @@ fun ManualGtidEntryPrompt(
         },
         confirmButton = {
             TextButton(onClick = {
-                if (gtidRegex.matches(gtid)) {
+                if (GTID_REGEX.matches(gtid)) {
                     onGtidEntered(BuzzCardTap(gtid.toInt(), source = Keyboard))
                     onHide()
                     gtid = ""
@@ -199,7 +203,7 @@ fun ManualGtidEntryPrompt(
                     },
                     label = { Text("GTID") },
                     singleLine = true,
-                    isError = gtid.isNotEmpty() && !gtidRegex.matches(gtid),
+                    isError = gtid.isNotEmpty() && !GTID_REGEX.matches(gtid),
                     modifier = Modifier.padding(top = 14.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     leadingIcon = { CreditCardIcon() }
