@@ -1,13 +1,15 @@
 object ComposeDependencies {
     object Versions {
-        const val accompanist_version = "0.23.1"
+        const val accompanist_version = "0.25.0"
         const val compose_settings_version = "0.7.2"
         const val compose_version = "1.1.1"
         const val lifecycle_viewmodel_compose_version = "2.4.1"
     }
 
-    const val accompanist =
+    const val accompanist_systemuicontroller =
         "com.google.accompanist:accompanist-systemuicontroller:${Versions.accompanist_version}"
+    const val accompanist_nav_material =
+        "com.google.accompanist:accompanist-navigation-material:${Versions.accompanist_version}"
 
     const val compose_foundation =
         "androidx.compose.foundation:foundation:${Versions.compose_version}"
@@ -106,6 +108,7 @@ object AndroidToolDependencies {
         const val android_tools_desugar_version = "1.1.5"
         const val krate_version = "2.0.0"
         const val gson_version = "2.9.0"
+        const val in_app_update_compose_version = "0.0.16"
         const val open_source_licenses_version = "17.0.0"
         const val sentry_version = "5.7.3"
         const val timber_version = "5.0.1"
@@ -114,6 +117,8 @@ object AndroidToolDependencies {
     const val android_tools_desugar_jdk =
         "com.android.tools:desugar_jdk_libs:${Versions.android_tools_desugar_version}"
     const val gson = "com.google.code.gson:gson:${Versions.gson_version}"
+    const val in_app_update_compose =
+        "se.warting.in-app-update:in-app-update-compose:${Versions.in_app_update_compose_version}"
     const val krate = "hu.autsoft:krate:${Versions.krate_version}"
     const val open_source_licenses =
         "com.google.android.gms:play-services-oss-licenses:${Versions.open_source_licenses_version}"

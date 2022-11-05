@@ -10,6 +10,9 @@ object NavigationDestinations {
     const val attendableTypeSelection = "attendableTypeSelection"
     const val attendableSelection = "attendableSelection"
     const val attendance = "attendanceMain"
+    const val optionalUpdatePrompt = "optionalUpdatePrompt"
+    const val requiredUpdatePrompt = "requiredUpdatePrompt"
+    const val updateInProgress = "updateInProgress"
 }
 
 object NavigationActions {
@@ -30,6 +33,24 @@ object NavigationActions {
                 .setPopUpTo(graphStartId, false, saveState = true)
                 .setLaunchSingleTop(true)
                 .setRestoreState(true)
+                .build()
+        }
+    }
+
+    object UpdatePrompts {
+        fun anyScreenToOptionalUpdatePrompt() = object : NavigationAction {
+            override val destination = NavigationDestinations.optionalUpdatePrompt
+        }
+        fun anyScreenToRequiredUpdatePrompt() = object : NavigationAction {
+            override val destination = NavigationDestinations.requiredUpdatePrompt
+            override val navOptions = NavOptions.Builder()
+                .setPopUpTo(0, true)
+                .build()
+        }
+        fun anyScreenToUpdateInProgress() = object : NavigationAction {
+            override val destination = NavigationDestinations.updateInProgress
+            override val navOptions = NavOptions.Builder()
+                .setPopUpTo(0, true)
                 .build()
         }
     }

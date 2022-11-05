@@ -101,3 +101,16 @@ fun EventIcon(
         contentDescription = "event"
     )
 }
+
+@Composable
+fun UpdateIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_baseline_update_24),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = "update"
+    )
+}

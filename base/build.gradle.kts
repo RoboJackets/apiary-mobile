@@ -20,6 +20,7 @@ dependencies {
     implementation(ComposeDependencies.compose_material)
     implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.compose_ui_tooling)
+    implementation(ComposeDependencies.accompanist_nav_material)
 
     implementation(HiltDependencies.hilt)
     kapt(HiltDependencies.hilt_android_compiler)
