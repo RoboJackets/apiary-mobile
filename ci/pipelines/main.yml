@@ -205,7 +205,7 @@ jobs:
             - get: android-build-box
               tags:
                 - large
-              timeout: 5m
+              timeout: 15m
             - do:
               - task: get-commit-sha
                 config:
@@ -322,7 +322,7 @@ jobs:
           - get: android-build-box
             tags:
               - large
-            timeout: 5m
+            timeout: 15m
 
       - task: prepare-env
         image: android-build-box
@@ -405,7 +405,7 @@ jobs:
           - get: android-build-box
             tags:
               - large
-            timeout: 5m
+            timeout: 15m
 
     - task: prepare-env
       image: android-build-box
