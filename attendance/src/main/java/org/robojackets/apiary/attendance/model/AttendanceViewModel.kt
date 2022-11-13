@@ -5,14 +5,14 @@ import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skydoves.sandwich.StatusCode
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
 import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import org.robojackets.apiary.attendance.model.AttendanceScreenState.Loading
-import org.robojackets.apiary.attendance.model.AttendanceScreenState.ReadyForTap
+import org.robojackets.apiary.attendance.model.AttendanceScreenState.*
 import org.robojackets.apiary.attendance.network.AttendanceRepository
 import org.robojackets.apiary.base.model.Attendable
 import org.robojackets.apiary.base.model.AttendableType
@@ -105,6 +105,9 @@ class AttendanceViewModel @Inject constructor(
             }
             .onError {
                 Timber.e(this.toString(), "Error occurred while recording attendance")
+                when (statusCode) {
+                    StatusCode.Forbidden -> Unit // TODO
+                }
                 error.value = "The last tap was successful, but we couldn't save the data. " +
                         "Check your internet connection and try again."
                 screenState.value = ReadyForTap
