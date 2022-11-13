@@ -58,6 +58,14 @@ import org.robojackets.apiary.ui.update.UpdateStatus
                 subtitle = { Text(text = user?.uid ?: "") },
                 onClick = {}
             )
+            if (BuildConfig.DEBUG) {
+                SettingsMenuLink(
+                    icon = { Icon(Icons.Outlined.VerifiedUser, contentDescription = "verified user") },
+                    title = { Text(text = "DEBUG: Recognized permissions") },
+                    subtitle = { Text(text = user?.allPermissions?.joinToString(separator = ", ") ?: "None") },
+                    onClick = {}
+                )
+            }
             SettingsMenuLink(
                 icon = { Icon(Icons.Outlined.Logout, contentDescription = "logout") },
                 title = { Text(text = "Logout") },

@@ -3,6 +3,8 @@ package org.robojackets.apiary.di
 import android.content.Context
 import com.nxp.nfclib.NxpNfcLib
 import com.skydoves.sandwich.coroutines.CoroutinesResponseCallAdapterFactory
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,10 +15,12 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.robojackets.apiary.BuildConfig
 import org.robojackets.apiary.auth.AuthStateManager
+import org.robojackets.apiary.auth.model.Permission
 import org.robojackets.apiary.auth.network.AuthHeaderInterceptor
 import org.robojackets.apiary.auth.network.UserApiService
 import org.robojackets.apiary.auth.oauth2.AuthManager
 import org.robojackets.apiary.base.GlobalSettings
+import org.robojackets.apiary.base.adapter.SkipNotFoundEnumInEnumListAdapter
 import org.robojackets.apiary.base.service.ServerInfoApiService
 import org.robojackets.apiary.network.UserAgentInterceptor
 import retrofit2.Retrofit
@@ -30,7 +34,7 @@ object MainActivityModule {
 
     @Provides
     fun providesAuthService(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ) = AuthorizationService(context)
 
     @Provides
@@ -40,8 +44,10 @@ object MainActivityModule {
         authManager: AuthManager,
     ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor()
-        loggingInterceptor.setLevel(if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
-            else HttpLoggingInterceptor.Level.BASIC) // Only log detailed
+        loggingInterceptor.setLevel(
+            if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
+            else HttpLoggingInterceptor.Level.BASIC
+        ) // Only log detailed
         // network requests in debug builds
         loggingInterceptor.redactHeader("Authorization") // Redact access tokens in headers
 
@@ -53,23 +59,34 @@ object MainActivityModule {
     }
 
     @Provides
+    fun providesMoshi(): Moshi {
+        return Moshi.Builder()
+            .add(
+                Types.newParameterizedType(List::class.java, Permission::class.java),
+                SkipNotFoundEnumInEnumListAdapter(Permission::class.java)
+            )
+            .build()
+    }
+
+    @Provides
     fun providesRetrofit(
         globalSettings: GlobalSettings,
-        okHttpClient: OkHttpClient
+        moshi: Moshi,
+        okHttpClient: OkHttpClient,
     ): Retrofit = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(globalSettings.appEnv.apiBaseUrl.toString())
         .addCallAdapterFactory(CoroutinesResponseCallAdapterFactory.create())
-        .addConverterFactory(MoshiConverterFactory.create())
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
 
     @Provides
     fun providesServerInfoApiService(
-        retrofit: Retrofit
+        retrofit: Retrofit,
     ) = retrofit.create(ServerInfoApiService::class.java)
 
     @Provides
     fun providesUserApiService(
-        retrofit: Retrofit
+        retrofit: Retrofit,
     ) = retrofit.create(UserApiService::class.java)
 }

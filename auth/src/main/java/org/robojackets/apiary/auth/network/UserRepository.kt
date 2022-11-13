@@ -12,4 +12,12 @@ class UserRepository @Inject constructor(
     suspend fun getLoggedInUserInfo(): ApiResponse<User> {
         return userApiService.getUserInfo()
     }
+
+//    suspend fun userCanRecordHiddenTeamAttendance(): Boolean {
+//        return false
+//    }
+//
+//    suspend fun userCanRecordAllAttendance() {
+//
+//    }
 }
