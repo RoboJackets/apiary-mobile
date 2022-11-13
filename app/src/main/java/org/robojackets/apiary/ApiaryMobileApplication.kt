@@ -14,17 +14,26 @@ import timber.log.Timber
 class ApiaryMobileApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        if (BuildConfig.DEBUG) {
+        val isDebugBuild = BuildConfig.DEBUG
+
+        if (isDebugBuild) {
             Timber.plant(Timber.DebugTree())
-        } else {
-            SentryAndroid.init(this) { options ->
-                options.addIntegration(
-                    SentryTimberIntegration(
-                        minEventLevel = SentryLevel.WARNING,
-                        minBreadcrumbLevel = SentryLevel.INFO,
-                    )
-                )
-            }
         }
+
+        SentryAndroid.init(this) { options ->
+            options.setBeforeSend { sentryEvent, _ ->
+                when (isDebugBuild) {
+                    true -> null
+                    else -> sentryEvent
+                }
+            }
+            options.addIntegration(
+                SentryTimberIntegration(
+                    minEventLevel = SentryLevel.WARNING,
+                    minBreadcrumbLevel = SentryLevel.INFO,
+                )
+            )
+        }
+
     }
 }
