@@ -5,7 +5,6 @@ import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.skydoves.sandwich.StatusCode
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
 import com.skydoves.sandwich.onSuccess
@@ -105,9 +104,6 @@ class AttendanceViewModel @Inject constructor(
             }
             .onError {
                 Timber.e(this.toString(), "Error occurred while recording attendance")
-                when (statusCode) {
-                    StatusCode.Forbidden -> Unit // TODO
-                }
                 error.value = "The last tap was successful, but we couldn't save the data. " +
                         "Check your internet connection and try again."
                 screenState.value = ReadyForTap

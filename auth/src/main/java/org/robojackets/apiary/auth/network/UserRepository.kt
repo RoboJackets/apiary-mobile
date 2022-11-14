@@ -7,17 +7,9 @@ import javax.inject.Inject
 
 @ActivityRetainedScoped
 class UserRepository @Inject constructor(
-    val userApiService: UserApiService
+    private val userApiService: UserApiService
 ) {
     suspend fun getLoggedInUserInfo(): ApiResponse<User> {
         return userApiService.getUserInfo()
     }
-
-//    suspend fun userCanRecordHiddenTeamAttendance(): Boolean {
-//        return false
-//    }
-//
-//    suspend fun userCanRecordAllAttendance() {
-//
-//    }
 }

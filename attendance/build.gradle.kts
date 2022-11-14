@@ -11,6 +11,7 @@ dependencies {
     // Other modules
     implementation(project(mapOf("path" to ":base")))
     implementation(project(mapOf("path" to ":navigation")))
+    implementation(project(mapOf("path" to ":auth")))
     implementation("androidx.navigation:navigation-common-ktx:2.3.5")
 
     // Dependencies

@@ -37,8 +37,8 @@ import org.robojackets.apiary.attendance.AttendanceScreen
 import org.robojackets.apiary.attendance.ui.AttendableSelectionScreen
 import org.robojackets.apiary.attendance.ui.AttendableTypeSelectionScreen
 import org.robojackets.apiary.auth.AuthStateManager
-import org.robojackets.apiary.auth.AuthenticationScreen
 import org.robojackets.apiary.auth.oauth2.AuthManager
+import org.robojackets.apiary.auth.ui.AuthenticationScreen
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.ui.nfc.NfcRequired

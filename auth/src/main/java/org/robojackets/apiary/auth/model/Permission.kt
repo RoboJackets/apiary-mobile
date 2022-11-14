@@ -1,6 +1,7 @@
 package org.robojackets.apiary.auth.model
 
 import com.squareup.moshi.Json
+import java.util.*
 
 /**
  * Nov-2022 (evan10s): This class has a custom serializer; see MainActivityModule in the `app`
@@ -8,7 +9,7 @@ import com.squareup.moshi.Json
  * in the enum already. This deviates from the default Moshi behavior to throw an exception if a
  * permission ID that doesn't map to a member of this enum is encountered.
  */
-enum class Permission() {
+enum class Permission {
     @Json(name = "create-attendance")
     CREATE_ATTENDANCE,
     @Json(name = "read-events")
@@ -19,4 +20,9 @@ enum class Permission() {
     READ_TEAMS_HIDDEN,
     @Json(name = "read-users")
     READ_USERS,
+    MAKE_PIES; // FIXME: remove this
+
+    override fun toString(): String {
+        return name.replace("_", "-").lowercase(Locale.getDefault())
+    }
 }

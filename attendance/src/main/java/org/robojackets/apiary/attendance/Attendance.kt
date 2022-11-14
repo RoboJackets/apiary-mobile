@@ -2,7 +2,6 @@ package org.robojackets.apiary.attendance
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,8 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.nxp.nfclib.NxpNfcLib
-import org.robojackets.apiary.attendance.model.AttendanceScreenState.Loading
-import org.robojackets.apiary.attendance.model.AttendanceScreenState.ReadyForTap
+import org.robojackets.apiary.attendance.model.AttendanceScreenState.*
 import org.robojackets.apiary.attendance.model.AttendanceState
 import org.robojackets.apiary.attendance.model.AttendanceViewModel
 import org.robojackets.apiary.base.model.AttendableType
@@ -31,6 +29,7 @@ import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptExternalError
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
 import org.robojackets.apiary.base.ui.theme.danger
 import org.robojackets.apiary.base.ui.util.ContentPadding
+import org.robojackets.apiary.base.ui.util.LoadingSpinner
 
 private fun getExternalError(error: String?): BuzzCardPromptExternalError? {
     error?.let {
@@ -48,16 +47,9 @@ private fun Attendance(
     onBuzzcardTap: (buzzcardTap: BuzzCardTap) -> Unit,
     onNavigateToAttendableSelection: () -> Unit,
 ) {
-    if (viewState.selectedAttendable == null) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
-                .fillMaxHeight()
-        ) {
-            CircularProgressIndicator()
-        }
 
+    if (viewState.selectedAttendable == null) {
+        LoadingSpinner()
         return
     }
 
