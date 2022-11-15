@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.robojackets.apiary.attendance.model.AttendableTypeSelectionViewModel
+import org.robojackets.apiary.auth.ui.permissions.InsufficientPermissions
 import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.ui.icons.EventIcon
 import org.robojackets.apiary.base.ui.icons.GroupsIcon
@@ -32,12 +33,16 @@ fun AttendableTypeSelectionScreen(
         return
     }
 
-    if (state.userMissingPermissions.isNotEmpty()) {
-        Text("Missing permissions: ${state.userMissingPermissions}")
-        return
-    }
-
     ContentPadding {
+        if (state.userMissingPermissions.isNotEmpty()) {
+            InsufficientPermissions(
+                featureName = "Attendance",
+                missingPermissions = state.userMissingPermissions,
+                requiredPermissions = viewModel.requiredPermissions
+            )
+            return@ContentPadding
+        }
+
         Column(
             Modifier
                 .fillMaxWidth()

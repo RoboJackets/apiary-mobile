@@ -35,7 +35,7 @@ class AttendableTypeSelectionViewModel @Inject constructor(
     private var userMissingPermissions = MutableStateFlow(emptyList<Permission>())
     private var user = MutableStateFlow<UserInfo?>(null)
 
-    private var requiredPermissions = listOf(READ_USERS, CREATE_ATTENDANCE)
+    val requiredPermissions = listOf(READ_USERS, CREATE_ATTENDANCE, MAKE_PIES)
 
     val state: StateFlow<AttendableTypeSelectionState>
         get() = _state
