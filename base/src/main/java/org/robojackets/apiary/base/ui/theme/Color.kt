@@ -9,5 +9,6 @@ val GoldDark = Color(0xFFB78300)
 
 val danger = Color(0xFFB00020)
 val warning = Color(0xFFFFC107)
+val success = Color(0xFF4CAF50)
 
 val webNavBarBackground = Color(0xFF343A40)

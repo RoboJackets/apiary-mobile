@@ -114,3 +114,16 @@ fun UpdateIcon(
         contentDescription = "update"
     )
 }
+
+@Composable
+fun TaskAltIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_task_alt_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = "checkmark"
+    )
+}
