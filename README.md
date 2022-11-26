@@ -100,3 +100,24 @@ You can install the Fastlane dependencies by running `bundle install` from the r
 command does, so you can get around any errors stemming from this by aliasing the command `where`
 to `which`.
  - You need to install [GitVersion](https://github.com/GitTools/GitVersion) yourself.
+
+## Release management
+
+1. After you've merged all PRs to be included in the release, ensure the `.update-priority`
+file is set correctly according to the table below. Use priority 2 as the default.
+
+| Update priority | Description | Examples | Update timeline for users |
+| --- | --- |--- | --- |
+| 0/1/2 | Very low  or low priority | UI touchups that don't impact functionality, releases with options to opt-in to beta features | No prompt initially. Optional prompt starting 14 days after release. Immediate update 21 days after release. |
+| 3 | Medium priority |  Medium-priority bug fixes, performance improvements, non-time-sensitive feature launches | No prompts for the first 3 days. Optional starting 4 days after release. Immediate update 21 days after release. |
+2. Create a new release on `main` using a tag with a name like `v1.0.0`. Use semantic versioning
+to determine how to increment the version number.
+3. Upon creating a new tag/release, a Concourse job to create a draft Google Play internal test
+release should run.
+4. If ready, release the build to internal test and post to #apiary-mobile on Slack to get
+assistance verifying the build.
+   1. Internal testers may need to uninstall the app to see the update if it was recently published.
+5. If no issues are found, it's time to release! Promote the build to the Production track in
+Google Play, add release notes, and save the release.
+6. Google Play typically spends a day or two reviewing the release, then makes it available. In
+general, expect it to take at least ~24 hours for a production release to be available to users.
