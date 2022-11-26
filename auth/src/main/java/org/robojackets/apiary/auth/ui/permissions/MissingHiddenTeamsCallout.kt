@@ -15,7 +15,7 @@ fun MissingHiddenTeamsCallout(onRefreshTeams: () -> Unit) {
         titleText = "Some teams are hidden",
     ) {
         Column {
-            Text("Your account doesn't have permission to view all teams, including " +
+            Text("You don't have permission to view all teams, including " +
                     "training teams. Ask in #it-helpdesk for access.")
             OutlinedButton(onClick = onRefreshTeams, Modifier.padding(top = 4.dp)) {
                 Text("Refresh teams")
