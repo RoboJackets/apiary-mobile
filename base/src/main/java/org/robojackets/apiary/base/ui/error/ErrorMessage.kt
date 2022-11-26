@@ -21,7 +21,7 @@ fun ErrorMessageWithRetry(
     message: String,
     onRetry: () -> Unit,
     showHelpButton: Boolean = true,
-    RetryButton: @Composable () -> Unit = {
+    retryButton: @Composable () -> Unit = {
         OutlinedButton(onClick = onRetry) {
             Text("Retry")
         }
@@ -43,7 +43,7 @@ fun ErrorMessageWithRetry(
         )
 
         Row(Modifier.padding(top = 12.dp)) {
-            RetryButton()
+            retryButton()
             if (showHelpButton) {
                 GoToItHelpdesk(modifier = Modifier.padding(start = 8.dp))
             }

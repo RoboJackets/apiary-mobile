@@ -7,6 +7,7 @@ import com.squareup.moshi.JsonWriter
 import java.io.IOException
 
 // Taken from https://stackoverflow.com/a/53675505
+@Suppress("SpreadOperator")
 class SkipNotFoundEnumInEnumListAdapter<T : Enum<T>>(enumType: Class<T>) : JsonAdapter<List<T>>() {
     private val nameStrings: Array<String>
     private val constants: Array<T>

@@ -32,7 +32,7 @@ import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.MadeWithLove
 import org.robojackets.apiary.ui.update.UpdateStatus
 
-@Suppress("LongMethod")
+@Suppress("LongMethod", "LongParameterList")
 @Composable
  private fun Settings(
      appEnv: AppEnvironment,

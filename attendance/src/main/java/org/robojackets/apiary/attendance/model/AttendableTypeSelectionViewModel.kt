@@ -21,7 +21,7 @@ import org.robojackets.apiary.navigation.NavigationManager
 import timber.log.Timber
 import javax.inject.Inject
 
-@Suppress("UnusedPrivateMember")
+@Suppress("UnusedPrivateMember", "MagicNumber")
 @HiltViewModel
 class AttendableTypeSelectionViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
@@ -78,14 +78,16 @@ class AttendableTypeSelectionViewModel @Inject constructor(
             }
                 .onError {
                     when {
-                        statusCode.code >= 500 -> Timber.e(this.message())
+                        statusCode.code >= StatusCode.InternalServerError.code ->
+                            Timber.e(this.message())
                         else -> Timber.w(this.message())
                     }
 
                     permissionsCheckError.value = when {
-                        this.statusCode.code >= 500 -> "A server error occurred while checking " +
-                                "if you have permission to use this feature. Check your internet " +
-                                "connection and try again, or ask in #it-helpdesk for assistance."
+                        this.statusCode.code >= StatusCode.InternalServerError.code ->
+                            "A server error occurred while checking if you have permission to " +
+                                    "use this feature. Check your internet connection and try " +
+                                    "again, or ask in #it-helpdesk for assistance."
                         else -> "An error occurred while checking if you have permission to use " +
                                 "this feature. Check your internet connection and try again, or " +
                                 "ask in #it-helpdesk for assistance."
