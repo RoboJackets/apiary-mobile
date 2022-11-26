@@ -431,8 +431,7 @@ jobs:
     - in_parallel:
         steps:
           - put: detekt-check
-            inputs:
-              - detekt-check
+            inputs: [ ]
           - put: tests-check
             inputs: [ ]
 
