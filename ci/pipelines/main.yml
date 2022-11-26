@@ -444,9 +444,9 @@ jobs:
                 - large
               file: tagged-release/ci/pipelines/tasks/run-detekt.yml
               input_mapping:
-                source: tagged-release
+                source: pull-request
               output_mapping:
-                source: tagged-release
+                source: pull-request
               on_abort:
                 put: detekt-check
                 inputs:
