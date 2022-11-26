@@ -442,7 +442,7 @@ jobs:
               image: android-build-box
               tags:
                 - large
-              file: tagged-release/ci/pipelines/tasks/run-detekt.yml
+              file: pull-request/ci/pipelines/tasks/run-detekt.yml
               input_mapping:
                 source: pull-request
               output_mapping:
