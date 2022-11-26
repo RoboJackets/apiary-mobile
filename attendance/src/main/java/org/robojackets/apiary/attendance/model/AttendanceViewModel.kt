@@ -124,8 +124,8 @@ class AttendanceViewModel @Inject constructor(
         error.value = null
         loadingAttendables.value = true
         viewModelScope.launch {
-            if (attendableType == AttendableType.Team
-                && (attendableTeams.value.isEmpty() || forceRefresh)) {
+            if (attendableType == AttendableType.Team &&
+                (attendableTeams.value.isEmpty() || forceRefresh)) {
                 meetingsRepository.getTeams().onSuccess {
                     attendableTeams.value = this.data.teams
                         .filter { it.attendable }
@@ -142,8 +142,8 @@ class AttendanceViewModel @Inject constructor(
                     error.value = "Unable to fetch teams"
                 }
             }
-            if (attendableType == AttendableType.Event
-                && (attendableEvents.value.isEmpty() || forceRefresh)) {
+            if (attendableType == AttendableType.Event &&
+                (attendableEvents.value.isEmpty() || forceRefresh)) {
                 meetingsRepository.getEvents().onSuccess {
                     attendableEvents.value = this.data.events
                 }.onError {

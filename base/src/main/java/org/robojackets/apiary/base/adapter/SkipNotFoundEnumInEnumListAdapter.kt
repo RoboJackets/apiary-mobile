@@ -24,7 +24,6 @@ class SkipNotFoundEnumInEnumListAdapter<T : Enum<T>>(enumType: Class<T>) : JsonA
         } catch (e: NoSuchFieldException) {
             throw AssertionError("Missing field in " + enumType.name, e)
         }
-
     }
 
     @Throws(IOException::class)

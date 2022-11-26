@@ -75,7 +75,7 @@ Detekt is used for linting Kotlin code.  The recommended command to run it is
 
 _(Windows)_
 ```bash
-gradlew detektAll -PdetektAutoFix=true
+./gradlew detektAll -PdetektAutoFix=true
 ```
 
 _(*nix)_

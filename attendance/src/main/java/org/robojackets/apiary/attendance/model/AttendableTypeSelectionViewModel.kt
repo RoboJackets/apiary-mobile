@@ -76,7 +76,7 @@ class AttendableTypeSelectionViewModel @Inject constructor(
                 userMissingPermissions.value = missingPermissions
                 user.value = this.data.user
             }
-                .onError { //TODO
+                .onError {
                     when {
                         statusCode.code >= 500 -> Timber.e(this.message())
                         else -> Timber.w(this.message())
@@ -90,9 +90,8 @@ class AttendableTypeSelectionViewModel @Inject constructor(
                                 "this feature. Check your internet connection and try again, or " +
                                 "ask in #it-helpdesk for assistance."
                     }
-
                 }
-                .onException { // TODO
+                .onException {
                     Timber.e(this.exception)
                     permissionsCheckError.value = "An error occurred while checking if you have " +
                             "permission to use this feature. Check your internet connection and " +
