@@ -30,6 +30,13 @@ platform :android do
     )
   end
 
+  desc "Run detekt"
+  lane :detekt do
+    gradle(
+      task: "detektAll"
+    )
+  end
+
   desc "Update the version code"
   lane :setVersionCode do |options|
     begin

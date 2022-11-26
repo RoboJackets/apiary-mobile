@@ -144,6 +144,16 @@ resources:
   tags:
     - resources
 
+- name: detekt-check
+  type: github-check
+  icon: check
+  public: true
+  source:
+    check_name: Detekt
+    resource_name: detekt-check
+  tags:
+    - resources
+
 - icon: webhook
   name: webhooks
   public: true
@@ -241,6 +251,7 @@ jobs:
           source: tagged-release
         output_mapping:
           source: tagged-release
+
       - put: internal-test-upload-check
         inputs: []
       - task: internal-test-build
@@ -417,42 +428,82 @@ jobs:
       output_mapping:
         source: pull-request
 
-    - put: tests-check
-      inputs: []
-
-    - task: run-tests
-      image: android-build-box
-      tags:
-        - large
-      file: pull-request/ci/pipelines/tasks/run-tests.yml
-      input_mapping:
-        source: pull-request
-      output_mapping:
-        source: pull-request
-      on_abort:
-        put: tests-check
-        inputs:
-          - tests-check
-        params:
-          conclusion: cancelled
-      on_error:
-        put: tests-check
-        inputs:
-          - tests-check
-        params:
-          conclusion: action_required
-      on_failure:
-        put: tests-check
-        inputs:
-          - tests-check
-        params:
-          conclusion: failure
-          summary: Review the output within Concourse.
-          title: Tests failed
+    - in_parallel:
+        steps:
+          - put: detekt-check
+            inputs:
+              - detekt-check
+          - put: tests-check
+            inputs: [ ]
 
     - in_parallel:
         steps:
           - do:
+            - task: run-detekt
+              image: android-build-box
+              tags:
+                - large
+              file: tagged-release/ci/pipelines/tasks/run-detekt.yml
+              input_mapping:
+                source: tagged-release
+              output_mapping:
+                source: tagged-release
+              on_abort:
+                put: detekt-check
+                inputs:
+                  - detekt-check
+                params:
+                  conclusion: cancelled
+              on_error:
+                put: detekt-check
+                inputs:
+                  - detekt-check
+                params:
+                  conclusion: action_required
+              on_failure:
+                put: detekt-check
+                inputs:
+                  - detekt-check
+                params:
+                  conclusion: failure
+                  summary: Review the output within Concourse.
+                  title: Detekt style checks failed
+            - put: detekt-check
+              params:
+                conclusion: success
+                title: No issues found
+              inputs:
+                - detekt-check
+          - do:
+            - task: run-tests
+              image: android-build-box
+              tags:
+                - large
+              file: pull-request/ci/pipelines/tasks/run-tests.yml
+              input_mapping:
+                source: pull-request
+              output_mapping:
+                source: pull-request
+              on_abort:
+                put: tests-check
+                inputs:
+                  - tests-check
+                params:
+                  conclusion: cancelled
+              on_error:
+                put: tests-check
+                inputs:
+                  - tests-check
+                params:
+                  conclusion: action_required
+              on_failure:
+                put: tests-check
+                inputs:
+                  - tests-check
+                params:
+                  conclusion: failure
+                  summary: Review the output within Concourse.
+                  title: Tests failed
             - put: tests-check
               params:
                 conclusion: success
@@ -460,8 +511,9 @@ jobs:
                 title: Tests passed
               inputs:
                 - tests-check
-            - put: pr-build-check
-              inputs: []
+
+    - put: pr-build-check
+      inputs: []
 
     - task: upload-pr-build
       file: pull-request/ci/pipelines/tasks/pr-build.yml
