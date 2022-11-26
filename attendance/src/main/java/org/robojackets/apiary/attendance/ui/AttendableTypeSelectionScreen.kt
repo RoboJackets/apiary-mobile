@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import org.robojackets.apiary.attendance.model.AttendableTypeSelectionViewModel
 import org.robojackets.apiary.auth.ui.permissions.InsufficientPermissions
 import org.robojackets.apiary.base.model.AttendableType
+import org.robojackets.apiary.base.ui.error.ErrorMessageWithRetry
 import org.robojackets.apiary.base.ui.icons.EventIcon
 import org.robojackets.apiary.base.ui.icons.GroupsIcon
 import org.robojackets.apiary.base.ui.util.ContentPadding
@@ -34,11 +35,21 @@ fun AttendableTypeSelectionScreen(
     }
 
     ContentPadding {
+        if (state.permissionsCheckError?.isNotEmpty() == true) {
+            ErrorMessageWithRetry(
+                message = state.permissionsCheckError ?: "An unknown error occurred",
+                onRetry = { viewModel.checkUserAttendanceAccess(forceRefresh = true) })
+            return@ContentPadding
+        }
+
         if (state.userMissingPermissions.isNotEmpty()) {
             InsufficientPermissions(
                 featureName = "Attendance",
+                onRefreshRequest = {
+                                   viewModel.checkUserAttendanceAccess(forceRefresh = true)
+                },
                 missingPermissions = state.userMissingPermissions,
-                requiredPermissions = viewModel.requiredPermissions
+                requiredPermissions = viewModel.requiredPermissions,
             )
             return@ContentPadding
         }

@@ -1,7 +1,5 @@
 package org.robojackets.apiary.auth.ui.permissions
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,13 +9,13 @@ import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.*
 import org.robojackets.apiary.auth.model.Permission
 import org.robojackets.apiary.auth.model.Permission.*
+import org.robojackets.apiary.base.ui.error.GoToItHelpdesk
 import org.robojackets.apiary.base.ui.icons.ErrorIcon
 import org.robojackets.apiary.base.ui.theme.danger
 import org.robojackets.apiary.base.ui.theme.success
@@ -26,10 +24,10 @@ import org.robojackets.apiary.base.ui.util.ContentPadding
 @Composable
 fun InsufficientPermissions(
     featureName: String,
+    onRefreshRequest: () -> Unit,
     missingPermissions: List<Permission>,
     requiredPermissions: List<Permission>,
 ) {
-    val context = LocalContext.current
     var showPermissionDetailsDialog by remember { mutableStateOf(false) }
 
     Column(
@@ -51,16 +49,10 @@ fun InsufficientPermissions(
         )
 
         Row(Modifier.padding(top = 18.dp)) {
-            OutlinedButton(onClick = {}) {
+            OutlinedButton(onClick = { onRefreshRequest() }) {
                 Text("Try again")
             }
-            Button(onClick = {
-                val slackDeepLink = "slack://channel?team=T033JPZLT&id=C29Q3D8K0"
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(slackDeepLink))
-                startActivity(context, intent, null)
-            }, Modifier.padding(start = 8.dp)) {
-                Text("Go to #it-helpdesk")
-            }
+            GoToItHelpdesk(modifier = Modifier.padding(start = 8.dp))
         }
 
         TextButton(onClick = {
@@ -82,7 +74,6 @@ fun InsufficientPermissions(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PermissionDetailsDialog(
     onHide: () -> Unit,
@@ -156,8 +147,9 @@ fun InsufficientPermissionsPreview() {
     ContentPadding {
         InsufficientPermissions(
             featureName = "Attendance",
+            onRefreshRequest = {},
             missingPermissions = listOf(READ_TEAMS_HIDDEN),
-            requiredPermissions = listOf(CREATE_ATTENDANCE, READ_USERS, READ_TEAMS_HIDDEN)
+            requiredPermissions = listOf(CREATE_ATTENDANCE, READ_USERS, READ_TEAMS_HIDDEN),
         )
     }
 }

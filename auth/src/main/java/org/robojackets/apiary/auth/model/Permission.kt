@@ -19,8 +19,7 @@ enum class Permission {
     @Json(name = "read-teams-hidden")
     READ_TEAMS_HIDDEN,
     @Json(name = "read-users")
-    READ_USERS,
-    MAKE_PIES; // FIXME: remove this
+    READ_USERS;
 
     override fun toString(): String {
         return name.replace("_", "-").lowercase(Locale.getDefault())

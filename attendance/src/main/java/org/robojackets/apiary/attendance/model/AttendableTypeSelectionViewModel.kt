@@ -31,11 +31,11 @@ class AttendableTypeSelectionViewModel @Inject constructor(
     private val _state = MutableStateFlow(AttendableTypeSelectionState())
 
     private var loadingUserPermissions = MutableStateFlow(false)
-    private var error = MutableStateFlow<String?>(null)
+    private var permissionsCheckError = MutableStateFlow<String?>(null)
     private var userMissingPermissions = MutableStateFlow(emptyList<Permission>())
     private var user = MutableStateFlow<UserInfo?>(null)
 
-    val requiredPermissions = listOf(READ_USERS, CREATE_ATTENDANCE, MAKE_PIES)
+    val requiredPermissions = listOf(READ_USERS, CREATE_ATTENDANCE)
 
     val state: StateFlow<AttendableTypeSelectionState>
         get() = _state
@@ -45,7 +45,7 @@ class AttendableTypeSelectionViewModel @Inject constructor(
             combine(
                 listOf(
                     loadingUserPermissions,
-                    error,
+                    permissionsCheckError,
                     userMissingPermissions,
                     user,
                 )
@@ -62,10 +62,12 @@ class AttendableTypeSelectionViewModel @Inject constructor(
         }
     }
 
-    fun checkUserAttendanceAccess() {
-        if (user.value != null) {
+    fun checkUserAttendanceAccess(forceRefresh: Boolean = false) {
+        if (user.value != null && !forceRefresh) {
             return
         }
+
+        permissionsCheckError.value = null
 
         viewModelScope.launch {
             loadingUserPermissions.value = true
@@ -75,10 +77,26 @@ class AttendableTypeSelectionViewModel @Inject constructor(
                 user.value = this.data.user
             }
                 .onError { //TODO
-                    Timber.w(this.message())
+                    when {
+                        statusCode.code >= 500 -> Timber.e(this.message())
+                        else -> Timber.w(this.message())
+                    }
+
+                    permissionsCheckError.value = when {
+                        this.statusCode.code >= 500 -> "A server error occurred while checking " +
+                                "if you have permission to use this feature. Check your internet " +
+                                "connection and try again, or ask in #it-helpdesk for assistance."
+                        else -> "An error occurred while checking if you have permission to use " +
+                                "this feature. Check your internet connection and try again, or " +
+                                "ask in #it-helpdesk for assistance."
+                    }
+
                 }
                 .onException { // TODO
                     Timber.e(this.exception)
+                    permissionsCheckError.value = "An error occurred while checking if you have " +
+                            "permission to use this feature. Check your internet connection and " +
+                            "try again, or ask in #it-helpdesk for assistance."
                 }
                 .also {
                     loadingUserPermissions.value = false
@@ -97,7 +115,7 @@ class AttendableTypeSelectionViewModel @Inject constructor(
 
 data class AttendableTypeSelectionState(
     val loadingUserPermissions: Boolean = false,
-    val error: String? = null,
+    val permissionsCheckError: String? = null,
     val userMissingPermissions: List<Permission> = emptyList(),
     val user: UserInfo? = null,
 )

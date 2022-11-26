@@ -115,9 +115,9 @@ class SettingsViewModel @Inject constructor(
     }
 
     @Suppress("TooGenericExceptionCaught",)
-    fun getUser() {
+    fun getUser(forceRefresh: Boolean = false) {
         viewModelScope.launch {
-            if (user.value == null) {
+            if (user.value == null || forceRefresh) {
                 try {
                     user.value = userRepository.getLoggedInUserInfo().getOrThrow().user
                     val sentryUser = SentryUser()

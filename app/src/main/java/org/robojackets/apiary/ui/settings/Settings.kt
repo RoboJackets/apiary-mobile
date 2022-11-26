@@ -40,6 +40,7 @@ import org.robojackets.apiary.ui.update.UpdateStatus
      onLogout: () -> Unit,
      onOpenPrivacyPolicy: () -> Unit,
      onOpenMakeAWish: () -> Unit,
+     onRefreshUser: () -> Unit,
  ) {
     val context = LocalContext.current
 
@@ -56,14 +57,14 @@ import org.robojackets.apiary.ui.update.UpdateStatus
                 icon = { Icon(Icons.Outlined.Person, contentDescription = "person") },
                 title = { Text(text = user?.name ?: "Refreshing data...") },
                 subtitle = { Text(text = user?.uid ?: "") },
-                onClick = {}
+                onClick = { onRefreshUser() }
             )
             if (BuildConfig.DEBUG) {
                 SettingsMenuLink(
                     icon = { Icon(Icons.Outlined.VerifiedUser, contentDescription = "verified user") },
                     title = { Text(text = "DEBUG: Recognized permissions") },
                     subtitle = { Text(text = user?.allPermissions?.joinToString(separator = ", ") ?: "None") },
-                    onClick = {}
+                    onClick = { onRefreshUser() }
                 )
             }
             SettingsMenuLink(
@@ -157,6 +158,9 @@ fun SettingsScreen(
            onOpenMakeAWish = {
                val customTabsIntent = viewModel.getCustomTabsIntent(secondaryThemeColor.toArgb())
                customTabsIntent.launchUrl(context, viewModel.makeAWishUrl)
+           },
+           onRefreshUser = {
+               viewModel.getUser(forceRefresh = true)
            }
        )
     }
@@ -171,6 +175,7 @@ private fun SettingsPreview() {
         user = null,
         onLogout = {},
         onOpenPrivacyPolicy = {},
-        onOpenMakeAWish = {}
+        onOpenMakeAWish = {},
+        onRefreshUser = {},
     )
 }
