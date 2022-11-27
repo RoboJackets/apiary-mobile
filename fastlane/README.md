@@ -31,6 +31,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Runs all the tests
 
+### android detekt
+
+```sh
+[bundle exec] fastlane android detekt
+```
+
+Run detekt
+
 ### android setVersionCode
 
 ```sh
@@ -67,14 +75,6 @@ Upload a release to Google Play internal app sharing
 
 ```sh
 [bundle exec] fastlane android uploadToInternalTest
-```
-
-Upload a new, signed production release to the internal test track
-
-### android uploadTest
-
-```sh
-[bundle exec] fastlane android uploadTest
 ```
 
 Upload a new, signed production release to the internal test track

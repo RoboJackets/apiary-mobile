@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.robojackets.apiary.attendance.model.AttendanceViewModel
+import org.robojackets.apiary.auth.ui.permissions.MissingHiddenTeamsCallout
 import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.ui.IconWithText
 import org.robojackets.apiary.base.ui.icons.WarningIcon
@@ -26,10 +27,12 @@ private fun <T> AttendableList(
     attendables: List<T>,
     onAttendableSelected: (attendable: T) -> Unit,
     title: @Composable () -> Unit,
+    callout: @Composable () -> Unit = {},
     attendableContent: @Composable (attendable: T) -> Unit,
 ) {
     Column {
         title()
+        callout()
         LazyColumn {
             itemsIndexed(attendables) { idx, attendable ->
                 ListItem(
@@ -100,10 +103,17 @@ fun AttendableSelectionScreen(
                         viewModel.onAttendableSelected(it.toAttendable())
                     },
                     title = { Text("Select a team", style = MaterialTheme.typography.h5) },
-                    attendableContent = {
-                        Text(it.name)
+                    callout = {
+                        if (state.missingHiddenTeams == true) {
+                            Spacer(Modifier.height(4.dp))
+                            MissingHiddenTeamsCallout(onRefreshTeams = {
+                                viewModel.loadAttendables(attendableType, forceRefresh = true)
+                            })
+                        }
                     }
-                )
+                ) {
+                    Text(it.name)
+                }
             }
             AttendableType.Event -> {
                 AttendableList(
@@ -111,11 +121,10 @@ fun AttendableSelectionScreen(
                     onAttendableSelected = {
                         viewModel.onAttendableSelected(it.toAttendable())
                     },
-                    title = { Text("Select an event", style = MaterialTheme.typography.h5) },
-                    attendableContent = {
-                        Text(it.name)
-                    }
-                )
+                    title = { Text("Select an event", style = MaterialTheme.typography.h5) }
+                ) {
+                    Text(it.name)
+                }
             }
         }
     }

@@ -1,6 +1,6 @@
-package org.robojackets.apiary.auth
+package org.robojackets.apiary.auth.ui
 
-import android.app.Activity.RESULT_OK
+import android.app.Activity.*
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -18,6 +18,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationResponse
+import org.robojackets.apiary.auth.R
 import org.robojackets.apiary.auth.model.AuthenticationState
 import org.robojackets.apiary.auth.model.AuthenticationViewModel
 import org.robojackets.apiary.auth.model.LoginStatus.*

@@ -17,6 +17,7 @@ data class Team(
     val id: Int,
     val name: String,
     val attendable: Boolean,
+    val visible: Boolean,
 ) {
     fun toAttendable(): Attendable {
         return Attendable(

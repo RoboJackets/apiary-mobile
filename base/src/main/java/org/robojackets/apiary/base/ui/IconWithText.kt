@@ -14,11 +14,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun IconWithText(
     icon: @Composable () -> Unit,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
     text: @Composable () -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = horizontalArrangement,
         modifier = Modifier.fillMaxWidth()
     ) {
         icon()
@@ -33,7 +34,6 @@ fun IconWithText(
     textAlign: TextAlign = TextAlign.Center
 ) {
     IconWithText(
-        icon,
-        { Text(text = text, modifier = Modifier.padding(start = 4.dp), textAlign = textAlign) }
-    )
+        icon
+    ) { Text(text = text, modifier = Modifier.padding(start = 4.dp), textAlign = textAlign) }
 }

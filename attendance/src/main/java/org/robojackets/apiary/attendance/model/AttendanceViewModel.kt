@@ -11,8 +11,7 @@ import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import org.robojackets.apiary.attendance.model.AttendanceScreenState.Loading
-import org.robojackets.apiary.attendance.model.AttendanceScreenState.ReadyForTap
+import org.robojackets.apiary.attendance.model.AttendanceScreenState.*
 import org.robojackets.apiary.attendance.network.AttendanceRepository
 import org.robojackets.apiary.base.model.Attendable
 import org.robojackets.apiary.base.model.AttendableType
@@ -44,6 +43,7 @@ class AttendanceViewModel @Inject constructor(
     private val showAttendableSelection = MutableStateFlow(false)
     private val selectedAttendable = MutableStateFlow<Attendable?>(null)
     private val error = MutableStateFlow<String?>(null)
+    private val missingHiddenTeams = MutableStateFlow<Boolean?>(null)
 
     val state: StateFlow<AttendanceState>
         get() = _state
@@ -60,6 +60,7 @@ class AttendanceViewModel @Inject constructor(
                 showAttendableSelection,
                 selectedAttendable,
                 error,
+                missingHiddenTeams
             )) {
                 flows -> AttendanceState(
                     flows[0] as AttendanceStoreResult?,
@@ -71,6 +72,7 @@ class AttendanceViewModel @Inject constructor(
                     flows[6] as Boolean,
                     flows[7] as Attendable?,
                     flows[8] as String?,
+                    flows[9] as Boolean?,
                 )
             }
                 .catch { throwable -> throw throwable }
@@ -118,15 +120,18 @@ class AttendanceViewModel @Inject constructor(
         }
     }
 
-    fun loadAttendables(attendableType: AttendableType) {
+    fun loadAttendables(attendableType: AttendableType, forceRefresh: Boolean = false) {
         error.value = null
         loadingAttendables.value = true
         viewModelScope.launch {
-            if (attendableType == AttendableType.Team && attendableTeams.value.isNullOrEmpty()) {
+            if (attendableType == AttendableType.Team &&
+                (attendableTeams.value.isEmpty() || forceRefresh)) {
                 meetingsRepository.getTeams().onSuccess {
                     attendableTeams.value = this.data.teams
                         .filter { it.attendable }
                         .sortedBy { it.name }
+
+                    missingHiddenTeams.value = attendableTeams.value.all { it.visible }
                 }.onError {
                     Timber.e(this.toString(), "Could not fetch attendable teams due to an error")
                     error.value = "Unable to fetch teams"
@@ -135,7 +140,8 @@ class AttendanceViewModel @Inject constructor(
                     error.value = "Unable to fetch teams"
                 }
             }
-            if (attendableType == AttendableType.Event && attendableEvents.value.isNullOrEmpty()) {
+            if (attendableType == AttendableType.Event &&
+                (attendableEvents.value.isEmpty() || forceRefresh)) {
                 meetingsRepository.getEvents().onSuccess {
                     attendableEvents.value = this.data.events
                 }.onError {
@@ -219,4 +225,5 @@ data class AttendanceState(
     val showAttendableSelection: Boolean = false,
     val selectedAttendable: Attendable? = null,
     val error: String? = null,
+    val missingHiddenTeams: Boolean? = null,
 )

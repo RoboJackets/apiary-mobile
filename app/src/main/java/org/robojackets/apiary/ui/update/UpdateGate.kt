@@ -61,7 +61,7 @@ fun isImmediateUpdateRequired(priority: Int, staleness: Int): Boolean {
     }
 }
 
-@Suppress("ComplexMethod")
+@Suppress("ComplexMethod", "LongMethod")
 @Composable
 fun UpdateGate(
     navReady: Boolean,

@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import org.robojackets.apiary.base.ui.ActionPrompt
 import org.robojackets.apiary.base.ui.icons.ErrorIcon
 import org.robojackets.apiary.base.ui.theme.danger
-import org.robojackets.apiary.base.ui.theme.warning
+import org.robojackets.apiary.base.ui.theme.warningLightEmphasis
 
 @Composable
 fun NfcRequired(nfcEnabled: Boolean, gatedComposable: @Composable () -> Unit) {
@@ -47,7 +47,7 @@ fun NfcRequired(nfcEnabled: Boolean, gatedComposable: @Composable () -> Unit) {
                 }
                 true -> {
                     ActionPrompt(
-                        icon = { ErrorIcon(Modifier.size(114.dp), tint = warning) },
+                        icon = { ErrorIcon(Modifier.size(114.dp), tint = warningLightEmphasis) },
                         title = "Restart to continue",
                         subtitle = "If you've enabled NFC, just restart the app and you'll be on your way!"
                     )

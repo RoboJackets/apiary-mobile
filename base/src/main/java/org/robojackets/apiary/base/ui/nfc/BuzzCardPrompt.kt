@@ -40,7 +40,7 @@ import java.nio.charset.StandardCharsets
  * this composable, making it hidden whilst also not allowing it to be disposed.
  */
 val GTID_REGEX = Regex("90[0-9]{7}")
-val GTID_LENGTH = 9
+const val GTID_LENGTH = 9
 @Suppress("MagicNumber", "LongMethod", "ComplexMethod")
 @Composable
 fun BuzzCardPrompt(

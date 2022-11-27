@@ -75,7 +75,7 @@ Detekt is used for linting Kotlin code.  The recommended command to run it is
 
 _(Windows)_
 ```bash
-gradlew detektAll -PdetektAutoFix=true
+./gradlew detektAll -PdetektAutoFix=true
 ```
 
 _(*nix)_
@@ -100,3 +100,59 @@ You can install the Fastlane dependencies by running `bundle install` from the r
 command does, so you can get around any errors stemming from this by aliasing the command `where`
 to `which`.
  - You need to install [GitVersion](https://github.com/GitTools/GitVersion) yourself.
+
+## Release management
+
+Below are some instructions on the MyRoboJackets Android release process. Note that you will need
+additional permissions on this repo and the MyRoboJackets Android Google Play application to
+fully carry out this step:
+- Permission on this repo to create tags and releases (write access)
+- Permissions on the MyRoboJackets Android Google Play app. At a minimum:
+  - `Release apps to testing tracks`
+  - `Release to production, exclude devices, and use Play App Signing`
+
+App releases don't have to perfectly coincide with PRs being merged, especially if two PRs are
+merged in close proximity. Our Concourse pipeline has jobs to automatically handle building,
+signing, and uploading production releases of the app.
+
+1. After you've merged all PRs to be included in the release, ensure the `.update-priority`
+file is set correctly according to the table below. Use priority 2 as the default. If you want to
+use priority 4 or 5, post in #apiary-mobile first.
+   1. Update priority affects if and how often users receive in-app update prompts to update the
+app to the latest version.
+
+| Update priority | Description | Examples | Update timeline for users |
+| --- | --- |--- | --- |
+| 0/1/2 | Very low  or low priority | UI touchups that don't impact functionality, releases with options to opt-in to beta features | No prompt initially. Optional prompt starting 14 days after release. Immediate update 21 days after release. |
+| 3 | Medium priority |  Medium-priority bug fixes, performance improvements, non-time-sensitive feature launches | No prompts for the first 3 days. Optional starting 4 days after release. Immediate update 21 days after release. |
+| 4 | High priority or time-sensitive | High priority bug fixes, time-sensitive feature launches | Optional for the first 24 hours, then immediate. |
+| 5 | Critical bug fixes | Crashes/bugs impacting major features, urgent vulnerabilities | Immediate update required. |
+
+2. Create a new release on `main` using a tag with a name like `v1.0.0`. Use semantic versioning
+to determine how to increment the version number.
+   1. Go to https://github.com/RoboJackets/apiary-mobile/releases
+   2. Press the **Draft a new release** button.
+   3. Decide on the new version tag; it **must** start with `v`. In general, you should increment 
+the previous release's version using [semantic versioning](https://semver.org/) guidelines (most 
+releases will be a 0.1.0 (minor) or 0.0.1 (patch) increment). Press **Choose a tag**, then enter the
+new tag name to create it on publish.
+   4. Leave **Release title** blank. Instead, press **Generate release notes**. The release title
+and description should automatically fill in with the changes since the last release.
+      1. In general, you shouldn't need to manually set the value of the `Previous tag` field,
+      unless the release notes seem incorrect.
+3. When you publish the release (which creates a new tag), a Concourse job to create a draft Google 
+Play internal test release will begin shortly.
+   1. If it doesn't start, a common reason is that it wasn't alphabetically the latest tag, so the
+   [`tagged-release`](https://concourse.sandbox.aws.robojackets.net/teams/information-technology/pipelines/apiary-mobile/resources/tagged-release)
+   resource didn't trigger a new build. We can disable old versions of the resource to trigger a new
+   build.
+4. If the Concourse [build-release job](https://concourse.sandbox.aws.robojackets.net/teams/information-technology/pipelines/apiary-mobile/jobs/build-release)
+finishes successfully, you'll find a new draft release on the Internal Test track in Google Play. 
+At this point, you should do some small QA efforts to verify the new build. Post in #apiary-mobile
+to have some people help you test. Note that access to the internal test track must be granted via
+the Google Play Console.
+   1. Internal testers may need to uninstall the app to see the update if it was recently published.
+6. If no issues are found, it's time to release! Promote the build to the Production track in
+Google Play, add release notes, and save the release.
+7. Google Play typically spends a day or two reviewing the release, then makes it available. In
+general, expect it to take at least ~24 hours for a production release to be available to users.

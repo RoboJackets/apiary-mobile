@@ -4,20 +4,56 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.robojackets.apiary.attendance.model.AttendableTypeSelectionViewModel
+import org.robojackets.apiary.auth.ui.permissions.InsufficientPermissions
 import org.robojackets.apiary.base.model.AttendableType
+import org.robojackets.apiary.base.ui.error.ErrorMessageWithRetry
 import org.robojackets.apiary.base.ui.icons.EventIcon
 import org.robojackets.apiary.base.ui.icons.GroupsIcon
 import org.robojackets.apiary.base.ui.util.ContentPadding
+import org.robojackets.apiary.base.ui.util.LoadingSpinner
 
 @ExperimentalMaterialApi
 @Composable
 fun AttendableTypeSelectionScreen(
-    viewModel: AttendableTypeSelectionViewModel
+    viewModel: AttendableTypeSelectionViewModel,
 ) {
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(true) {
+        viewModel.checkUserAttendanceAccess()
+    }
+
+    if (state.loadingUserPermissions) {
+        LoadingSpinner()
+        return
+    }
+
     ContentPadding {
+        if (state.permissionsCheckError?.isNotEmpty() == true) {
+            ErrorMessageWithRetry(
+                message = state.permissionsCheckError ?: "An unknown error occurred",
+                onRetry = { viewModel.checkUserAttendanceAccess(forceRefresh = true) })
+            return@ContentPadding
+        }
+
+        if (state.userMissingPermissions.isNotEmpty()) {
+            InsufficientPermissions(
+                featureName = "Attendance",
+                onRefreshRequest = {
+                                   viewModel.checkUserAttendanceAccess(forceRefresh = true)
+                },
+                missingPermissions = state.userMissingPermissions,
+                requiredPermissions = viewModel.requiredPermissions,
+            )
+            return@ContentPadding
+        }
+
         Column(
             Modifier
                 .fillMaxWidth()
