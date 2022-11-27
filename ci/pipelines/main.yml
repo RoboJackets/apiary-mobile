@@ -345,46 +345,86 @@ jobs:
         output_mapping:
           source: apiary-mobile
 
-      - put: tests-check
-        inputs: []
+      - in_parallel:
+          steps:
+            - put: detekt-check
+              inputs: [ ]
+            - put: tests-check
+              inputs: [ ]
 
-      - task: run-tests
-        image: android-build-box
-        tags:
-          - large
-        file: apiary-mobile/ci/pipelines/tasks/run-tests.yml
-        input_mapping:
-          source: apiary-mobile
-        output_mapping:
-          source: apiary-mobile
-        on_abort:
-          put: tests-check
-          inputs:
-            - tests-check
-          params:
-            conclusion: cancelled
-        on_error:
-          put: tests-check
-          inputs:
-            - tests-check
-          params:
-            conclusion: action_required
-        on_failure:
-          put: tests-check
-          inputs:
-            - tests-check
-          params:
-            conclusion: failure
-            summary: Review the output within Concourse.
-            title: Tests failed
-
-      - put: tests-check
-        params:
-          conclusion: success
-          summary: Tests ran successfully
-          title: Tests passed
-        inputs:
-          - tests-check
+      - in_parallel:
+          steps:
+            - do:
+              - task: run-detekt
+                image: android-build-box
+                tags:
+                  - large
+                file: apiary-mobile/ci/pipelines/tasks/run-detekt.yml
+                input_mapping:
+                  source: apiary-mobile
+                on_abort:
+                  put: detekt-check
+                  inputs:
+                    - detekt-check
+                  params:
+                    conclusion: cancelled
+                on_error:
+                  put: detekt-check
+                  inputs:
+                    - detekt-check
+                  params:
+                    conclusion: action_required
+                on_failure:
+                  put: detekt-check
+                  inputs:
+                    - detekt-check
+                  params:
+                    conclusion: failure
+                    summary: Review the output within Concourse.
+                    title: Detekt style checks failed
+              - put: detekt-check
+                params:
+                  conclusion: success
+                  title: No issues found
+                inputs:
+                  - detekt-check
+            - do:
+              - task: run-tests
+                image: android-build-box
+                tags:
+                  - large
+                file: apiary-mobile/ci/pipelines/tasks/run-tests.yml
+                input_mapping:
+                  source: apiary-mobile
+                output_mapping:
+                  source: apiary-mobile
+                on_abort:
+                  put: tests-check
+                  inputs:
+                    - tests-check
+                  params:
+                    conclusion: cancelled
+                on_error:
+                  put: tests-check
+                  inputs:
+                    - tests-check
+                  params:
+                    conclusion: action_required
+                on_failure:
+                  put: tests-check
+                  inputs:
+                    - tests-check
+                  params:
+                    conclusion: failure
+                    summary: Review the output within Concourse.
+                    title: Tests failed
+              - put: tests-check
+                params:
+                  conclusion: success
+                  summary: Tests ran successfully
+                  title: Tests passed
+                inputs:
+                  - tests-check
 
       - put: webhooks
         inputs: []
@@ -393,30 +433,30 @@ jobs:
     public: true
     plan:
     - in_parallel:
-          steps:
-          - do:
-            - get: pull-request
-              params:
-                integration_tool: checkout
-                list_changed_files: true
-                submodules: true
-              trigger: true
-              version: every
-            - in_parallel:
-                steps:
-                - do:
-                  - file: pull-request/.git/resource/head_sha
-                    format: trim
-                    load_var: commit
-                    reveal: true
-                  - file: pull-request/.git/resource/pr
-                    format: trim
-                    load_var: pull_request_key
-                    reveal: true
-          - get: android-build-box
-            tags:
-              - large
-            timeout: 15m
+        steps:
+        - do:
+          - get: pull-request
+            params:
+              integration_tool: checkout
+              list_changed_files: true
+              submodules: true
+            trigger: true
+            version: every
+          - in_parallel:
+              steps:
+              - do:
+                - file: pull-request/.git/resource/head_sha
+                  format: trim
+                  load_var: commit
+                  reveal: true
+                - file: pull-request/.git/resource/pr
+                  format: trim
+                  load_var: pull_request_key
+                  reveal: true
+        - get: android-build-box
+          tags:
+            - large
+          timeout: 15m
 
     - task: prepare-env
       image: android-build-box
