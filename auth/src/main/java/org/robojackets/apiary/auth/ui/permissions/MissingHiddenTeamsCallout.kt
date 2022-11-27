@@ -14,7 +14,7 @@ import org.robojackets.apiary.base.ui.callout.WarningCallout
 fun MissingHiddenTeamsCallout(onRefreshTeams: () -> Unit) {
     WarningCallout(
         titleText = "Some teams are hidden",
-        padding = PaddingValues(start = 10.dp, top = 8.dp, end = 10.dp, bottom = 5.dp)
+        padding = PaddingValues(start = 12.dp, top = 10.dp, end = 12.dp, bottom = 7.dp)
     ) {
         Column {
             Text("You don't have permission to view all teams, including " +
