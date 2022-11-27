@@ -35,7 +35,7 @@ fun Callout(
             .clip(shape = shape)
             .then(if (borderColor != null) Modifier.border(1.dp, borderColor, shape) else Modifier)
             .then(if (backgroundColor != null) Modifier.background(backgroundColor) else Modifier)
-            .then (if (padding != null) Modifier.padding(paddingValues = padding) else Modifier)
+            .then(if (padding != null) Modifier.padding(paddingValues = padding) else Modifier)
             .fillMaxWidth(),
     ) {
         title()
