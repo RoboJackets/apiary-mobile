@@ -2,10 +2,7 @@ package org.robojackets.apiary.base.ui.callout
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -27,6 +24,7 @@ fun Callout(
     title: @Composable () -> Unit,
     backgroundColor: Color? = null,
     borderColor: Color? = null,
+    padding: PaddingValues? = PaddingValues(8.dp),
     body: @Composable () -> Unit,
 ) {
     val shape = RoundedCornerShape(8.dp)
@@ -34,11 +32,10 @@ fun Callout(
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
-            .padding(0.dp)
             .clip(shape = shape)
             .then(if (borderColor != null) Modifier.border(1.dp, borderColor, shape) else Modifier)
             .then(if (backgroundColor != null) Modifier.background(backgroundColor) else Modifier)
-            .padding(8.dp)
+            .then (if (padding != null) Modifier.padding(paddingValues = padding) else Modifier)
             .fillMaxWidth(),
     ) {
         title()
@@ -49,6 +46,7 @@ fun Callout(
 @Composable
 fun WarningCallout(
     titleText: String,
+    padding: PaddingValues? = null,
     body: @Composable () -> Unit,
 ) {
     val isLightTheme = MaterialTheme.colors.isLight
@@ -65,6 +63,7 @@ fun WarningCallout(
         },
         backgroundColor = if (isLightTheme) warningLightSubtle else warningDarkSubtle,
         borderColor = if (isLightTheme) warningLightMuted else warningLightMuted,
+        padding = padding,
     ) {
         body()
     }
