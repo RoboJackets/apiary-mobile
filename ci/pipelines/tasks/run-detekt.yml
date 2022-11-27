@@ -2,9 +2,6 @@
 inputs:
 - name: source
 
-outputs:
-- name: source
-
 platform: linux
 run:
     dir: source

@@ -445,8 +445,6 @@ jobs:
               file: pull-request/ci/pipelines/tasks/run-detekt.yml
               input_mapping:
                 source: pull-request
-              output_mapping:
-                source: pull-request
               on_abort:
                 put: detekt-check
                 inputs:

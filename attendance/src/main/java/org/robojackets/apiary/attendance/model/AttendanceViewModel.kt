@@ -131,9 +131,7 @@ class AttendanceViewModel @Inject constructor(
                         .filter { it.attendable }
                         .sortedBy { it.name }
 
-                    missingHiddenTeams.value = attendableTeams.value.none {
-                        it.name.contains("training", ignoreCase = true)
-                    }
+                    missingHiddenTeams.value = attendableTeams.value.all { it.visible }
                 }.onError {
                     Timber.e(this.toString(), "Could not fetch attendable teams due to an error")
                     error.value = "Unable to fetch teams"
