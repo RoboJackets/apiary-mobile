@@ -187,6 +187,7 @@ jobs:
         alert_type: aborted
         mode: normal
       put: slack
+      no_get: true
     on_error:
       inputs: []
       params:
@@ -194,18 +195,21 @@ jobs:
         message: Task error, review logs
         mode: normal
       put: slack
+      no_get: true
     on_failure:
       inputs: []
       params:
         alert_type: failed
         mode: normal
       put: slack
+      no_get: true
     on_success:
       inputs: []
       params:
         alert_type: success
         mode: normal
       put: slack
+      no_get: true
     public: true
     plan:
       - in_parallel:
@@ -266,18 +270,21 @@ jobs:
           source: tagged-release
         on_abort:
           put: internal-test-upload-check
+          no_get: true
           inputs:
             - internal-test-upload-check
           params:
             conclusion: cancelled
         on_error:
           put: internal-test-upload-check
+          no_get: true
           inputs:
             - internal-test-upload-check
           params:
             conclusion: action_required
         on_failure:
           put: internal-test-upload-check
+          no_get: true
           inputs:
             - internal-test-upload-check
           params:
@@ -286,6 +293,7 @@ jobs:
             title: Draft build upload failed
 
       - put: internal-test-upload-check
+        no_get: true
         params:
           conclusion: success
           summary: Created a new draft release on the internal test track in Google Play
@@ -301,6 +309,7 @@ jobs:
         alert_type: aborted
         mode: normal
       put: slack
+      no_get: true
     on_error:
       inputs: []
       params:
@@ -308,18 +317,21 @@ jobs:
         message: Task error, review logs
         mode: normal
       put: slack
+      no_get: true
     on_failure:
       inputs: []
       params:
         alert_type: failed
         mode: normal
       put: slack
+      no_get: true
     on_success:
       inputs: []
       params:
         alert_type: success
         mode: normal
       put: slack
+      no_get: true
     plan:
       - in_parallel:
           steps:
@@ -364,18 +376,21 @@ jobs:
                   source: apiary-mobile
                 on_abort:
                   put: detekt-check
+                  no_get: true
                   inputs:
                     - detekt-check
                   params:
                     conclusion: cancelled
                 on_error:
                   put: detekt-check
+                  no_get: true
                   inputs:
                     - detekt-check
                   params:
                     conclusion: action_required
                 on_failure:
                   put: detekt-check
+                  no_get: true
                   inputs:
                     - detekt-check
                   params:
@@ -383,6 +398,7 @@ jobs:
                     summary: Review the output within Concourse.
                     title: Detekt style checks failed
               - put: detekt-check
+                no_get: true
                 params:
                   conclusion: success
                   title: No issues found
@@ -400,18 +416,21 @@ jobs:
                   source: apiary-mobile
                 on_abort:
                   put: tests-check
+                  no_get: true
                   inputs:
                     - tests-check
                   params:
                     conclusion: cancelled
                 on_error:
                   put: tests-check
+                  no_get: true
                   inputs:
                     - tests-check
                   params:
                     conclusion: action_required
                 on_failure:
                   put: tests-check
+                  no_get: true
                   inputs:
                     - tests-check
                   params:
@@ -419,6 +438,7 @@ jobs:
                     summary: Review the output within Concourse.
                     title: Tests failed
               - put: tests-check
+                no_get: true
                 params:
                   conclusion: success
                   summary: Tests ran successfully
@@ -427,6 +447,7 @@ jobs:
                   - tests-check
 
       - put: webhooks
+        no_get: true
         inputs: []
 
   - name: build-pull-request
@@ -487,18 +508,21 @@ jobs:
                 source: pull-request
               on_abort:
                 put: detekt-check
+                no_get: true
                 inputs:
                   - detekt-check
                 params:
                   conclusion: cancelled
               on_error:
                 put: detekt-check
+                no_get: true
                 inputs:
                   - detekt-check
                 params:
                   conclusion: action_required
               on_failure:
                 put: detekt-check
+                no_get: true
                 inputs:
                   - detekt-check
                 params:
@@ -506,6 +530,7 @@ jobs:
                   summary: Review the output within Concourse.
                   title: Detekt style checks failed
             - put: detekt-check
+              no_get: true
               params:
                 conclusion: success
                 title: No issues found
@@ -523,18 +548,21 @@ jobs:
                 source: pull-request
               on_abort:
                 put: tests-check
+                no_get: true
                 inputs:
                   - tests-check
                 params:
                   conclusion: cancelled
               on_error:
                 put: tests-check
+                no_get: true
                 inputs:
                   - tests-check
                 params:
                   conclusion: action_required
               on_failure:
                 put: tests-check
+                no_get: true
                 inputs:
                   - tests-check
                 params:
@@ -542,6 +570,7 @@ jobs:
                   summary: Review the output within Concourse.
                   title: Tests failed
             - put: tests-check
+              no_get: true
               params:
                 conclusion: success
                 summary: Tests ran successfully
@@ -559,18 +588,21 @@ jobs:
         - large
       on_abort:
         put: pr-build-check
+        no_get: true
         inputs:
           - pr-build-check
         params:
           conclusion: cancelled
       on_error:
         put: pr-build-check
+        no_get: true
         inputs:
           - pr-build-check
         params:
           conclusion: action_required
       on_failure:
         put: pr-build-check
+        no_get: true
         inputs:
           - pr-build-check
         params:
@@ -579,6 +611,7 @@ jobs:
           title: Pull request build failed
 
     - put: pr-build-check
+      no_get: true
       params:
         conclusion: success
         summary: Pull request build created successfully
