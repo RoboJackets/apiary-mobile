@@ -1,9 +1,9 @@
 object ComposeDependencies {
     object Versions {
-        const val accompanist_version = "0.25.0"
-        const val compose_settings_version = "0.7.2"
-        const val compose_version = "1.1.1"
-        const val lifecycle_viewmodel_compose_version = "2.4.1"
+        const val accompanist_version = "0.30.1"
+        const val compose_settings_version = "0.27.0"
+        const val compose_version = "1.4.3"
+        const val lifecycle_viewmodel_compose_version = "2.6.1"
     }
 
     const val accompanist_systemuicontroller =
@@ -37,7 +37,7 @@ object ComposeDependencies {
 
 object MaterialDependencies {
     object Versions {
-        const val material_android_version = "1.6.1"
+        const val material_android_version = "1.9.0"
     }
 
     const val material_android =
@@ -46,11 +46,11 @@ object MaterialDependencies {
 
 object AndroidXDependencies {
     object Versions {
-        const val androidx_activity_compose_version = "1.4.0"
-        const val androidx_appcompat_version = "1.4.2"
-        const val androidx_browser_version = "1.4.0"
-        const val androidx_lifecycle_runtime_ktx_version = "2.4.1"
-        const val androidx_navigation_compose_version = "2.4.2"
+        const val androidx_activity_compose_version = "1.7.2"
+        const val androidx_appcompat_version = "1.6.1"
+        const val androidx_browser_version = "1.5.0"
+        const val androidx_lifecycle_runtime_ktx_version = "2.6.1"
+        const val androidx_navigation_compose_version = "2.5.3"
     }
 
     const val androidx_activity_compose =
@@ -66,19 +66,16 @@ object AndroidXDependencies {
 
 object FirebaseDependencies {
     object Versions {
-        const val firebase_bom_version = "30.1.0"
+        const val firebase_bom_version = "32.0.0"
     }
 
     const val firebase_bom = "com.google.firebase:firebase-bom:${Versions.firebase_bom_version}"
-    const val firebase_core = "com.google.firebase:firebase-core" // No explicit version specified
-    // because of the inclusion of the Firebase BOM
+    const val firebase_analytics = "com.google.firebase:firebase-analytics-ktx" // versioned by BOM
 }
 
 object NfcDependencies {
     const val nfc_firebase_bom = FirebaseDependencies.firebase_bom
-    const val nfc_firebase_core = FirebaseDependencies.firebase_core // Duplicate definition
-    // with the goal of clarifying that the inclusion of Firebase Core here is specifically for
-    // the NXP NFC (TapLinx) library
+    const val nfc_firebase_analytics = FirebaseDependencies.firebase_analytics
     const val nxp_nfc_android_aar_path = "../libs/nxpnfcandroidlib-release.aar"
 }
 
@@ -93,7 +90,7 @@ object AuthDependencies {
 object HiltDependencies {
     object Versions {
         const val hilt_navigation_compose_version = "1.0.0"
-        const val hilt_version = "2.42"
+        const val hilt_version = "2.44"
     }
 
     const val hilt = "com.google.dagger:hilt-android:${Versions.hilt_version}"
@@ -107,10 +104,10 @@ object AndroidToolDependencies {
     object Versions {
         const val android_tools_desugar_version = "1.1.5"
         const val krate_version = "2.0.0"
-        const val gson_version = "2.9.0"
-        const val in_app_update_compose_version = "0.0.16"
-        const val open_source_licenses_version = "17.0.0"
-        const val sentry_version = "5.7.3"
+        const val gson_version = "2.10.1"
+        const val in_app_update_compose_version = "0.0.17"
+        const val open_source_licenses_version = "17.0.1"
+        const val sentry_version = "6.19.1"
         const val timber_version = "5.0.1"
     }
 
@@ -129,12 +126,12 @@ object AndroidToolDependencies {
 
 object NetworkDependencies {
     object Versions {
-        const val moshi_version = "1.13.0"
+        const val moshi_version = "1.15.0"
         const val moshi_converter_factory_version = "2.9.0"
-        const val okhttp_bom_version = "4.9.3"
+        const val okhttp_bom_version = "4.11.0"
         const val retrofit_version = "2.9.0"
         const val retrofuture_version = "1.7.4"
-        const val sandwich_version = "1.2.5"
+        const val sandwich_version = "1.3.6"
     }
 
     const val moshi = "com.squareup.moshi:moshi:${Versions.moshi_version}"

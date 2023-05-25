@@ -5,9 +5,9 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21")
-        classpath("com.android.tools.build:gradle:7.3.1")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.40.1")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21")
+        classpath("com.android.tools.build:gradle:8.0.1")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.46.1")
         classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
         classpath("com.google.gms:google-services:4.3.15")
         classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
@@ -29,14 +29,14 @@ allprojects {
 }
 
 plugins {
-    id("io.gitlab.arturbosch.detekt").version("1.20.0")
-    id("com.autonomousapps.dependency-analysis").version("1.4.0")
-    id("com.github.ben-manes.versions").version("0.42.0")
+    id("io.gitlab.arturbosch.detekt").version("1.23.0")
+    id("com.autonomousapps.dependency-analysis").version("1.20.0")
+    id("com.github.ben-manes.versions").version("0.46.0")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 }
 
@@ -71,7 +71,7 @@ tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt::class) {
 }
 
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.16.0")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0")
 }
 
 // from https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/wiki/ABI-filtering

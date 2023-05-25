@@ -31,7 +31,7 @@ dependencies {
     implementation(NetworkDependencies.sandwich)
 
     implementation(platform(NfcDependencies.nfc_firebase_bom))
-    implementation(NfcDependencies.nfc_firebase_core) // Firebase BoM and Core are required when including TapLinx (line below) manually
+    implementation(NfcDependencies.nfc_firebase_analytics) // Firebase BoM and Analytics (f/k/a Core) are required when including TapLinx (line below) manually
     compileOnly(files(NfcDependencies.nxp_nfc_android_aar_path))
 
     // Test dependencies
@@ -62,15 +62,15 @@ android {
         compose = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.2.0-beta03"
+        kotlinCompilerExtensionVersion = "1.4.7"
     }
     namespace = "org.robojackets.apiary.base"
     hilt {
