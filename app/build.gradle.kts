@@ -71,11 +71,11 @@ android {
         create("release") {
         }
     }
-    compileSdk = 32
+    compileSdk = 33
     defaultConfig {
         applicationId = "org.robojackets.apiary"
         minSdk = 21
-        targetSdk = 32
+        targetSdk = 33
         versionCode = 12
         versionName = "1.0.0"
         vectorDrawables {

@@ -9,8 +9,8 @@ buildscript {
         classpath("com.android.tools.build:gradle:7.3.1")
         classpath("com.google.dagger:hilt-android-gradle-plugin:2.40.1")
         classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
-        classpath("com.google.gms:google-services:4.3.10")
-        classpath("com.google.android.gms:oss-licenses-plugin:0.10.5")
+        classpath("com.google.gms:google-services:4.3.15")
+        classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
     }
 }
 
