@@ -62,6 +62,8 @@ import org.robojackets.apiary.ui.update.UpdateInProgress
 import timber.log.Timber
 import javax.inject.Inject
 
+// TODO: see if we can make app launch screen match light/dark mode?
+
 sealed class Screen(
     val navigationDestination: String,
     @StringRes val resourceId: Int,
