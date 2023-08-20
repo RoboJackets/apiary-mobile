@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
         classpath("com.android.tools.build:gradle:8.1.0")
         classpath("com.google.dagger:hilt-android-gradle-plugin:2.46.1")
         classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
@@ -29,8 +29,9 @@ allprojects {
 }
 
 plugins {
+    id("com.google.devtools.ksp").version("1.9.0-1.0.13").apply(false)
     id("io.gitlab.arturbosch.detekt").version("1.23.0")
-    id("com.autonomousapps.dependency-analysis").version("1.20.0")
+    id("com.autonomousapps.dependency-analysis").version("1.21.0")
     id("com.github.ben-manes.versions").version("0.46.0")
 }
 

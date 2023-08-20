@@ -3,6 +3,7 @@ plugins {
     kotlin("android")
     id("kotlin-android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
@@ -34,7 +35,6 @@ android {
     compileSdk = 33
     defaultConfig {
         minSdk = 21
-        targetSdk = 33
 
         vectorDrawables {
             useSupportLibrary = true
@@ -57,7 +57,7 @@ android {
         jvmTarget = "17"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.7"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     namespace = "org.robojackets.apiary.navigation"
     hilt {

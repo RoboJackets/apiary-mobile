@@ -94,7 +94,7 @@ object AuthDependencies {
 object HiltDependencies {
     object Versions {
         const val hilt_navigation_compose_version = "1.0.0"
-        const val hilt_version = "2.44"
+        const val hilt_version = "2.46.1"
     }
 
     const val hilt = "com.google.dagger:hilt-android:${Versions.hilt_version}"
@@ -111,7 +111,7 @@ object AndroidToolDependencies {
         const val gson_version = "2.10.1"
         const val in_app_update_compose_version = "0.0.17"
         const val open_source_licenses_version = "17.0.1"
-        const val sentry_version = "6.19.1"
+        const val sentry_version = "6.28.0"
         const val timber_version = "5.0.1"
     }
 
@@ -135,7 +135,7 @@ object NetworkDependencies {
         const val okhttp_bom_version = "4.11.0"
         const val retrofit_version = "2.9.0"
         const val retrofuture_version = "1.7.4"
-        const val sandwich_version = "1.3.6"
+        const val sandwich_version = "1.3.8"
     }
 
     const val moshi = "com.squareup.moshi:moshi:${Versions.moshi_version}"

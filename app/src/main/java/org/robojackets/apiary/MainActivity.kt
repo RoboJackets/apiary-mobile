@@ -272,7 +272,7 @@ class MainActivity : ComponentActivity() {
                         navArgument("attendableType") { type = NavType.StringType }
                     ),
                 ) {
-                    val attendableType = it.arguments?.get("attendableType")
+                    val attendableType = it.arguments?.getString("attendableType")
 
                     AttendableSelectionScreen(
                         hiltViewModel(),
@@ -287,8 +287,8 @@ class MainActivity : ComponentActivity() {
                         navArgument("attendableId") { type = NavType.IntType },
                     )
                 ) {
-                    val attendableType = it.arguments?.get("attendableType")
-                    val attendableId = it.arguments?.get("attendableId")
+                    val attendableType = it.arguments?.getString("attendableType")
+                    val attendableId = it.arguments?.getInt("attendableId")
 
                     AttendanceScreen(
                         hiltViewModel(),

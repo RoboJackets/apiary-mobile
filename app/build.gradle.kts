@@ -3,6 +3,7 @@ plugins {
     kotlin("android")
     id("kotlin-android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.google.android.gms.oss-licenses-plugin")
@@ -99,7 +100,7 @@ android {
         jvmTarget = "17"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.7"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     namespace = "org.robojackets.apiary"
     hilt {

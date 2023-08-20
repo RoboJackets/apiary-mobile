@@ -3,6 +3,7 @@ plugins {
     kotlin("android")
     id("kotlin-android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
@@ -38,7 +39,7 @@ dependencies {
     implementation(MaterialDependencies.material_android)
 
     implementation(NetworkDependencies.moshi)
-    kapt(NetworkDependencies.moshi_kotlin_codegen)
+    ksp(NetworkDependencies.moshi_kotlin_codegen)
     implementation(NetworkDependencies.okhttp)
     implementation(platform(NetworkDependencies.okhttp_bom))
     implementation(NetworkDependencies.retrofit)
@@ -55,7 +56,6 @@ android {
     compileSdk = 33
     defaultConfig {
         minSdk = 21
-        targetSdk = 33
 
         vectorDrawables {
             useSupportLibrary = true
@@ -79,7 +79,7 @@ android {
         jvmTarget = "17"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.7"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     namespace = "org.robojackets.apiary.auth"
     hilt {
