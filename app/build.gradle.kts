@@ -36,7 +36,6 @@ dependencies {
     implementation(ComposeDependencies.lifecycle_viewmodel_compose)
     implementation(ComposeDependencies.compose_ui_tooling)
     implementation(ComposeDependencies.compose_foundation)
-    implementation(ComposeDependencies.compose_material)
     implementation(ComposeDependencies.compose_material3)
     implementation(ComposeDependencies.compose_material_icons_core)
     implementation(ComposeDependencies.compose_material_icons_extended)

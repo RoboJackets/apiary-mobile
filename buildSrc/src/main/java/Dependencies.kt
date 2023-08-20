@@ -15,7 +15,8 @@ object ComposeDependencies {
     const val compose_foundation =
         "androidx.compose.foundation:foundation:${Versions.compose_version}"
 
-    const val compose_material = "androidx.compose.material:material:${Versions.compose_version}"
+    const val compose_material3 =
+        "androidx.compose.material3:material3:${Versions.compose_material3_version}"
     const val compose_material_icons_core =
         "androidx.compose.material:material-icons-core:${Versions.compose_version}"
     const val compose_material_icons_extended =
@@ -35,8 +36,7 @@ object ComposeDependencies {
     const val lifecycle_viewmodel_compose =
         "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle_viewmodel_compose_version}"
 
-    const val compose_material3 =
-        "androidx.compose.material3:material3:${Versions.compose_material3_version}"
+
 }
 
 object MaterialDependencies {

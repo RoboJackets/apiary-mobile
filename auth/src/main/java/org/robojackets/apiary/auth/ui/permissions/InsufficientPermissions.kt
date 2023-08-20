@@ -1,12 +1,17 @@
 package org.robojackets.apiary.auth.ui.permissions
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -14,13 +19,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.*
 import org.robojackets.apiary.auth.model.Permission
 import org.robojackets.apiary.auth.model.Permission.*
 import org.robojackets.apiary.base.ui.error.GoToItHelpdesk
@@ -28,9 +36,6 @@ import org.robojackets.apiary.base.ui.icons.ErrorIcon
 import org.robojackets.apiary.base.ui.theme.danger
 import org.robojackets.apiary.base.ui.theme.success
 import org.robojackets.apiary.base.ui.util.ContentPadding
-
-// TODO: M3 upgrade
-// - Update to M3 AlertDialog
 
 @Composable
 fun InsufficientPermissions(
@@ -131,7 +136,6 @@ fun PermissionDetailsDialog(
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PermissionsListItem(hasPermission: Boolean, permissionName: String) {
     ListItem(

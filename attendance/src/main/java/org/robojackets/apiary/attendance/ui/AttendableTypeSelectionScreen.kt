@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -27,7 +26,6 @@ import org.robojackets.apiary.base.ui.icons.GroupsIcon
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.LoadingSpinner
 
-@ExperimentalMaterialApi
 @Composable
 fun AttendableTypeSelectionScreen(
     viewModel: AttendableTypeSelectionViewModel,

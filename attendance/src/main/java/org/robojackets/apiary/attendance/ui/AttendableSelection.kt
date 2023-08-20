@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -27,7 +26,6 @@ import org.robojackets.apiary.base.ui.icons.WarningIcon
 import org.robojackets.apiary.base.ui.theme.danger
 import org.robojackets.apiary.base.ui.util.ContentPadding
 
-@ExperimentalMaterialApi
 @Composable
 private fun <T> AttendableList(
     attendables: List<T>,
@@ -56,7 +54,6 @@ private fun <T> AttendableList(
 }
 
 @Suppress("LongMethod")
-@ExperimentalMaterialApi
 @Composable
 fun AttendableSelectionScreen(
     viewModel: AttendanceViewModel,

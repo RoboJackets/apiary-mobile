@@ -18,15 +18,12 @@ dependencies {
     coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
     implementation(AndroidToolDependencies.timber)
 
-    implementation(ComposeDependencies.compose_material)
     implementation(ComposeDependencies.compose_material3)
     implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.lifecycle_viewmodel_compose)
 
     implementation(HiltDependencies.hilt)
     kapt(HiltDependencies.hilt_android_compiler)
-
-    implementation(MaterialDependencies.material_android)
 
     implementation(NetworkDependencies.moshi)
     kapt(NetworkDependencies.moshi_kotlin_codegen)

@@ -8,7 +8,6 @@ import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Contactless
@@ -125,7 +124,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
-    @ExperimentalMaterialApi
     @Suppress("LongMethod")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -242,7 +240,6 @@ class MainActivity : ComponentActivity() {
 
     @Suppress("LongMethod")
     @OptIn(ExperimentalMaterialNavigationApi::class)
-    @ExperimentalMaterialApi
     @Composable
     private fun AppNavigation(
         navController: NavHostController,

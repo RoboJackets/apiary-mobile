@@ -17,7 +17,6 @@ dependencies {
     implementation(AndroidToolDependencies.timber)
 
     implementation(ComposeDependencies.compose_foundation)
-    implementation(ComposeDependencies.compose_material)
     implementation(ComposeDependencies.compose_material3)
     implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.compose_ui_tooling)
