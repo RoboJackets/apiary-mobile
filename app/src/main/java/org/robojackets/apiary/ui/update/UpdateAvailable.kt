@@ -21,9 +21,6 @@ import org.robojackets.apiary.base.ui.util.getActivity
 import se.warting.inappupdate.compose.rememberInAppUpdateState
 import timber.log.Timber
 
-// TODO: M3 upgrade:
-// - Implement M3 AlertDialog
-
 // Just a random number so we can identify our update request later if necessary
 const val UPDATE_REQUEST_CODE = 1999
 

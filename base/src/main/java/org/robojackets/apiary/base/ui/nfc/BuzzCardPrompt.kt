@@ -32,11 +32,6 @@ import org.robojackets.apiary.base.ui.theme.danger
 import timber.log.Timber
 import java.nio.charset.StandardCharsets
 
-// TODO: M3 upgrade
-// - Switch to M3 AlertDialog
-// - Verify icon/text colors are correct in dark mode
-// - Verify Contactless icon color is correct in light mode
-
 /**
  * Show a prompt for BuzzCards and call a callback function each time a valid GTID is obtained.
  *

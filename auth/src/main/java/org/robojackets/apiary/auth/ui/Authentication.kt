@@ -34,11 +34,6 @@ import org.robojackets.apiary.auth.oauth2.AuthManager
 import org.robojackets.apiary.base.AppEnvironment
 import org.robojackets.apiary.base.ui.util.MadeWithLove
 
-// TODO: M3 upgrade
-// - Update to M3 BottomSheet
-// -  Update to M3 AlertDialog
-// - Test auth behavior with new theme
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Suppress("LongMethod", "MagicNumber")
 @Composable
