@@ -4,8 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,6 +18,9 @@ import org.robojackets.apiary.base.ui.icons.ErrorIcon
 import org.robojackets.apiary.base.ui.theme.warningDarkSubtle
 import org.robojackets.apiary.base.ui.theme.warningLightMuted
 import org.robojackets.apiary.base.ui.theme.warningLightSubtle
+
+// TODO: M3 upgrade
+// - Implement replacement for isLight
 
 @Composable
 fun Callout(
@@ -49,7 +52,7 @@ fun WarningCallout(
     padding: PaddingValues? = null,
     body: @Composable () -> Unit,
 ) {
-    val isLightTheme = MaterialTheme.colors.isLight
+    val isLightTheme = true // TODO: M3 upgrade, previously: MaterialTheme.colors.isLight
 
     Callout(
         title = {
@@ -57,7 +60,7 @@ fun WarningCallout(
                 Text(
                     titleText,
                     modifier = Modifier.padding(start = 8.dp),
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.titleLarge
                 )
             }
         },

@@ -5,7 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -26,6 +31,11 @@ import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource.*
 import org.robojackets.apiary.base.ui.theme.danger
 import timber.log.Timber
 import java.nio.charset.StandardCharsets
+
+// TODO: M3 upgrade
+// - Switch to M3 AlertDialog
+// - Verify icon/text colors are correct in dark mode
+// - Verify Contactless icon color is correct in light mode
 
 /**
  * Show a prompt for BuzzCards and call a callback function each time a valid GTID is obtained.
@@ -185,7 +195,7 @@ fun ManualGtidEntryPrompt(
                 Text("Submit")
             }
         },
-        title = { Text(text = "Manual GTID entry", style = MaterialTheme.typography.h5) },
+        title = { Text(text = "Manual GTID entry", style = MaterialTheme.typography.headlineSmall) },
         text = {
             Column {
                 Text("Type the entire 9-digit GTID, starting with 90")

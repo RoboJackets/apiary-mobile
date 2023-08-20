@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -143,7 +143,7 @@ fun SettingsScreen(
     }
 
     val state by viewModel.state.collectAsState()
-    val secondaryThemeColor = MaterialTheme.colors.background
+    val secondaryThemeColor = MaterialTheme.colorScheme.background
     ContentPadding {
        Settings(
            appEnv = viewModel.globalSettings.appEnv,

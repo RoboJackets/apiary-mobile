@@ -1,8 +1,12 @@
 package org.robojackets.apiary.base.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +32,7 @@ fun ActionPrompt(
         icon()
         Text(
             text = title,
-            style = MaterialTheme.typography.h4,
+            style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(top = 6.dp),
             textAlign = TextAlign.Center,
         )
@@ -40,7 +44,7 @@ fun ActionPrompt(
         subtitle?.let {
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
             )
         }

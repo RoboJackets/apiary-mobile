@@ -8,10 +8,17 @@ import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Contactless
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -137,7 +144,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Apiary_MobileTheme {
-                window.statusBarColor = MaterialTheme.colors.primaryVariant.toArgb()
+                window.statusBarColor = MaterialTheme.colorScheme.secondary.toArgb()
                 val navController = rememberNavController()
                 val bottomSheetNavigator = rememberBottomSheetNavigator()
                 navController.navigatorProvider += bottomSheetNavigator
@@ -155,7 +162,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
+                Surface(color = MaterialTheme.colorScheme.background) {
                     ModalBottomSheetLayout(bottomSheetNavigator) {
                         UpdateGate(
                             navReady = navReady,
@@ -180,9 +187,9 @@ class MainActivity : ComponentActivity() {
                                 bottomBar = {
                                     val current = currentRoute(navController)
                                     if (shouldShowBottomNav(nfcEnabled, current)) {
-                                        BottomNavigation {
+                                        NavigationBar {
                                             navItems.forEach { screen ->
-                                                BottomNavigationItem(
+                                                NavigationBarItem(
                                                     icon = {
                                                         Icon(
                                                             screen.icon,

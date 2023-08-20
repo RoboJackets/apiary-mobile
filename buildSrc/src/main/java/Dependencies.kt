@@ -4,6 +4,7 @@ object ComposeDependencies {
         const val compose_settings_version = "0.27.0"
         const val compose_version = "1.4.3"
         const val lifecycle_viewmodel_compose_version = "2.6.1"
+        const val compose_material3_version = "1.1.1"
     }
 
     const val accompanist_systemuicontroller =
@@ -25,7 +26,7 @@ object ComposeDependencies {
         "androidx.compose.runtime:runtime-livedata:${Versions.compose_version}"
 
     const val compose_settings =
-        "com.github.alorma:compose-settings-ui:${Versions.compose_settings_version}"
+        "com.github.alorma:compose-settings-ui-m3:${Versions.compose_settings_version}"
 
     const val compose_ui = "androidx.compose.ui:ui:${Versions.compose_version}"
     const val compose_ui_test = "androidx.compose.ui:ui-test-junit4:${Versions.compose_version}"
@@ -33,6 +34,9 @@ object ComposeDependencies {
 
     const val lifecycle_viewmodel_compose =
         "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle_viewmodel_compose_version}"
+
+    const val compose_material3 =
+        "androidx.compose.material3:material3:${Versions.compose_material3_version}"
 }
 
 object MaterialDependencies {

@@ -7,7 +7,19 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.BottomSheetScaffoldState
+import androidx.compose.material.BottomSheetValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.material.rememberBottomSheetState
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +38,11 @@ import org.robojackets.apiary.auth.oauth2.AuthManager
 import org.robojackets.apiary.base.AppEnvironment
 import org.robojackets.apiary.base.ui.theme.BottomSheetShape
 import org.robojackets.apiary.base.ui.util.MadeWithLove
+
+// TODO: M3 upgrade
+// - Update to M3 BottomSheet
+// -  Update to M3 AlertDialog
+// - Test auth behavior with new theme
 
 @OptIn(ExperimentalMaterialApi::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Suppress("LongMethod", "MagicNumber")
@@ -46,7 +63,7 @@ private fun Authentication(
     val coroutineScope = rememberCoroutineScope()
 
     val systemUiController = rememberSystemUiController()
-    val backgroundColor = MaterialTheme.colors.background
+    val backgroundColor = MaterialTheme.colorScheme.background
     SideEffect {
         systemUiController.setSystemBarsColor(backgroundColor)
     }
@@ -115,7 +132,7 @@ private fun Authentication(
             )
         }) {
         Surface(
-            color = MaterialTheme.colors.background,
+            color = MaterialTheme.colorScheme.background,
             modifier = Modifier.padding(8.dp)
         ) {
             Column(
@@ -207,7 +224,7 @@ private fun ChangeEnvironmentBottomSheetContent(
         "Change server",
         modifier = Modifier
             .padding(16.dp),
-        style = MaterialTheme.typography.h5
+        style = MaterialTheme.typography.headlineSmall
     )
 
     Column(Modifier.selectableGroup()) {
@@ -230,7 +247,7 @@ private fun ChangeEnvironmentBottomSheetContent(
                 )
                 Text(
                     text = "${it.name} (${it.apiBaseUrl})",
-                    style = MaterialTheme.typography.body1.merge(),
+                    style = MaterialTheme.typography.bodyLarge.merge(),
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }

@@ -5,18 +5,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.robojackets.apiary.base.ui.IconWithText
 import org.robojackets.apiary.base.ui.icons.WarningIcon
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopBar(isProdEnv: Boolean) {
     Column {
@@ -24,7 +25,7 @@ fun AppTopBar(isProdEnv: Boolean) {
             title = {
                 Text(
                     text = "MyRoboJackets",
-                    style = MaterialTheme.typography.h5,
+                    style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.W800
                 )
             },
@@ -34,16 +35,16 @@ fun AppTopBar(isProdEnv: Boolean) {
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colors.error)
+                    .background(MaterialTheme.colorScheme.error)
                     .align(Alignment.CenterHorizontally)
                     .padding(vertical = 4.dp)
             ) {
                 IconWithText(
-                    icon = { WarningIcon(tint = Color.White) },
+                    icon = { WarningIcon(tint = MaterialTheme.colorScheme.onError) },
                     text = { Text(
                         "Non-production server",
                         modifier = Modifier.padding(start = 4.dp),
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onError
                     ) }
                 )
             }

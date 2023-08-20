@@ -2,7 +2,12 @@ package org.robojackets.apiary.ui.update
 
 import android.app.Activity
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,6 +20,9 @@ import org.robojackets.apiary.base.ui.icons.UpdateIcon
 import org.robojackets.apiary.base.ui.util.getActivity
 import se.warting.inappupdate.compose.rememberInAppUpdateState
 import timber.log.Timber
+
+// TODO: M3 upgrade:
+// - Implement M3 AlertDialog
 
 // Just a random number so we can identify our update request later if necessary
 const val UPDATE_REQUEST_CODE = 1999
@@ -87,7 +95,7 @@ fun RequiredUpdatePrompt() {
         UpdateIcon(Modifier
             .padding(bottom = 18.dp)
             .size(96.dp))
-        Text("Update to continue", style = MaterialTheme.typography.h4)
+        Text("Update to continue", style = MaterialTheme.typography.headlineMedium)
         Text("To continue using MyRoboJackets, install the latest version. It'll only take a minute.",
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(24.dp)
@@ -110,7 +118,7 @@ fun OptionalUpdatePrompt(
         UpdateIcon(Modifier
             .padding(bottom = 9.dp)
             .size(72.dp))
-        Text("Update available", style = MaterialTheme.typography.h5)
+        Text("Update available", style = MaterialTheme.typography.headlineSmall)
         Text("Install the latest version of MyRoboJackets for the latest features and " +
                 "bug fixes. It'll only take a minute.",
             textAlign = TextAlign.Center,
@@ -133,7 +141,7 @@ fun UpdateInProgress() {
         modifier = Modifier.fillMaxHeight(),
     ) {
         CircularProgressIndicator(Modifier.padding(bottom = 28.dp))
-        Text("Please wait...", style = MaterialTheme.typography.h5)
+        Text("Please wait...", style = MaterialTheme.typography.headlineSmall)
         Text("We're finishing installing an update. It'll just be a minute or two!",
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(20.dp)
