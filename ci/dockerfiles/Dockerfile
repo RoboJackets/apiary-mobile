@@ -1,5 +1,6 @@
 # This value is overridden during Concourse jobs to use a local copy of the image.
-# If you are changing the base image here, you should also change it in the Concourse pipeline configuration.
+# If you are changing the base image here, you should also change it in the Concourse pipeline configuration
+# in https://github.com/RoboJackets/concourse-pipeline-library/blob/main/pipelines/information-technology/apiary-mobile-docker-build.yml
 ARG base_image=mingc/android-build-box:1.25.0
 
 FROM ${base_image}
