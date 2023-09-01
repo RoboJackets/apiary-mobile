@@ -3,6 +3,7 @@ plugins {
     kotlin("android")
     id("kotlin-android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
@@ -28,7 +29,7 @@ dependencies {
 
     implementation(ComposeDependencies.accompanist_systemuicontroller)
     implementation(ComposeDependencies.compose_foundation)
-    implementation(ComposeDependencies.compose_material)
+    implementation(ComposeDependencies.compose_material3)
     implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.compose_ui_tooling)
 
@@ -38,7 +39,7 @@ dependencies {
     implementation(MaterialDependencies.material_android)
 
     implementation(NetworkDependencies.moshi)
-    kapt(NetworkDependencies.moshi_kotlin_codegen)
+    ksp(NetworkDependencies.moshi_kotlin_codegen)
     implementation(NetworkDependencies.okhttp)
     implementation(platform(NetworkDependencies.okhttp_bom))
     implementation(NetworkDependencies.retrofit)
@@ -52,10 +53,9 @@ dependencies {
 }
 
 android {
-    compileSdk = 32
+    compileSdk = 33
     defaultConfig {
         minSdk = 21
-        targetSdk = 32
 
         vectorDrawables {
             useSupportLibrary = true
@@ -71,15 +71,15 @@ android {
         compose = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.2.0-beta03"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     namespace = "org.robojackets.apiary.auth"
     hilt {

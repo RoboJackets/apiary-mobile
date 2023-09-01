@@ -3,6 +3,7 @@ plugins {
     kotlin("android")
     id("kotlin-android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
@@ -18,17 +19,15 @@ dependencies {
     coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
     implementation(AndroidToolDependencies.timber)
 
-    implementation(ComposeDependencies.compose_material)
+    implementation(ComposeDependencies.compose_material3)
     implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.lifecycle_viewmodel_compose)
 
     implementation(HiltDependencies.hilt)
     kapt(HiltDependencies.hilt_android_compiler)
 
-    implementation(MaterialDependencies.material_android)
-
     implementation(NetworkDependencies.moshi)
-    kapt(NetworkDependencies.moshi_kotlin_codegen)
+    ksp(NetworkDependencies.moshi_kotlin_codegen)
     implementation(NetworkDependencies.okhttp)
     implementation(platform(NetworkDependencies.okhttp_bom))
     implementation(NetworkDependencies.retrofit)
@@ -36,7 +35,7 @@ dependencies {
     implementation(NetworkDependencies.sandwich)
 
     implementation(platform(NfcDependencies.nfc_firebase_bom))
-    implementation(NfcDependencies.nfc_firebase_core) // Firebase BoM and Core are required when including TapLinx (line below) manually
+    implementation(NfcDependencies.nfc_firebase_analytics) // Firebase BoM and Analytics (f/k/a Core) are required when including TapLinx (line below) manually
     compileOnly(files(NfcDependencies.nxp_nfc_android_aar_path))
 
     // Test dependencies
@@ -46,10 +45,9 @@ dependencies {
 }
 
 android {
-    compileSdk = 32
+    compileSdk = 33
     defaultConfig {
         minSdk = 21
-        targetSdk = 32
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -63,15 +61,15 @@ android {
         compose = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.2.0-beta03"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     namespace = "org.robojackets.apiary.attendance"
     hilt {

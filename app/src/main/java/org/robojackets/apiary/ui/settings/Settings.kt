@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,7 +34,7 @@ import org.robojackets.apiary.ui.update.UpdateStatus
 
 @Suppress("LongMethod", "LongParameterList")
 @Composable
- private fun Settings(
+private fun Settings(
      appEnv: AppEnvironment,
      user: UserInfo?,
      onLogout: () -> Unit,
@@ -76,17 +76,21 @@ import org.robojackets.apiary.ui.update.UpdateStatus
             SettingsMenuLink(
                 icon = { Icon(Icons.Outlined.Home, contentDescription = "home") },
                 title = { Text(text = "Server") },
-                subtitle = { Text(
+                subtitle = {
+                    Text(
                     text = "${appEnv.name} (${appEnv.apiBaseUrl})"
-                ) },
+                )
+                },
                 onClick = {}
             )
             SettingsMenuLink(
                 icon = { Icon(Icons.Outlined.Build, contentDescription = "build") },
                 title = { Text(text = "Version") },
-                subtitle = { Text(
+                subtitle = {
+                    Text(
                     text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
-                ) },
+                )
+                },
                 onClick = {}
             )
             SettingsMenuLink(
@@ -143,7 +147,7 @@ fun SettingsScreen(
     }
 
     val state by viewModel.state.collectAsState()
-    val secondaryThemeColor = MaterialTheme.colors.background
+    val secondaryThemeColor = MaterialTheme.colorScheme.background
     ContentPadding {
        Settings(
            appEnv = viewModel.globalSettings.appEnv,

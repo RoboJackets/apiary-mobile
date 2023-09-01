@@ -5,7 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -185,7 +190,7 @@ fun ManualGtidEntryPrompt(
                 Text("Submit")
             }
         },
-        title = { Text(text = "Manual GTID entry", style = MaterialTheme.typography.h5) },
+        title = { Text(text = "Manual GTID entry", style = MaterialTheme.typography.headlineSmall) },
         text = {
             Column {
                 Text("Type the entire 9-digit GTID, starting with 90")

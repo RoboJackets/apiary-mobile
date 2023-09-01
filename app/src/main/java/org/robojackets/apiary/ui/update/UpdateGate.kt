@@ -1,6 +1,6 @@
 package org.robojackets.apiary.ui.update
 
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -80,7 +80,8 @@ fun UpdateGate(
             Lifecycle.Event.ON_RESUME -> {
                 if (result is AppUpdateResult.Available) {
                     if (result.updateInfo.updateAvailability()
-                        == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                        == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
+                    ) {
                         context.getActivity()
                             ?.let { result.startImmediateUpdate(it, UPDATE_REQUEST_CODE) }
                     }
@@ -160,10 +161,14 @@ fun UpdateStatus() {
                     isImmediateUpdateOptional(priority, staleness)
 
             when {
-                immediateRequired -> Text("Required update available (priority: " +
-                        "$priority, staleness: $staleness)")
-                immediateOptional -> Text("Optional update available (priority: " +
-                        "$priority, staleness: $staleness)")
+                immediateRequired -> Text(
+                    "Required update available (priority: " +
+                        "$priority, staleness: $staleness)"
+                )
+                immediateOptional -> Text(
+                    "Optional update available (priority: " +
+                        "$priority, staleness: $staleness)"
+                )
                 else -> Text("Available")
             }
         }

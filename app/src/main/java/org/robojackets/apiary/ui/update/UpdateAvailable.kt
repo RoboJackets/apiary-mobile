@@ -2,7 +2,12 @@ package org.robojackets.apiary.ui.update
 
 import android.app.Activity
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,10 +72,14 @@ fun InstallUpdateButton(onIgnoreUpdate: () -> Unit = {}) {
             },
             title = { Text("Update failed") },
             text = {
-                Text("${
-                    updateError ?: ("An unknown error occurred while starting the " +
-                            "update.")
-                }\n\nPlease try again, or post in #it-helpdesk for assistance.")
+                Text(
+                    "${
+                    updateError ?: (
+                        "An unknown error occurred while starting the " +
+                            "update."
+                    )
+                }\n\nPlease try again, or post in #it-helpdesk for assistance."
+                )
             }
         )
     }
@@ -84,11 +93,14 @@ fun RequiredUpdatePrompt() {
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxHeight(),
     ) {
-        UpdateIcon(Modifier
+        UpdateIcon(
+            Modifier
             .padding(bottom = 18.dp)
-            .size(96.dp))
-        Text("Update to continue", style = MaterialTheme.typography.h4)
-        Text("To continue using MyRoboJackets, install the latest version. It'll only take a minute.",
+            .size(96.dp)
+        )
+        Text("Update to continue", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            "To continue using MyRoboJackets, install the latest version. It'll only take a minute.",
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(24.dp)
             )
@@ -107,11 +119,14 @@ fun OptionalUpdatePrompt(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxHeight(.5F),
     ) {
-        UpdateIcon(Modifier
+        UpdateIcon(
+            Modifier
             .padding(bottom = 9.dp)
-            .size(72.dp))
-        Text("Update available", style = MaterialTheme.typography.h5)
-        Text("Install the latest version of MyRoboJackets for the latest features and " +
+            .size(72.dp)
+        )
+        Text("Update available", style = MaterialTheme.typography.headlineSmall)
+        Text(
+            "Install the latest version of MyRoboJackets for the latest features and " +
                 "bug fixes. It'll only take a minute.",
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(20.dp)
@@ -133,8 +148,9 @@ fun UpdateInProgress() {
         modifier = Modifier.fillMaxHeight(),
     ) {
         CircularProgressIndicator(Modifier.padding(bottom = 28.dp))
-        Text("Please wait...", style = MaterialTheme.typography.h5)
-        Text("We're finishing installing an update. It'll just be a minute or two!",
+        Text("Please wait...", style = MaterialTheme.typography.headlineSmall)
+        Text(
+            "We're finishing installing an update. It'll just be a minute or two!",
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(20.dp)
         )

@@ -50,7 +50,8 @@ class AttendanceViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            combine(listOf(
+            combine(
+                listOf(
                 lastAttendee,
                 screenState,
                 totalAttendees,
@@ -61,8 +62,10 @@ class AttendanceViewModel @Inject constructor(
                 selectedAttendable,
                 error,
                 missingHiddenTeams
-            )) {
-                flows -> AttendanceState(
+            )
+            ) {
+                flows ->
+                    AttendanceState(
                     flows[0] as AttendanceStoreResult?,
                     flows[1] as AttendanceScreenState,
                     flows[2] as Int,
@@ -125,7 +128,8 @@ class AttendanceViewModel @Inject constructor(
         loadingAttendables.value = true
         viewModelScope.launch {
             if (attendableType == AttendableType.Team &&
-                (attendableTeams.value.isEmpty() || forceRefresh)) {
+                (attendableTeams.value.isEmpty() || forceRefresh)
+            ) {
                 meetingsRepository.getTeams().onSuccess {
                     attendableTeams.value = this.data.teams
                         .filter { it.attendable }
@@ -141,7 +145,8 @@ class AttendanceViewModel @Inject constructor(
                 }
             }
             if (attendableType == AttendableType.Event &&
-                (attendableEvents.value.isEmpty() || forceRefresh)) {
+                (attendableEvents.value.isEmpty() || forceRefresh)
+            ) {
                 meetingsRepository.getEvents().onSuccess {
                     attendableEvents.value = this.data.events
                 }.onError {
