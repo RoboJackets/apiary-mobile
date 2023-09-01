@@ -78,7 +78,9 @@ fun ActionPromptCardReadErrorWrongType() {
         title = "Card read error",
         subtitle = "Try tapping again"
     ) {
-        IconWithText(icon = { WarningIcon(tint = danger) },
-            text = "We only support BuzzCards 😉")
+        IconWithText(
+            icon = { WarningIcon(tint = danger) },
+            text = "We only support BuzzCards 😉"
+        )
     }
 }

@@ -246,8 +246,11 @@ class MainActivity : ComponentActivity() {
         modifier: Modifier = Modifier,
     ) {
         val startDestination =
-            if (!authStateManager.current.isAuthorized) NavigationDestinations.authentication
-            else NavigationDestinations.attendanceSubgraph
+            if (!authStateManager.current.isAuthorized) {
+                NavigationDestinations.authentication
+            } else {
+                NavigationDestinations.attendanceSubgraph
+            }
 
         NavHost(
             navController = navController,

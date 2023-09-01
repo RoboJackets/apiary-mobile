@@ -35,8 +35,6 @@ object ComposeDependencies {
 
     const val lifecycle_viewmodel_compose =
         "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle_viewmodel_compose_version}"
-
-
 }
 
 object MaterialDependencies {

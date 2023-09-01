@@ -17,8 +17,10 @@ fun MissingHiddenTeamsCallout(onRefreshTeams: () -> Unit) {
         padding = PaddingValues(start = 12.dp, top = 10.dp, end = 12.dp, bottom = 7.dp)
     ) {
         Column {
-            Text("You don't have permission to view all teams, including " +
-                    "training teams. Ask in #it-helpdesk for access.")
+            Text(
+                "You don't have permission to view all teams, including " +
+                    "training teams. Ask in #it-helpdesk for access."
+            )
             OutlinedButton(onClick = onRefreshTeams, Modifier.padding(top = 0.dp)) {
                 Text("Refresh teams")
             }

@@ -26,6 +26,7 @@ import org.robojackets.apiary.base.ui.icons.GroupsIcon
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.LoadingSpinner
 
+@Suppress("LongMethod")
 @Composable
 fun AttendableTypeSelectionScreen(
     viewModel: AttendableTypeSelectionViewModel,
@@ -45,7 +46,8 @@ fun AttendableTypeSelectionScreen(
         if (state.permissionsCheckError?.isNotEmpty() == true) {
             ErrorMessageWithRetry(
                 message = state.permissionsCheckError ?: "An unknown error occurred",
-                onRetry = { viewModel.checkUserAttendanceAccess(forceRefresh = true) })
+                onRetry = { viewModel.checkUserAttendanceAccess(forceRefresh = true) }
+            )
             return@ContentPadding
         }
 
@@ -64,7 +66,8 @@ fun AttendableTypeSelectionScreen(
         Column(
             Modifier
                 .fillMaxWidth()
-                .fillMaxHeight()) {
+                .fillMaxHeight()
+        ) {
             Text("What do you want to take attendance for?", style = MaterialTheme.typography.headlineSmall)
             Spacer(Modifier.defaultMinSize(minHeight = 16.dp))
             Divider()

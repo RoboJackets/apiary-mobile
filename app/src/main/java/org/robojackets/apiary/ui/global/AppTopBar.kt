@@ -41,11 +41,13 @@ fun AppTopBar(isProdEnv: Boolean) {
             ) {
                 IconWithText(
                     icon = { WarningIcon(tint = MaterialTheme.colorScheme.onError) },
-                    text = { Text(
+                    text = {
+                        Text(
                         "Non-production server",
                         modifier = Modifier.padding(start = 4.dp),
                         color = MaterialTheme.colorScheme.onError
-                    ) }
+                    )
+                    }
                 )
             }
         }

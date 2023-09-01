@@ -34,7 +34,7 @@ import org.robojackets.apiary.ui.update.UpdateStatus
 
 @Suppress("LongMethod", "LongParameterList")
 @Composable
- private fun Settings(
+private fun Settings(
      appEnv: AppEnvironment,
      user: UserInfo?,
      onLogout: () -> Unit,
@@ -76,17 +76,21 @@ import org.robojackets.apiary.ui.update.UpdateStatus
             SettingsMenuLink(
                 icon = { Icon(Icons.Outlined.Home, contentDescription = "home") },
                 title = { Text(text = "Server") },
-                subtitle = { Text(
+                subtitle = {
+                    Text(
                     text = "${appEnv.name} (${appEnv.apiBaseUrl})"
-                ) },
+                )
+                },
                 onClick = {}
             )
             SettingsMenuLink(
                 icon = { Icon(Icons.Outlined.Build, contentDescription = "build") },
                 title = { Text(text = "Version") },
-                subtitle = { Text(
+                subtitle = {
+                    Text(
                     text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
-                ) },
+                )
+                },
                 onClick = {}
             )
             SettingsMenuLink(

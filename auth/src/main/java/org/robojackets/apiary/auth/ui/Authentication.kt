@@ -15,7 +15,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -43,9 +42,6 @@ private fun Authentication(
     onAppEnvChange: (newEnv: AppEnvironment) -> Unit,
     viewModel: AuthenticationViewModel,
 ) {
-    val scaffoldState = rememberBottomSheetScaffoldState()
-    val coroutineScope = rememberCoroutineScope()
-
     val systemUiController = rememberSystemUiController()
     val backgroundColor = MaterialTheme.colorScheme.background
     SideEffect {
@@ -98,7 +94,6 @@ private fun Authentication(
         }
 
     var showChangeEnvBottomSheet by remember { mutableStateOf(false) }
-
 
     if (showChangeEnvBottomSheet) {
         ChangeEnvBottomSheet(
@@ -211,7 +206,6 @@ private fun ChangeEnvironmentBottomSheetContent(
     viewState: AuthenticationState,
     onAppEnvChange: (newEnv: AppEnvironment) -> Unit,
 ) {
-    val coroutineScope = rememberCoroutineScope()
     var unsavedAppEnvSelection by remember { mutableStateOf(viewState.appEnv) }
     val appEnvChoices = AppEnvironment.values()
     val saveNewAppEnvChoice: (() -> Unit) = {

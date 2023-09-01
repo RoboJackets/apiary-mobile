@@ -79,7 +79,9 @@ private fun WarningCalloutPreview() {
     WarningCallout(
         titleText = "Some teams are hidden",
     ) {
-        Text("Your account doesn't have permission to view all teams, including training " +
-                "teams. Ask in #it-helpdesk for access.")
+        Text(
+            "Your account doesn't have permission to view all teams, including training " +
+                "teams. Ask in #it-helpdesk for access."
+        )
     }
 }

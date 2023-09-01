@@ -33,7 +33,8 @@ fun NfcRequired(nfcEnabled: Boolean, gatedComposable: @Composable () -> Unit) {
     if (nfcEnabled) {
         gatedComposable()
     } else {
-        Column(Modifier.fillMaxHeight(),
+        Column(
+            Modifier.fillMaxHeight(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
