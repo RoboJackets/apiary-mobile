@@ -30,5 +30,38 @@ jobs:
         echo taplinxOfflineKey=${{ secrets.TAPLINX_OFFLINE_KEY }} >> local.properties
         echo sentryDsn=${{ secrets.SENTRY_DSN }} >> local.properties
 
+    - name: Add problem matcher for Detekt
+      run: echo "::add-matcher::ci/detekt/matcher.json"
+
     - name: Build with Gradle
       run: ./gradlew build
+
+    - name: Upload attendance module lint results HTML report
+      uses: actions/upload-artifact@v4
+      with:
+        name: attendance-lint-results-html
+        path: attendance/build/reports/lint-results-debug.html
+        if-no-files-found: warn
+        retention-days: 1
+        compression-level: 9
+        overwrite: false
+
+    - name: Upload auth module lint results HTML report
+      uses: actions/upload-artifact@v4
+      with:
+        name: auth-lint-results-html
+        path: auth/build/reports/lint-results-debug.html
+        if-no-files-found: warn
+        retention-days: 1
+        compression-level: 9
+        overwrite: false
+
+    - name: Upload auth module lint results text report
+      uses: actions/upload-artifact@v4
+      with:
+        name: auth-lint-results-html
+        path: auth/build/intermediates/lint_intermediate_text_report/debug/lint-results-debug.txt
+        if-no-files-found: warn
+        retention-days: 1
+        compression-level: 9
+        overwrite: false
