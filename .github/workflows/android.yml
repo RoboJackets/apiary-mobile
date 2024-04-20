@@ -30,7 +30,7 @@ jobs:
         echo taplinxOfflineKey=${{ secrets.TAPLINX_OFFLINE_KEY }} >> local.properties
         echo sentryDsn=${{ secrets.SENTRY_DSN }} >> local.properties
 
-    - name: Add problem matcher
+    - name: Add problem matchers
       run: echo "::add-matcher::ci/matcher.json"
 
     - name: Build with Gradle
