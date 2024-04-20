@@ -24,10 +24,11 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Set up secret values
-      env:
-        SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-      run: echo "::add-mask::$SENTRY_DSN"
+    - name: Set up secrets
+      run: |
+        echo taplinxKey=${{ secrets.TAPLINX_KEY }} >> local.properties
+        echo taplinxOfflineKey=${{ secrets.TAPLINX_OFFLINE_KEY }} >> local.properties
+        echo sentryDsn=${{ secrets.SENTRY_DSN }} >> local.properties
 
-    # - name: Build with Gradle
-    #   run: ./gradlew build
+    - name: Build with Gradle
+      run: ./gradlew build
