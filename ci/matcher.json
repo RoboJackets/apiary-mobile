@@ -4,11 +4,12 @@
             "owner": "lint",
             "pattern": [
                 {
-                    "regexp": "^\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z-\\\\.]+):(\\d+):\\s+([a-zA-Z]+):\\s+(.+)$",
+                    "regexp": "^\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z-\\\\.]+):(\\d+):\\s+([a-zA-Z]+):\\s+(.+)\\s+(\\[[a-zA-Z]+\\])$",
                     "file": 1,
                     "line": 2,
                     "severity": 3,
-                    "message": 4
+                    "message": 4,
+                    "code": 5
                 }
             ]
         },
