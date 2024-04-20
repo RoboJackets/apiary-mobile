@@ -4,7 +4,7 @@
             "owner": "detekt",
             "pattern": [
                 {
-                    "regexp": "^\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile([\\/a-zA-Z-\\\\.]+):(\\d+):\\s+([a-zA-Z]+):\\s+(.+)$",
+                    "regexp": "^\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z-\\\\.]+):(\\d+):\\s+([a-zA-Z]+):\\s+(.+)$",
                     "file": 1,
                     "line": 2,
                     "severity": 3,
