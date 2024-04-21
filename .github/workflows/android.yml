@@ -31,7 +31,7 @@ jobs:
         echo sentryDsn=${{ secrets.SENTRY_DSN }} >> local.properties
 
     - name: Add problem matchers
-      run: echo "::add-matcher::ci/matcher.json"
+      run: echo "::add-matcher::.github/matchers.json"
 
     - name: Build with Gradle
       run: ./gradlew build
