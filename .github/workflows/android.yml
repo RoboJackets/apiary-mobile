@@ -14,12 +14,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: set up JDK
+    - name: Set up JDK
       uses: actions/setup-java@v4
       with:
         java-version: '11'
         distribution: 'corretto'
         cache: gradle
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+        rubygems: latest
+        bundler: latest
+        bundler-cache: true
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -37,10 +45,10 @@ jobs:
       run: ./gradlew build
 
     - name: Run detekt
-      run: fastlane detekt
+      run: bundle exec fastlane detekt
 
     - name: Run tests
-      run: fastlane test
+      run: bundle exec fastlane test
 
     - name: Upload lint results
       uses: actions/upload-artifact@v4
