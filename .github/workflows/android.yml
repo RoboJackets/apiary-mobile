@@ -36,6 +36,12 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
+    - name: Run Detekt
+      run: bundle exec fastlane detekt
+
+    - name: Run tests
+      run: bundle exec fastlane test
+
     - name: Upload lint results
       uses: actions/upload-artifact@v4
       if: always()
