@@ -50,6 +50,14 @@ jobs:
     - name: Run tests
       run: bundle exec fastlane test
 
+    - name: Upload internal app sharing build
+      if: github.event.issue.number
+      run: bundle exec fastlane uploadToInternalAppSharing pr_number:${{ github.event.issue.number }}
+      env:
+        GITHUB_API_BEARER_TOKEN: ${{ github.token }}
+        GOOGLE_PLAY_PRIVATE_KEY: ${{ secrets.GOOGLE_PLAY_PRIVATE_KEY }}
+        IS_CI: true
+
     - name: Upload lint results
       uses: actions/upload-artifact@v4
       if: always()
