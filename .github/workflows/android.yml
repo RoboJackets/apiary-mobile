@@ -29,6 +29,13 @@ jobs:
         bundler: latest
         bundler-cache: true
 
+    - name: Set up GitVersion
+      if: github.event.pull_request.number
+      uses: GitTools/actions@v1
+      with:
+        versionSpec: '5.x'
+        preferLatestVersion: true
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
