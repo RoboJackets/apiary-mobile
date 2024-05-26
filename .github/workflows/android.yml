@@ -31,7 +31,7 @@ jobs:
 
     - name: Set up GitVersion
       if: github.event.pull_request.number
-      uses: GitTools/actions@v1
+      uses: GitTools/actions/gitversion/setup@v1
       with:
         versionSpec: '5.x'
         preferLatestVersion: true
