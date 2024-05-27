@@ -112,7 +112,6 @@ platform :android do
     upload_urls = upload_to_play_store_internal_app_sharing(
       package_name: "org.robojackets.apiary",
       json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"],
-      aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
       apk_paths: []
     )
 
