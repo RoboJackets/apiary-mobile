@@ -94,7 +94,7 @@ platform :android do
       version_output = JSON.parse(sh("gitversion"))
     rescue # fallback in case GitVersion is locally installed
       Dir.chdir("..") do
-        version_output = JSON.parse(sh("./gitversion"))
+        version_output = JSON.parse(sh("dotnet-gitversion"))
       end
     end
     full_sem_ver = version_output["FullSemVer"]
@@ -147,7 +147,7 @@ platform :android do
       version_output = JSON.parse(sh("gitversion"))
     rescue # fallback in case GitVersion is locally installed
       Dir.chdir("..") do
-        version_output = JSON.parse(sh("./gitversion"))
+        version_output = JSON.parse(sh("dotnet-gitversion"))
       end
     end
     full_sem_ver = version_output["FullSemVer"]
