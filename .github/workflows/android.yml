@@ -11,8 +11,13 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    permissions:
+      pull-requests: write
+
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Set up JDK
       uses: actions/setup-java@v4
@@ -28,6 +33,13 @@ jobs:
         rubygems: latest
         bundler: latest
         bundler-cache: true
+
+    - name: Set up GitVersion
+      if: github.event.pull_request.number
+      uses: GitTools/actions/gitversion/setup@v1
+      with:
+        versionSpec: '5.x'
+        preferLatestVersion: true
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -50,9 +62,16 @@ jobs:
     - name: Run tests
       run: bundle exec fastlane test
 
+    - name: Hide old internal app sharing links
+      if: github.event.pull_request.number
+      uses: int128/hide-comment-action@v1
+      with:
+        authors: github-actions
+        issue-number: ${{ github.event.pull_request.number }}
+
     - name: Upload internal app sharing build
-      if: github.event.issue.number
-      run: bundle exec fastlane uploadToInternalAppSharing pr_number:${{ github.event.issue.number }}
+      if: github.event.pull_request.number
+      run: bundle exec fastlane uploadToInternalAppSharing pr_number:${{ github.event.pull_request.number }}
       env:
         GITHUB_API_BEARER_TOKEN: ${{ github.token }}
         GOOGLE_PLAY_PRIVATE_KEY: ${{ secrets.GOOGLE_PLAY_PRIVATE_KEY }}
