@@ -66,5 +66,5 @@ jobs:
         git config --local user.name "github-actions[bot]"
         git add app/build.gradle.kts
         git commit -m "Bump version to v$(dotnet-gitversion | jq --raw-output .SemVer)"
-        git tag --annotate v$(dotnet-gitversion | jq --raw-output .SemVer)
+        git tag --annotate v$(dotnet-gitversion | jq --raw-output .SemVer) -m "Build released to internal test track"
         git push --follow-tags
