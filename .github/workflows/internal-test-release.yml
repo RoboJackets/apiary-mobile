@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
     inputs:
       update-priority:
-        description: 'In-app update priority'
         required: true
         type: number
 
