@@ -152,7 +152,7 @@ platform :android do
         version_output = JSON.parse(sh("dotnet-gitversion"))
       end
     end
-    full_sem_ver = version_output["FullSemVer"]
+    full_sem_ver = version_output["SemVer"]
     version_name = full_sem_ver.gsub("+", "-")
 
     current_max_version_code = google_play_track_version_codes(
@@ -161,7 +161,7 @@ platform :android do
       json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"]
     ).max()
 
-    in_app_update_priority = File.read("../.update-priority").to_i
+    in_app_update_priority = options[:inAppUpdatePriority].to_i
     puts("Update priority: #{in_app_update_priority}")
     puts("Current max version code from Google Play: #{current_max_version_code}")
 

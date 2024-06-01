@@ -12,6 +12,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
     - uses: actions/checkout@v4
       with:
@@ -51,5 +54,17 @@ jobs:
     - name: Add problem matchers
       run: echo "::add-matcher::.github/matchers.json"
 
-    - name: Run GitVersion
-      run: dotnet-gitversion
+    - name: Upload internal test release build
+      run: bundle exec fastlane uploadToInternalTest jksPath:"$(pwd)/apiary-mobile.jks" signingStorePassword:"${{ secrets.GOOGLE_PLAY_KEYSTORE_PASSWORD }}" signingKeyAlias:"apiary-mobile-upload-key" signingKeyPassword:"${{ secrets.GOOGLE_PLAY_KEYSTORE_PASSWORD }}" inAppUpdatePriority:"${{ inputs.update-priority }}"
+      env:
+        GOOGLE_PLAY_PRIVATE_KEY: ${{ secrets.GOOGLE_PLAY_PRIVATE_KEY }}
+        IS_CI: true
+
+    - name: Push release to GitHub
+      run: |
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add app/build.gradle.kts
+        git commit -m "Bump version to v$(gitversion | jq --raw-output .SemVer)"
+        git tag --annotate v$(gitversion | jq --raw-output .SemVer)
+        git push --follow-tags
