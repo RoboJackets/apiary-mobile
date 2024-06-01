@@ -41,6 +41,12 @@ jobs:
         versionSpec: '5.x'
         preferLatestVersion: true
 
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: java-kotlin
+        queries: security-extended,security-and-quality
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
@@ -76,6 +82,14 @@ jobs:
         GITHUB_API_BEARER_TOKEN: ${{ github.token }}
         GOOGLE_PLAY_PRIVATE_KEY: ${{ secrets.GOOGLE_PLAY_PRIVATE_KEY }}
         IS_CI: true
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:java-kotlin"
+
+    - name: Generate and submit dependency graph
+      uses: gradle/actions/dependency-submission@v3
 
     - name: Upload lint results
       uses: actions/upload-artifact@v4
