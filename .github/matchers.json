@@ -1,0 +1,46 @@
+{
+    "problemMatcher": [
+        {
+            "owner": "lint",
+            "pattern": [
+                {
+                    "regexp": "^\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z-\\\\.]+):(\\d+):\\s+([a-zA-Z]+):\\s+(.+)\\s+(\\[[a-zA-Z]+\\])$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4,
+                    "code": 5
+                }
+            ]
+        },
+        {
+            "owner": "manifest",
+            "pattern": [
+                {
+                    "regexp": "^\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z\\\\.]+):(\\d+):(\\d+)-\\d+:\\d+\\s+([a-zA-Z]+):$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4
+                },
+                {
+                    "regexp": "^\t(.+)$",
+                    "message": 1
+                }
+            ]
+        },
+        {
+            "owner": "compiler",
+            "severity": "warning",
+            "pattern": [
+                {
+                    "regexp": "^w: \\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z\\\\.]+): \\((\\d+), (\\d+)\\): (.+)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "message": 4
+                }
+            ]
+        }
+    ]
+}

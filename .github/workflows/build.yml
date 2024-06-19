@@ -1,0 +1,107 @@
+name: Build App
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      security-events: write
+      contents: write
+      pull-requests: write
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'corretto'
+        cache: gradle
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+        rubygems: latest
+        bundler: latest
+        bundler-cache: true
+
+    - name: Set up GitVersion
+      if: github.event.pull_request.number
+      uses: GitTools/actions/gitversion/setup@v1
+      with:
+        versionSpec: '5.x'
+        preferLatestVersion: true
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: java-kotlin
+        queries: security-extended,security-and-quality
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Set up secrets
+      run: |
+        echo taplinxKey=${{ secrets.TAPLINX_KEY }} >> local.properties
+        echo taplinxOfflineKey=${{ secrets.TAPLINX_OFFLINE_KEY }} >> local.properties
+        echo sentryDsn=${{ secrets.SENTRY_DSN }} >> local.properties
+
+    - name: Add problem matchers
+      run: echo "::add-matcher::.github/matchers.json"
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Run detekt
+      run: bundle exec fastlane detekt
+
+    - name: Run tests
+      run: bundle exec fastlane test
+
+    - name: Hide old internal app sharing links
+      if: github.event.pull_request.number
+      uses: int128/hide-comment-action@v1
+      with:
+        authors: github-actions
+        issue-number: ${{ github.event.pull_request.number }}
+
+    - name: Upload internal app sharing build
+      if: github.event.pull_request.number
+      run: bundle exec fastlane uploadToInternalAppSharing pr_number:${{ github.event.pull_request.number }}
+      env:
+        GITHUB_API_BEARER_TOKEN: ${{ github.token }}
+        GOOGLE_PLAY_PRIVATE_KEY: ${{ secrets.GOOGLE_PLAY_PRIVATE_KEY }}
+        IS_CI: true
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:java-kotlin"
+
+    - name: Generate and submit dependency graph
+      uses: gradle/actions/dependency-submission@v3
+
+    - name: Upload lint results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: lint-results
+        path: |
+          **/build/reports/lint-results-debug.html
+          **/build/intermediates/lint_intermediate_text_report/debug/lint-results-debug.txt
+        if-no-files-found: warn
+        retention-days: 1
+        compression-level: 9
+        overwrite: false

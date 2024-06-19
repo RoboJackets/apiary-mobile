@@ -94,7 +94,7 @@ platform :android do
       version_output = JSON.parse(sh("gitversion"))
     rescue # fallback in case GitVersion is locally installed
       Dir.chdir("..") do
-        version_output = JSON.parse(sh("./gitversion"))
+        version_output = JSON.parse(sh("dotnet-gitversion"))
       end
     end
     full_sem_ver = version_output["FullSemVer"]
@@ -112,18 +112,20 @@ platform :android do
     upload_urls = upload_to_play_store_internal_app_sharing(
       package_name: "org.robojackets.apiary",
       json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"],
-      aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
+      # apk_paths is specifically an empy list so fastlane does not upload any APKs
+      # the AAB will be found from the lane context
+      apk_paths: []
     )
 
     upload_url = nil
 
     # The result of the upload_to_play_store_internal_app_sharing is different on Windows vs. Ubuntu
-    # If the result is an array, then it also uploaded the APK and the AAB link will be the second element in the array
+    # If the result is an array, then it also uploaded the APK and the AAB link will be the last element in the array
     # Otherwise, it only uploaded the AAB and returned the link as a string
     if upload_urls.instance_of?(String)
       upload_url = upload_urls
     elsif upload_urls.instance_of?(Array)
-        upload_url = upload_urls[1]
+        upload_url = upload_urls.last
     end
 
     github_api(
@@ -147,10 +149,10 @@ platform :android do
       version_output = JSON.parse(sh("gitversion"))
     rescue # fallback in case GitVersion is locally installed
       Dir.chdir("..") do
-        version_output = JSON.parse(sh("./gitversion"))
+        version_output = JSON.parse(sh("dotnet-gitversion"))
       end
     end
-    full_sem_ver = version_output["FullSemVer"]
+    full_sem_ver = version_output["SemVer"]
     version_name = full_sem_ver.gsub("+", "-")
 
     current_max_version_code = google_play_track_version_codes(
@@ -159,7 +161,7 @@ platform :android do
       json_key_data: ENV["GOOGLE_PLAY_PRIVATE_KEY"]
     ).max()
 
-    in_app_update_priority = File.read("../.update-priority").to_i
+    in_app_update_priority = options[:inAppUpdatePriority].to_i
     puts("Update priority: #{in_app_update_priority}")
     puts("Current max version code from Google Play: #{current_max_version_code}")
 

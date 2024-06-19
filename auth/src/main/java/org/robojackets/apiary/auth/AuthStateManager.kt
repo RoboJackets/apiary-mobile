@@ -3,8 +3,6 @@ package org.robojackets.apiary.auth
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.AnyThread
-import androidx.annotation.NonNull
-import androidx.annotation.Nullable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import net.openid.appauth.*
@@ -25,7 +23,6 @@ class AuthStateManager @Inject constructor(
     private val mPrefsLock: ReentrantLock = ReentrantLock()
     private val mCurrentAuthState: AtomicReference<AuthState> = AtomicReference()
 
-    @get:NonNull
     @get:AnyThread
     val current: AuthState
         get() {
@@ -41,18 +38,16 @@ class AuthStateManager @Inject constructor(
         }
 
     @AnyThread
-    @NonNull
-    fun replace(@NonNull state: AuthState?): AuthState? {
+    fun replace(state: AuthState?): AuthState? {
         writeState(state)
         mCurrentAuthState.set(state)
         return state
     }
 
     @AnyThread
-    @NonNull
     fun updateAfterAuthorization(
-        @Nullable response: AuthorizationResponse?,
-        @Nullable ex: AuthorizationException?
+        response: AuthorizationResponse?,
+        ex: AuthorizationException?
     ): AuthState? {
         val current: AuthState = current
         current.update(response, ex)
@@ -60,10 +55,9 @@ class AuthStateManager @Inject constructor(
     }
 
     @AnyThread
-    @NonNull
     fun updateAfterTokenResponse(
-        @Nullable response: TokenResponse?,
-        @Nullable ex: AuthorizationException?
+        response: TokenResponse?,
+        ex: AuthorizationException?
     ): AuthState? {
         val current: AuthState = current
         current.update(response, ex)
@@ -71,7 +65,6 @@ class AuthStateManager @Inject constructor(
     }
 
     @AnyThread
-    @NonNull
     fun updateAfterRegistration(
         response: RegistrationResponse?,
         ex: AuthorizationException?
@@ -85,7 +78,6 @@ class AuthStateManager @Inject constructor(
     }
 
     @AnyThread
-    @NonNull
     private fun readState(): AuthState {
         mPrefsLock.lock()
         return try {
@@ -103,7 +95,7 @@ class AuthStateManager @Inject constructor(
     }
 
     @AnyThread
-    private fun writeState(@Nullable state: AuthState?) {
+    private fun writeState(state: AuthState?) {
         mPrefsLock.lock()
         try {
             val editor = mPrefs.edit()
@@ -124,7 +116,7 @@ class AuthStateManager @Inject constructor(
         private const val STORE_NAME = "AuthState"
         private const val KEY_STATE = "state"
         @AnyThread
-        fun getInstance(@NonNull context: Context): AuthStateManager {
+        fun getInstance(context: Context): AuthStateManager {
             var manager: AuthStateManager? = INSTANCE_REF.get().get()
             if (manager == null) {
                 manager = AuthStateManager(context.getApplicationContext())

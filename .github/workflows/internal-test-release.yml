@@ -1,0 +1,68 @@
+name: Release to Internal Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      update-priority:
+        required: true
+        type: number
+
+jobs:
+  internal-test-release:
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'corretto'
+        cache: gradle
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+        rubygems: latest
+        bundler: latest
+        bundler-cache: true
+
+    - name: Set up GitVersion
+      uses: GitTools/actions/gitversion/setup@v1
+      with:
+        versionSpec: '5.x'
+        preferLatestVersion: true
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Set up secrets
+      run: |
+        echo taplinxKey=${{ secrets.TAPLINX_KEY }} >> local.properties
+        echo taplinxOfflineKey=${{ secrets.TAPLINX_OFFLINE_KEY }} >> local.properties
+        echo sentryDsn=${{ secrets.SENTRY_DSN }} >> local.properties
+        echo ${{ secrets.GOOGLE_PLAY_KEYSTORE_BASE64 }} | base64 -d > apiary-mobile.jks
+
+    - name: Add problem matchers
+      run: echo "::add-matcher::.github/matchers.json"
+
+    - name: Upload internal test release build
+      run: bundle exec fastlane uploadToInternalTest jksPath:"$(pwd)/apiary-mobile.jks" signingStorePassword:"${{ secrets.GOOGLE_PLAY_KEYSTORE_PASSWORD }}" signingKeyAlias:"apiary-mobile-upload-key" signingKeyPassword:"${{ secrets.GOOGLE_PLAY_KEYSTORE_PASSWORD }}" inAppUpdatePriority:"${{ inputs.update-priority }}"
+      env:
+        GOOGLE_PLAY_PRIVATE_KEY: ${{ secrets.GOOGLE_PLAY_PRIVATE_KEY }}
+        IS_CI: true
+
+    - name: Push tag to GitHub
+      run: |
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git tag --annotate v$(dotnet-gitversion | jq --raw-output .SemVer) -m "Build released to internal test track"
+        git push --tags
