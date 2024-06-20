@@ -27,6 +27,7 @@ dependencies {
 
     implementation(HiltDependencies.hilt)
     kapt(HiltDependencies.hilt_android_compiler)
+    implementation(HiltDependencies.dagger_producer)
 
     implementation(NetworkDependencies.moshi)
     ksp(NetworkDependencies.moshi_kotlin_codegen)
@@ -47,7 +48,7 @@ hilt {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 35
     defaultConfig {
         minSdk = 21
 
@@ -62,6 +63,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

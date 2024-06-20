@@ -35,6 +35,7 @@ dependencies {
 
     implementation(HiltDependencies.hilt)
     kapt(HiltDependencies.hilt_android_compiler)
+    implementation(HiltDependencies.dagger_producer)
 
     implementation(MaterialDependencies.material_android)
 
@@ -53,7 +54,7 @@ dependencies {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 35
     defaultConfig {
         minSdk = 21
 
@@ -69,6 +70,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

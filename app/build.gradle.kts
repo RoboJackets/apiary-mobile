@@ -44,6 +44,7 @@ dependencies {
 
     implementation(HiltDependencies.hilt)
     kapt(HiltDependencies.hilt_android_compiler)
+    implementation(HiltDependencies.dagger_producer)
     implementation(HiltDependencies.hilt_navigation_compose)
 
     implementation(NetworkDependencies.moshi_converter_factory)
@@ -71,11 +72,11 @@ android {
         create("release") {
         }
     }
-    compileSdk = 33
+    compileSdk = 35
     defaultConfig {
         applicationId = "org.robojackets.apiary"
         minSdk = 21
-        targetSdk = 33
+        targetSdk = 35
         versionCode = 12
         versionName = "1.0.0"
         vectorDrawables {
@@ -90,6 +91,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

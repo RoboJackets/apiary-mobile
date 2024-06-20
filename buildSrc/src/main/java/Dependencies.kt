@@ -1,10 +1,10 @@
 object ComposeDependencies {
     object Versions {
-        const val accompanist_version = "0.30.1"
-        const val compose_settings_version = "0.27.0"
-        const val compose_version = "1.4.3"
-        const val lifecycle_viewmodel_compose_version = "2.6.1"
-        const val compose_material3_version = "1.1.1"
+        const val accompanist_version = "0.34.0"
+        const val compose_settings_version = "2.4.0"
+        const val compose_version = "1.6.8"
+        const val lifecycle_viewmodel_compose_version = "2.8.2"
+        const val compose_material3_version = "1.2.1"
     }
 
     const val accompanist_systemuicontroller =
@@ -27,7 +27,7 @@ object ComposeDependencies {
         "androidx.compose.runtime:runtime-livedata:${Versions.compose_version}"
 
     const val compose_settings =
-        "com.github.alorma:compose-settings-ui-m3:${Versions.compose_settings_version}"
+        "com.github.alorma.compose-settings:ui-tiles:${Versions.compose_settings_version}"
 
     const val compose_ui = "androidx.compose.ui:ui:${Versions.compose_version}"
     const val compose_ui_test = "androidx.compose.ui:ui-test-junit4:${Versions.compose_version}"
@@ -39,7 +39,7 @@ object ComposeDependencies {
 
 object MaterialDependencies {
     object Versions {
-        const val material_android_version = "1.9.0"
+        const val material_android_version = "1.12.0"
     }
 
     const val material_android =
@@ -48,11 +48,11 @@ object MaterialDependencies {
 
 object AndroidXDependencies {
     object Versions {
-        const val androidx_activity_compose_version = "1.7.2"
-        const val androidx_appcompat_version = "1.6.1"
-        const val androidx_browser_version = "1.5.0"
-        const val androidx_lifecycle_runtime_ktx_version = "2.6.1"
-        const val androidx_navigation_compose_version = "2.5.3"
+        const val androidx_activity_compose_version = "1.9.0"
+        const val androidx_appcompat_version = "1.7.0"
+        const val androidx_browser_version = "1.8.0"
+        const val androidx_lifecycle_runtime_ktx_version = "2.8.2"
+        const val androidx_navigation_compose_version = "2.7.7"
     }
 
     const val androidx_activity_compose =
@@ -68,7 +68,7 @@ object AndroidXDependencies {
 
 object FirebaseDependencies {
     object Versions {
-        const val firebase_bom_version = "32.0.0"
+        const val firebase_bom_version = "33.1.0"
     }
 
     const val firebase_bom = "com.google.firebase:firebase-bom:${Versions.firebase_bom_version}"
@@ -91,25 +91,26 @@ object AuthDependencies {
 
 object HiltDependencies {
     object Versions {
-        const val hilt_navigation_compose_version = "1.0.0"
+        const val hilt_navigation_compose_version = "1.2.0"
         const val hilt_version = "2.46.1"
     }
 
     const val hilt = "com.google.dagger:hilt-android:${Versions.hilt_version}"
     const val hilt_android_compiler =
         "com.google.dagger:hilt-android-compiler:${Versions.hilt_version}"
+    const val dagger_producer = "com.google.dagger:dagger-producers:${Versions.hilt_version}"
     const val hilt_navigation_compose =
         "androidx.hilt:hilt-navigation-compose:${Versions.hilt_navigation_compose_version}"
 }
 
 object AndroidToolDependencies {
     object Versions {
-        const val android_tools_desugar_version = "1.1.5"
+        const val android_tools_desugar_version = "2.0.4"
         const val krate_version = "2.0.0"
-        const val gson_version = "2.10.1"
-        const val in_app_update_compose_version = "0.0.17"
-        const val open_source_licenses_version = "17.0.1"
-        const val sentry_version = "6.28.0"
+        const val gson_version = "2.11.0"
+        const val in_app_update_compose_version = "0.0.17" // TODO: Update to newer version with breaking changes
+        const val open_source_licenses_version = "17.1.0"
+        const val sentry_version = "7.10.0"
         const val timber_version = "5.0.1"
     }
 
@@ -128,12 +129,12 @@ object AndroidToolDependencies {
 
 object NetworkDependencies {
     object Versions {
-        const val moshi_version = "1.15.0"
-        const val moshi_converter_factory_version = "2.9.0"
-        const val okhttp_bom_version = "4.11.0"
-        const val retrofit_version = "2.9.0"
+        const val moshi_version = "1.15.1"
+        const val moshi_converter_factory_version = "2.11.0"
+        const val okhttp_bom_version = "4.12.0"
+        const val retrofit_version = "2.11.0"
         const val retrofuture_version = "1.7.4"
-        const val sandwich_version = "1.3.8"
+        const val sandwich_version = "1.3.9" // TODO: Upgrade to v2
     }
 
     const val moshi = "com.squareup.moshi:moshi:${Versions.moshi_version}"

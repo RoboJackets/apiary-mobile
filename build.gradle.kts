@@ -1,15 +1,15 @@
 buildscript {
     repositories {
-        gradlePluginPortal()
         google()
+        gradlePluginPortal()
         mavenCentral()
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
-        classpath("com.android.tools.build:gradle:8.1.0")
+        classpath("com.android.tools.build:gradle:8.5.0")
         classpath("com.google.dagger:hilt-android-gradle-plugin:2.46.1")
         classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
-        classpath("com.google.gms:google-services:4.3.15")
+        classpath("com.google.gms:google-services:4.4.2")
         classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
     }
 }
@@ -65,9 +65,9 @@ tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt::class) {
     include(kotlinFiles)
     exclude(resourceFiles, buildFiles)
     reports {
-        html.enabled = true
-        xml.enabled = false
-        txt.enabled = false
+        html.required.set(true)
+        xml.required.set(false)
+        txt.required.set(false)
     }
 }
 

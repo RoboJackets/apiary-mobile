@@ -101,7 +101,7 @@ command does, so you can get around any errors stemming from this by aliasing th
 to `which`.
  - You need to install [GitVersion](https://github.com/GitTools/GitVersion) yourself.
 
-## Release management
+## Release management   
 
 Below are some instructions on the MyRoboJackets Android release process. Note that you will need
 additional permissions on this repo and the MyRoboJackets Android Google Play application to
