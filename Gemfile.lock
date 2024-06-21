@@ -207,4 +207,18 @@ GEM
       nanaimo (~> 0.3.0)
       rexml (~> 3.2.4)
     xcpretty (0.3.0)
-      rouge (~> 2
+      rouge (~> 2.0.7)
+    xcpretty-travis-formatter (1.0.1)
+      xcpretty (~> 0.2, >= 0.0.7)
+
+PLATFORMS
+  x64-mingw32
+  x86_64-linux
+
+DEPENDENCIES
+  dotenv (~> 2.7)
+  fastlane
+  fastlane-plugin-sentry
+
+BUNDLED WITH
+   2.3.1
