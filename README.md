@@ -116,17 +116,17 @@ merged in close proximity. Our Concourse pipeline has jobs to automatically hand
 signing, and uploading production releases of the app.
 
 1. After you've merged all PRs to be included in the release, ensure the `.update-priority`
-file is set correctly according to the table below. Use priority 2 as the default. If you want to
-use priority 4 or 5, post in #apiary-mobile first.
+file is set correctly according to the table below. Use priority 1 as the default. If you want to
+use priority 5, post in #apiary-mobile first.
    1. Update priority affects if and how often users receive in-app update prompts to update the
 app to the latest version.
+2. 
 
-| Update priority | Description | Examples | Update timeline for users |
-| --- | --- |--- | --- |
-| 0/1/2 | Very low  or low priority | UI touchups that don't impact functionality, releases with options to opt-in to beta features | No prompt initially. Optional prompt starting 14 days after release. Immediate update 21 days after release. |
-| 3 | Medium priority |  Medium-priority bug fixes, performance improvements, non-time-sensitive feature launches | No prompts for the first 3 days. Optional starting 4 days after release. Immediate update 21 days after release. |
-| 4 | High priority or time-sensitive | High priority bug fixes, time-sensitive feature launches | Optional for the first 24 hours, then immediate. |
-| 5 | Critical bug fixes | Crashes/bugs impacting major features, urgent vulnerabilities | Immediate update required. |
+| Update priority | Description                                                                         | Examples                                                                                      |
+|-----------------|-------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| 1               | Optional update with prompts when the update is first available, then every 8 days. | UI touchups that don't impact functionality, releases with options to opt-in to beta features |
+| 3               | Optional update with prompts when the update is first available, then every 4 days. | Medium-priority bug fixes, performance improvements, new features                             |
+| 5               | Required update with immediate prompt and no option to decline.                     | Crashes/bugs impacting major features, urgent vulnerabilities                                 |
 
 2. Create a new release on `main` using a tag with a name like `v1.0.0`. Use semantic versioning
 to determine how to increment the version number.

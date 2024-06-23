@@ -7,7 +7,8 @@ buildscript {
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
         classpath("com.android.tools.build:gradle:8.5.0")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.46.1")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.51.1") // This version needs to
+        // match the version for other Hilt dependencies defined in Dependencies.kt
         classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
         classpath("com.google.gms:google-services:4.4.2")
         classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
@@ -42,7 +43,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 }
 
 tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }
 
 val projectSource = file(projectDir)

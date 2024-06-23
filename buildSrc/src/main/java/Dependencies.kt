@@ -92,7 +92,8 @@ object AuthDependencies {
 object HiltDependencies {
     object Versions {
         const val hilt_navigation_compose_version = "1.2.0"
-        const val hilt_version = "2.46.1"
+        const val hilt_version = "2.51.1" // If you update this version, you also need to update
+        // the com.google.dagger:hilt-android-gradle-plugin version in build.gradle files
     }
 
     const val hilt = "com.google.dagger:hilt-android:${Versions.hilt_version}"
@@ -108,7 +109,7 @@ object AndroidToolDependencies {
         const val android_tools_desugar_version = "2.0.4"
         const val krate_version = "2.0.0"
         const val gson_version = "2.11.0"
-        const val in_app_update_compose_version = "0.0.17" // TODO: Update to newer version with breaking changes
+        const val in_app_update_compose_version = "1.2.0"
         const val open_source_licenses_version = "17.1.0"
         const val sentry_version = "7.10.0"
         const val timber_version = "5.0.1"
@@ -118,7 +119,7 @@ object AndroidToolDependencies {
         "com.android.tools:desugar_jdk_libs:${Versions.android_tools_desugar_version}"
     const val gson = "com.google.code.gson:gson:${Versions.gson_version}"
     const val in_app_update_compose =
-        "se.warting.in-app-update:in-app-update-compose:${Versions.in_app_update_compose_version}"
+        "se.warting.in-app-update:in-app-update-compose-mui:${Versions.in_app_update_compose_version}"
     const val krate = "hu.autsoft:krate:${Versions.krate_version}"
     const val open_source_licenses =
         "com.google.android.gms:play-services-oss-licenses:${Versions.open_source_licenses_version}"
