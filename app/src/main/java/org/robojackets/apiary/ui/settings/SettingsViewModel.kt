@@ -35,9 +35,11 @@ class SettingsViewModel @Inject constructor(
     val authStateManager: AuthStateManager,
 ) : ViewModel() {
     val privacyPolicyUrl: Uri = Uri.withAppendedPath(globalSettings.appEnv.apiBaseUrl, "privacy")
-    val makeAWishUrl: Uri = Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLSelERsYq3" +
+    val makeAWishUrl: Uri = Uri.parse(
+        "https://docs.google.com/forms/d/e/1FAIpQLSelERsYq3" +
             "gLmHbWvVCWha5iCU8z3r9VYC0hCN4ArLpMAiysaQ/viewform?entry.1338203640=MyRoboJackets%20" +
-            "Android")
+            "Android"
+    )
     var customTabsClient: CustomTabsClient? = null
 
     val customTabsServiceConnection = object : CustomTabsServiceConnection() {
@@ -67,10 +69,13 @@ class SettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            combine(listOf(
+            combine(
+                listOf(
                 user,
-            )) {
-                flows -> SettingsState(
+            )
+            ) {
+                flows ->
+                    SettingsState(
                     flows[0] as UserInfo?
                 )
             }.catch { throwable -> throw throwable }

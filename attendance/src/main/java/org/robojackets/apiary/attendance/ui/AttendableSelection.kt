@@ -4,7 +4,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -21,7 +26,6 @@ import org.robojackets.apiary.base.ui.icons.WarningIcon
 import org.robojackets.apiary.base.ui.theme.danger
 import org.robojackets.apiary.base.ui.util.ContentPadding
 
-@ExperimentalMaterialApi
 @Composable
 private fun <T> AttendableList(
     attendables: List<T>,
@@ -36,12 +40,11 @@ private fun <T> AttendableList(
         LazyColumn {
             itemsIndexed(attendables) { idx, attendable ->
                 ListItem(
+                    headlineContent = { attendableContent(attendable) },
                     Modifier.clickable {
                         onAttendableSelected(attendable)
                     }
-                ) {
-                    attendableContent(attendable)
-                }
+                )
                 if (idx < attendables.size - 1) {
                     Divider()
                 }
@@ -51,7 +54,6 @@ private fun <T> AttendableList(
 }
 
 @Suppress("LongMethod")
-@ExperimentalMaterialApi
 @Composable
 fun AttendableSelectionScreen(
     viewModel: AttendanceViewModel,
@@ -102,7 +104,7 @@ fun AttendableSelectionScreen(
                     onAttendableSelected = {
                         viewModel.onAttendableSelected(it.toAttendable())
                     },
-                    title = { Text("Select a team", style = MaterialTheme.typography.h5) },
+                    title = { Text("Select a team", style = MaterialTheme.typography.headlineSmall) },
                     callout = {
                         if (state.missingHiddenTeams == true) {
                             Spacer(Modifier.height(4.dp))
@@ -121,7 +123,7 @@ fun AttendableSelectionScreen(
                     onAttendableSelected = {
                         viewModel.onAttendableSelected(it.toAttendable())
                     },
-                    title = { Text("Select an event", style = MaterialTheme.typography.h5) }
+                    title = { Text("Select an event", style = MaterialTheme.typography.headlineSmall) }
                 ) {
                     Text(it.name)
                 }

@@ -1,10 +1,9 @@
 package org.robojackets.apiary.base.ui.icons
 
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,7 +13,7 @@ import org.robojackets.apiary.base.R
 @Composable
 fun ContactlessIcon(
     modifier: Modifier,
-    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+    tint: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_outline_contactless_24dp),
@@ -27,7 +26,7 @@ fun ContactlessIcon(
 @Composable
 fun WarningIcon(
     modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+    tint: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Icon(
         Icons.Default.Warning,
@@ -40,7 +39,7 @@ fun WarningIcon(
 @Composable
 fun ErrorIcon(
     modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+    tint: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_baseline_error_outline_24),
@@ -53,7 +52,7 @@ fun ErrorIcon(
 @Composable
 fun CreditCardIcon(
     modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+    tint: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_baseline_credit_card_24),
@@ -66,7 +65,7 @@ fun CreditCardIcon(
 @Composable
 fun PendingIcon(
     modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+    tint: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_outline_pending_24dp),
@@ -79,7 +78,7 @@ fun PendingIcon(
 @Composable
 fun GroupsIcon(
     modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+    tint: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_outline_groups_24dp),
@@ -92,7 +91,7 @@ fun GroupsIcon(
 @Composable
 fun EventIcon(
     modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+    tint: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_outline_event_24dp),
@@ -105,7 +104,7 @@ fun EventIcon(
 @Composable
 fun UpdateIcon(
     modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+    tint: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_baseline_update_24),
@@ -118,7 +117,7 @@ fun UpdateIcon(
 @Composable
 fun TaskAltIcon(
     modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+    tint: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_outline_task_alt_24dp),

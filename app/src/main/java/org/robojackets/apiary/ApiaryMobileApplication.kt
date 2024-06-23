@@ -8,8 +8,8 @@ import io.sentry.android.timber.SentryTimberIntegration
 import timber.log.Timber
 
 // Note: this class has to be in the same module as the @AndroidEntryPoint annotated class, which
-// is MainActivity.  In other words, you can't move this class to another module to solve
-// dependency issues (use dependency injection instead!).
+// is MainActivity. In other words, you can't move this class to another module to solve dependency
+// issues (use dependency injection instead!).
 @HiltAndroidApp
 class ApiaryMobileApplication : Application() {
     override fun onCreate() {

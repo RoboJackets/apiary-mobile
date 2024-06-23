@@ -24,9 +24,13 @@ class UserAgentInterceptor(context: Context) : Interceptor {
     private fun getApplicationName(context: Context): String {
         val applicationInfo = context.applicationInfo
         val stringId = applicationInfo.labelRes
-        return if (stringId == 0) applicationInfo.nonLocalizedLabel.toString() else context.getString(
+        return if (stringId == 0) {
+            applicationInfo.nonLocalizedLabel.toString()
+        } else {
+            context.getString(
             stringId
         )
+        }
     }
 
     private fun getDeviceName(): String {
@@ -34,7 +38,9 @@ class UserAgentInterceptor(context: Context) : Interceptor {
         val model = Build.MODEL
         return if (model.startsWith(manufacturer)) {
             model.replaceFirstChar { it.titlecase() }
-        } else manufacturer.replaceFirstChar { it.titlecase() } + " " + model
+        } else {
+            manufacturer.replaceFirstChar { it.titlecase() } + " " + model
+        }
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {

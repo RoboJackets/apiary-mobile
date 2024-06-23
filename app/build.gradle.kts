@@ -2,7 +2,8 @@ plugins {
     id("com.android.application")
     kotlin("android")
     id("kotlin-android")
-    kotlin("kapt")
+//    kotlin("kapt") // FIXME: remove if unneeded
+    id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.google.android.gms.oss-licenses-plugin")
@@ -36,14 +37,14 @@ dependencies {
     implementation(ComposeDependencies.lifecycle_viewmodel_compose)
     implementation(ComposeDependencies.compose_ui_tooling)
     implementation(ComposeDependencies.compose_foundation)
-    implementation(ComposeDependencies.compose_material)
+    implementation(ComposeDependencies.compose_material3)
     implementation(ComposeDependencies.compose_material_icons_core)
     implementation(ComposeDependencies.compose_material_icons_extended)
     implementation(ComposeDependencies.compose_settings)
 
-
     implementation(HiltDependencies.hilt)
-    kapt(HiltDependencies.hilt_android_compiler)
+    ksp(HiltDependencies.hilt_android_compiler)
+//    implementation(HiltDependencies.dagger_producer) // FIXME: remove if unneeded
     implementation(HiltDependencies.hilt_navigation_compose)
 
     implementation(NetworkDependencies.moshi_converter_factory)
@@ -54,7 +55,7 @@ dependencies {
     implementation(NetworkDependencies.sandwich) // yum yum
 
     implementation(platform(NfcDependencies.nfc_firebase_bom))
-    implementation(NfcDependencies.nfc_firebase_core) // Firebase BoM and Core are required when including TapLinx (line below) manually
+    implementation(NfcDependencies.nfc_firebase_analytics) // Firebase BoM and Analytics (f/k/a Core) are required when including TapLinx (line below) manually
     implementation(files(NfcDependencies.nxp_nfc_android_aar_path))
 
     // Test dependencies
@@ -71,12 +72,12 @@ android {
         create("release") {
         }
     }
-    compileSdk = 32
+    compileSdk = 35
     defaultConfig {
         applicationId = "org.robojackets.apiary"
         minSdk = 21
-        targetSdk = 32
-        versionCode = 12
+        targetSdk = 35
+        versionCode = 21
         versionName = "1.0.0"
         vectorDrawables {
             useSupportLibrary = true
@@ -90,17 +91,18 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.2.0-beta03"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     namespace = "org.robojackets.apiary"
     hilt {
