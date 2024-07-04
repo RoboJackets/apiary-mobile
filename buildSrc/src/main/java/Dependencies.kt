@@ -34,15 +34,6 @@ object ComposeDependencies {
         "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle_viewmodel_compose_version}"
 }
 
-object MaterialDependencies {
-    object Versions {
-        const val material_android_version = "1.12.0"
-    }
-
-    const val material_android =
-        "com.google.android.material:material:${Versions.material_android_version}"
-}
-
 object AndroidXDependencies {
     object Versions {
         const val androidx_activity_compose_version = "1.9.0"
