@@ -22,9 +22,6 @@ import org.robojackets.apiary.base.ui.icons.ErrorIcon
 import org.robojackets.apiary.base.ui.theme.danger
 import org.robojackets.apiary.base.ui.theme.warningLightEmphasis
 
-// TODO: M3 upgrade
-// - Opening the app with NFC disabled causes a crash
-
 @Composable
 fun NfcRequired(nfcEnabled: Boolean, gatedComposable: @Composable () -> Unit) {
     val context = LocalContext.current

@@ -2,7 +2,6 @@ plugins {
     id("com.android.library")
     kotlin("android")
     id("kotlin-android")
-//    kotlin("kapt")
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
@@ -24,9 +23,6 @@ dependencies {
 
     implementation(HiltDependencies.hilt)
     ksp(HiltDependencies.hilt_android_compiler)
-//    implementation(HiltDependencies.dagger_producer)
-
-    implementation(MaterialDependencies.material_android)
 
     // Test dependencies
     androidTestImplementation(TestDependencies.junit)

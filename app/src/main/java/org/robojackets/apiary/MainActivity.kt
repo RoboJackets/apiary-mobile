@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Contactless
+import androidx.compose.material.navigation.ModalBottomSheetLayout
+import androidx.compose.material.navigation.bottomSheet
+import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -40,10 +43,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import androidx.navigation.plusAssign
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
-import com.google.accompanist.navigation.material.bottomSheet
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.nxp.nfclib.NxpNfcLib
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -132,7 +131,6 @@ class MainActivity : ComponentActivity() {
         nfcLib.registerActivity(this, BuildConfig.taplinxKey, BuildConfig.taplinxOfflineKey)
     }
 
-    @OptIn(ExperimentalMaterialNavigationApi::class)
     @Suppress("LongMethod")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -153,7 +151,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Apiary_MobileTheme {
-                window.statusBarColor = MaterialTheme.colorScheme.secondary.toArgb() // FIXME: deprecated
+                window.statusBarColor = MaterialTheme.colorScheme.secondary.toArgb()
                 val navController = rememberNavController()
                 val bottomSheetNavigator = rememberBottomSheetNavigator()
                 navController.navigatorProvider += bottomSheetNavigator
@@ -248,7 +246,6 @@ class MainActivity : ComponentActivity() {
             currentScreen != NavigationDestinations.updateInProgress
 
     @Suppress("LongMethod")
-    @OptIn(ExperimentalMaterialNavigationApi::class)
     @Composable
     private fun AppNavigation(
         navController: NavHostController,

@@ -63,7 +63,7 @@ fun UpdateGate(
         is InAppUpdateState.OptionalUpdate -> {
             LaunchedEffect(navReady) {
                 if (navReady && inAppUpdateState.shouldPrompt) {
-                    onShowOptionalUpdatePrompt() // FIXME: test this
+                    onShowOptionalUpdatePrompt()
                 }
             }
             content()
@@ -72,7 +72,7 @@ fun UpdateGate(
         is InAppUpdateState.RequiredUpdate -> {
             LaunchedEffect(navReady) {
                 if (navReady && inAppUpdateState.shouldPrompt) {
-                    onShowRequiredUpdatePrompt() // FIXME: test this
+                    onShowRequiredUpdatePrompt()
                 }
             }
             content()

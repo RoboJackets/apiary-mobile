@@ -2,7 +2,7 @@ package org.robojackets.apiary.di
 
 import android.content.Context
 import com.nxp.nfclib.NxpNfcLib
-import com.skydoves.sandwich.adapters.ApiResponseCallAdapterFactory
+import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import dagger.Module

@@ -9,9 +9,13 @@ import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
 import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import org.robojackets.apiary.attendance.model.AttendanceScreenState.*
+import org.robojackets.apiary.attendance.model.AttendanceScreenState.Loading
+import org.robojackets.apiary.attendance.model.AttendanceScreenState.ReadyForTap
 import org.robojackets.apiary.attendance.network.AttendanceRepository
 import org.robojackets.apiary.base.model.Attendable
 import org.robojackets.apiary.base.model.AttendableType
@@ -191,7 +195,7 @@ class AttendanceViewModel @Inject constructor(
                         error.value = "Unable to fetch team info"
                     }.onException {
                         Timber.e(
-                            this.exception,
+                            this.throwable,
                             "Exception occurred while fetching attendable teams"
                         )
                         error.value = "Unable to fetch team info"
@@ -209,7 +213,7 @@ class AttendanceViewModel @Inject constructor(
                         error.value = "Unable to fetch event info"
                     }.onException {
                         Timber.e(
-                            this.exception,
+                            this.throwable,
                             "Exception occurred while fetching attendable events"
                         )
                         error.value = "Unable to fetch event info"

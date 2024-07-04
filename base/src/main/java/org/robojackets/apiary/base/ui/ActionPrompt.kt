@@ -27,7 +27,7 @@ fun ActionPrompt(
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp, start = 4.dp, end = 4.dp)
     ) {
         icon()
         Text(
@@ -44,7 +44,7 @@ fun ActionPrompt(
         subtitle?.let {
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
             )
         }

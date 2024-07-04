@@ -1,10 +1,17 @@
 package org.robojackets.apiary.auth.ui
 
-import android.app.Activity.*
+import android.app.Activity.RESULT_OK
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.AlertDialog
@@ -16,7 +23,13 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -28,12 +41,13 @@ import net.openid.appauth.AuthorizationResponse
 import org.robojackets.apiary.auth.R
 import org.robojackets.apiary.auth.model.AuthenticationState
 import org.robojackets.apiary.auth.model.AuthenticationViewModel
-import org.robojackets.apiary.auth.model.LoginStatus.*
+import org.robojackets.apiary.auth.model.LoginStatus.COMPLETE
+import org.robojackets.apiary.auth.model.LoginStatus.ERROR
+import org.robojackets.apiary.auth.model.LoginStatus.NOT_STARTED
 import org.robojackets.apiary.auth.oauth2.AuthManager
 import org.robojackets.apiary.base.AppEnvironment
 import org.robojackets.apiary.base.ui.util.MadeWithLove
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Suppress("LongMethod", "MagicNumber")
 @Composable
 private fun Authentication(

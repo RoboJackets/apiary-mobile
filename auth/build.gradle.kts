@@ -2,7 +2,6 @@ plugins {
     id("com.android.library")
     kotlin("android")
     id("kotlin-android")
-//    kotlin("kapt")
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
@@ -22,7 +21,7 @@ dependencies {
     implementation(AndroidToolDependencies.timber)
 
     implementation(AndroidXDependencies.androidx_activity_compose)
-    implementation(AndroidXDependencies.androidx_lifecycle_runtime_ktx)
+    implementation(AndroidXDependencies.androidx_lifecycle_runtime)
     implementation(AndroidXDependencies.androidx_navigation_compose)
 
     implementation(AuthDependencies.appauth)
@@ -35,9 +34,6 @@ dependencies {
 
     implementation(HiltDependencies.hilt)
     ksp(HiltDependencies.hilt_android_compiler)
-//    implementation(HiltDependencies.dagger_producer)
-
-    implementation(MaterialDependencies.material_android)
 
     implementation(NetworkDependencies.moshi)
     ksp(NetworkDependencies.moshi_kotlin_codegen)
@@ -46,6 +42,8 @@ dependencies {
     implementation(NetworkDependencies.retrofit)
     implementation(NetworkDependencies.retrofuture)
     implementation(NetworkDependencies.sandwich)
+    implementation(NetworkDependencies.sandwich_retrofit)
+    implementation(NetworkDependencies.sandwich_retrofit_serialization)
 
     // Test dependencies
     androidTestImplementation(ComposeDependencies.compose_ui_test)

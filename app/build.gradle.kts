@@ -2,7 +2,6 @@ plugins {
     id("com.android.application")
     kotlin("android")
     id("kotlin-android")
-//    kotlin("kapt") // FIXME: remove if unneeded
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
@@ -32,7 +31,7 @@ dependencies {
 
     implementation(AuthDependencies.appauth)
 
-    implementation(ComposeDependencies.accompanist_nav_material)
+    implementation(ComposeDependencies.compose_material_navigation)
     implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.lifecycle_viewmodel_compose)
     implementation(ComposeDependencies.compose_ui_tooling)
@@ -44,7 +43,6 @@ dependencies {
 
     implementation(HiltDependencies.hilt)
     ksp(HiltDependencies.hilt_android_compiler)
-//    implementation(HiltDependencies.dagger_producer) // FIXME: remove if unneeded
     implementation(HiltDependencies.hilt_navigation_compose)
 
     implementation(NetworkDependencies.moshi_converter_factory)
@@ -53,6 +51,8 @@ dependencies {
     implementation(NetworkDependencies.okhttp_logging_interceptor)
     implementation(NetworkDependencies.retrofit)
     implementation(NetworkDependencies.sandwich) // yum yum
+    implementation(NetworkDependencies.sandwich_retrofit)
+    implementation(NetworkDependencies.sandwich_retrofit_serialization)
 
     implementation(platform(NfcDependencies.nfc_firebase_bom))
     implementation(NfcDependencies.nfc_firebase_analytics) // Firebase BoM and Analytics (f/k/a Core) are required when including TapLinx (line below) manually

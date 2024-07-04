@@ -2,7 +2,11 @@ package org.robojackets.apiary.base.ui.callout
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,12 +19,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.robojackets.apiary.base.ui.IconWithText
 import org.robojackets.apiary.base.ui.icons.ErrorIcon
+import org.robojackets.apiary.base.ui.theme.isLight
 import org.robojackets.apiary.base.ui.theme.warningDarkSubtle
 import org.robojackets.apiary.base.ui.theme.warningLightMuted
 import org.robojackets.apiary.base.ui.theme.warningLightSubtle
-
-// TODO: M3 upgrade
-// - Implement replacement for isLight
 
 @Composable
 fun Callout(
@@ -52,7 +54,7 @@ fun WarningCallout(
     padding: PaddingValues? = null,
     body: @Composable () -> Unit,
 ) {
-    val isLightTheme = true // TODO: M3 upgrade, previously: MaterialTheme.colors.isLight
+    val isLightTheme = MaterialTheme.colorScheme.isLight()
 
     Callout(
         title = {

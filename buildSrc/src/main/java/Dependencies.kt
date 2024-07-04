@@ -5,12 +5,11 @@ object ComposeDependencies {
         const val compose_version = "1.6.8"
         const val lifecycle_viewmodel_compose_version = "2.8.2"
         const val compose_material3_version = "1.2.1"
+        const val compose_material_navigation_version = "1.7.0-beta01"
     }
 
     const val accompanist_systemuicontroller =
         "com.google.accompanist:accompanist-systemuicontroller:${Versions.accompanist_version}"
-    const val accompanist_nav_material =
-        "com.google.accompanist:accompanist-navigation-material:${Versions.accompanist_version}"
 
     const val compose_foundation =
         "androidx.compose.foundation:foundation:${Versions.compose_version}"
@@ -21,10 +20,8 @@ object ComposeDependencies {
         "androidx.compose.material:material-icons-core:${Versions.compose_version}"
     const val compose_material_icons_extended =
         "androidx.compose.material:material-icons-extended:${Versions.compose_version}"
-
-    const val compose_runtime = "androidx.compose.runtime:runtime:${Versions.compose_version}"
-    const val compose_runtime_livedata =
-        "androidx.compose.runtime:runtime-livedata:${Versions.compose_version}"
+    const val compose_material_navigation =
+        "androidx.compose.material:material-navigation:${Versions.compose_material_navigation_version}"
 
     const val compose_settings =
         "com.github.alorma.compose-settings:ui-tiles:${Versions.compose_settings_version}"
@@ -51,7 +48,7 @@ object AndroidXDependencies {
         const val androidx_activity_compose_version = "1.9.0"
         const val androidx_appcompat_version = "1.7.0"
         const val androidx_browser_version = "1.8.0"
-        const val androidx_lifecycle_runtime_ktx_version = "2.8.2"
+        const val androidx_lifecycle_runtime_version = "2.8.2"
         const val androidx_navigation_compose_version = "2.7.7"
     }
 
@@ -60,8 +57,8 @@ object AndroidXDependencies {
     const val androidx_appcompat =
         "androidx.appcompat:appcompat:${Versions.androidx_appcompat_version}"
     const val androidx_browser = "androidx.browser:browser:${Versions.androidx_browser_version}"
-    const val androidx_lifecycle_runtime_ktx =
-        "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.androidx_lifecycle_runtime_ktx_version}"
+    const val androidx_lifecycle_runtime =
+        "androidx.lifecycle:lifecycle-runtime:${Versions.androidx_lifecycle_runtime_version}"
     const val androidx_navigation_compose =
         "androidx.navigation:navigation-compose:${Versions.androidx_navigation_compose_version}"
 }
@@ -135,7 +132,7 @@ object NetworkDependencies {
         const val okhttp_bom_version = "4.12.0"
         const val retrofit_version = "2.11.0"
         const val retrofuture_version = "1.7.4"
-        const val sandwich_version = "1.3.9" // TODO: Upgrade to v2
+        const val sandwich_version = "2.0.8"
     }
 
     const val moshi = "com.squareup.moshi:moshi:${Versions.moshi_version}"
@@ -148,6 +145,10 @@ object NetworkDependencies {
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit_version}"
     const val retrofuture = "net.sourceforge.streamsupport:android-retrofuture:${Versions.retrofuture_version}"
     const val sandwich = "com.github.skydoves:sandwich:${Versions.sandwich_version}"
+    const val sandwich_retrofit =
+        "com.github.skydoves:sandwich-retrofit:${Versions.sandwich_version}"
+    const val sandwich_retrofit_serialization =
+        "com.github.skydoves:sandwich-retrofit-serialization:${Versions.sandwich_version}"
 }
 
 object TestDependencies {
