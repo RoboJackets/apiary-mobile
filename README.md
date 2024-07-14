@@ -12,7 +12,7 @@ NFC functionality uses the NXP MIFARE TapLinx Android SDK.  You must provide a l
 license key from the TapLinx Developer Center on https://www.mifare.net/en/products/tools/taplinx/.
 
 Additionally, important licensing information about the TapLinx library is included in the [`libs`](libs)
-directory, including the [license](libs/LA_OPT_NXP_Software_License.txt) 
+directory, including the [license](libs/LA_OPT_NXP_Software_License.txt)
 and [Software Content Register](libs/Taplinx_Android_SDK_SCR.txt).
 
 **Note:** For RoboJackets developers, reach out in #apiary-mobile in Slack to obtain our keys.
@@ -31,7 +31,7 @@ sentryDsn=SENTRY_DSN_HERE
 There are 5 modules encompassing features and utilities.
 
 - **app** - The main application module
-  
+
 Note: To avoid circular dependencies, the below modules **must not** have the **app** module as a
 dependency.  Place such code in the `base` (or a new) module.
 
@@ -42,12 +42,12 @@ dependency.  Place such code in the `base` (or a new) module.
 
 #### Dependency management
 
-Dependency versions are managed centrally in 
+Dependency versions are managed centrally in
 [Dependencies.kt](buildSrc/src/main/java/Dependencies.kt) in the `buildSrc` module.  If you change
 a version in `Dependencies.kt`, make sure to manually sync Gradle because Android Studio might not
 recognize that the change requires a Gradle sync.
 
-After adding a dependency in `Dependencies.kt`, you must also add it to the appropriate Gradle 
+After adding a dependency in `Dependencies.kt`, you must also add it to the appropriate Gradle
 Script (take a look at a `build.gradle.kts` file for one of the modules for examples).
 
 ### Environment configuration
@@ -101,7 +101,7 @@ command does, so you can get around any errors stemming from this by aliasing th
 to `which`.
  - You need to install [GitVersion](https://github.com/GitTools/GitVersion) yourself.
 
-## Release management   
+## Release management
 
 Below are some instructions on the MyRoboJackets Android release process. Note that you will need
 additional permissions on this repo and the MyRoboJackets Android Google Play application to
@@ -120,7 +120,7 @@ file is set correctly according to the table below. Use priority 1 as the defaul
 use priority 5, post in #apiary-mobile first.
    1. Update priority affects if and how often users receive in-app update prompts to update the
 app to the latest version.
-2. 
+2.
 
 | Update priority | Description                                                                         | Examples                                                                                      |
 |-----------------|-------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
@@ -132,22 +132,22 @@ app to the latest version.
 to determine how to increment the version number.
    1. Go to https://github.com/RoboJackets/apiary-mobile/releases
    2. Press the **Draft a new release** button.
-   3. Decide on the new version tag; it **must** start with `v`. In general, you should increment 
-the previous release's version using [semantic versioning](https://semver.org/) guidelines (most 
+   3. Decide on the new version tag; it **must** start with `v`. In general, you should increment
+the previous release's version using [semantic versioning](https://semver.org/) guidelines (most
 releases will be a 0.1.0 (minor) or 0.0.1 (patch) increment). Press **Choose a tag**, then enter the
 new tag name to create it on publish.
    4. Leave **Release title** blank. Instead, press **Generate release notes**. The release title
 and description should automatically fill in with the changes since the last release.
       1. In general, you shouldn't need to manually set the value of the `Previous tag` field,
       unless the release notes seem incorrect.
-3. When you publish the release (which creates a new tag), a Concourse job to create a draft Google 
+3. When you publish the release (which creates a new tag), a Concourse job to create a draft Google
 Play internal test release will begin shortly.
    1. If it doesn't start, a common reason is that it wasn't alphabetically the latest tag, so the
    [`tagged-release`](https://concourse.sandbox.aws.robojackets.net/teams/information-technology/pipelines/apiary-mobile/resources/tagged-release)
    resource didn't trigger a new build. We can disable old versions of the resource to trigger a new
    build.
 4. If the Concourse [build-release job](https://concourse.sandbox.aws.robojackets.net/teams/information-technology/pipelines/apiary-mobile/jobs/build-release)
-finishes successfully, you'll find a new draft release on the Internal Test track in Google Play. 
+finishes successfully, you'll find a new draft release on the Internal Test track in Google Play.
 At this point, you should do some small QA efforts to verify the new build. Post in #apiary-mobile
 to have some people help you test. Note that access to the internal test track must be granted via
 the Google Play Console.
