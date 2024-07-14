@@ -46,7 +46,7 @@ jobs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
-        languages: java-kotlin
+        languages: java-kotlin,ruby
         queries: security-extended,security-and-quality
 
     - name: Grant execute permission for gradlew
@@ -85,10 +85,15 @@ jobs:
         GOOGLE_PLAY_PRIVATE_KEY: ${{ secrets.GOOGLE_PLAY_PRIVATE_KEY }}
         IS_CI: true
 
-    - name: Perform CodeQL Analysis
+    - name: Perform CodeQL Analysis for Java/Kotlin
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:java-kotlin"
+
+    - name: Perform CodeQL Analysis for Ruby
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:ruby"
 
     - name: Generate and submit dependency graph
       uses: gradle/actions/dependency-submission@v3
