@@ -46,7 +46,7 @@ jobs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
-        languages: java-kotlin,ruby
+        languages: java-kotlin
         queries: security-extended,security-and-quality
 
     - name: Grant execute permission for gradlew
@@ -89,11 +89,6 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:java-kotlin"
-
-    - name: Perform CodeQL Analysis for Ruby
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:ruby"
 
     - name: Generate and submit dependency graph
       uses: gradle/actions/dependency-submission@v3
