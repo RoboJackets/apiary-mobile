@@ -45,6 +45,8 @@ dependencies {
     ksp(HiltDependencies.hilt_android_compiler)
     implementation(HiltDependencies.hilt_navigation_compose)
 
+    implementation(MaterialDependencies.material_android)
+
     implementation(NetworkDependencies.moshi_converter_factory)
     implementation(NetworkDependencies.okhttp)
     implementation(platform(NetworkDependencies.okhttp_bom))

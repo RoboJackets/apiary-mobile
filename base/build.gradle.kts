@@ -25,6 +25,8 @@ dependencies {
     implementation(HiltDependencies.hilt)
     ksp(HiltDependencies.hilt_android_compiler)
 
+    implementation(MaterialDependencies.material_android)
+
     implementation(NetworkDependencies.moshi)
     ksp(NetworkDependencies.moshi_kotlin_codegen)
     implementation(NetworkDependencies.retrofit)
