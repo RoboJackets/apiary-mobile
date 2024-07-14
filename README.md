@@ -100,20 +100,20 @@ to `which`.
 Below are some instructions on the MyRoboJackets Android release process. Note that you will need
 additional permissions on this repo and the MyRoboJackets Android Google Play application to
 fully carry out this step:
-- Permission on this repo to create tags and releases (write access)
+- Permission on this repo to run `workflow_dispatch` workflows (write access)
 - Permissions on the MyRoboJackets Android Google Play app. At a minimum:
   - `Release apps to testing tracks`
   - `Release to production, exclude devices, and use Play App Signing`
 
 App releases don't have to perfectly coincide with PRs being merged, especially if two PRs are
-merged in close proximity. Our Concourse pipeline has jobs to automatically handle building,
+merged in close proximity. Our GitHub Actions workflows automatically handle building,
 signing, and uploading production releases of the app.
 
 1. After you've merged all PRs to be included in the release, open the [Release to Internal Test](https://github.com/RoboJackets/apiary-mobile/actions/workflows/internal-test-release.yml)
    Github Actions pipeline.
-2. Find the `Run workflow` button. Use the table below to enter a value for the `update_priority`. 
-   Update priority is an integer passed to Google Play, and it determines update nag behavior
-   (frequency/intensity) in the app.
+2. Find the `Run workflow` button. Use the table below to select a value for the `update_priority`.
+   The update priority affects if and how often users receive in-app update prompts
+to update the app to the latest version.
 
 | Update priority | Description                                                                         | Examples                                                                                      |
 |-----------------|-------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
