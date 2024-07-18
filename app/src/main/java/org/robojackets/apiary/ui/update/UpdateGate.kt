@@ -117,18 +117,18 @@ fun UpdateStatus() {
         is InAppUpdateState.OptionalUpdate -> {
             Text(
                 "Optional update | Should prompt: ${inAppUpdateState.shouldPrompt} " +
-                    "| Priority: ${inAppUpdateState.appUpdateInfo.priority}" +
-                    "| Staleness: ${inAppUpdateState.appUpdateInfo.staleDays}" +
-                    "| Version code: ${inAppUpdateState.appUpdateInfo.versionCode}"
+                    " | Priority: ${inAppUpdateState.appUpdateInfo.priority}" +
+                    " | Staleness: ${inAppUpdateState.appUpdateInfo.staleDays}" +
+                    " | Version code: ${inAppUpdateState.appUpdateInfo.versionCode}"
             )
         }
 
         is InAppUpdateState.RequiredUpdate -> {
             Text(
                 "Required update | Should prompt: ${inAppUpdateState.shouldPrompt} " +
-                    "| Priority: ${inAppUpdateState.appUpdateInfo.priority}" +
-                    "| Staleness: ${inAppUpdateState.appUpdateInfo.staleDays}" +
-                    "| Version code: ${inAppUpdateState.appUpdateInfo.versionCode}"
+                    " | Priority: ${inAppUpdateState.appUpdateInfo.priority}" +
+                    " | Staleness: ${inAppUpdateState.appUpdateInfo.staleDays}" +
+                    " | Version code: ${inAppUpdateState.appUpdateInfo.versionCode}"
             )
         }
 
