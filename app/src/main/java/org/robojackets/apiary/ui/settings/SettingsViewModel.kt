@@ -98,6 +98,18 @@ class SettingsViewModel @Inject constructor(
         navigateToLogin()
     }
 
+    fun navigateToOptionalUpdateBottomSheet() {
+        navigationManager.navigate(NavigationActions.UpdatePrompts.anyScreenToOptionalUpdatePrompt())
+    }
+
+    fun navigateToRequiredUpdatePrompt() {
+        navigationManager.navigate(NavigationActions.UpdatePrompts.anyScreenToRequiredUpdatePrompt())
+    }
+
+    fun navigateToUpdateInProgress() {
+        navigationManager.navigate(NavigationActions.UpdatePrompts.anyScreenToUpdateInProgress())
+    }
+
     fun getCustomTabsIntent(toolbarColor: Int = webNavBarBackground.toArgb()): CustomTabsIntent {
         val customTabsBuilder = CustomTabsIntent.Builder()
 

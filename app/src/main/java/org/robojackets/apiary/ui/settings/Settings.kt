@@ -9,7 +9,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.Feedback
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Logout
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.PrivacyTip
+import androidx.compose.material.icons.outlined.Update
+import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,6 +49,9 @@ private fun Settings(
      onOpenPrivacyPolicy: () -> Unit,
      onOpenMakeAWish: () -> Unit,
      onRefreshUser: () -> Unit,
+     onNavigateToOptionalUpdateBottomSheet: () -> Unit,
+     onNavigateToRequiredUpdatePrompt: () -> Unit,
+     onNavigateToUpdateInProgress: () -> Unit,
  ) {
     val context = LocalContext.current
 
@@ -65,6 +76,21 @@ private fun Settings(
                     title = { Text(text = "DEBUG: Recognized permissions") },
                     subtitle = { Text(text = user?.allPermissions?.joinToString(separator = ", ") ?: "None") },
                     onClick = { onRefreshUser() }
+                )
+                SettingsMenuLink(
+                    icon = { Icon(Icons.Outlined.Update, contentDescription = "update") },
+                    title = { Text(text = "DEBUG: Open optional update bottom sheet") },
+                    onClick = { onNavigateToOptionalUpdateBottomSheet() }
+                )
+                SettingsMenuLink(
+                    icon = { Icon(Icons.Outlined.Update, contentDescription = "update") },
+                    title = { Text(text = "DEBUG: Open required update prompt") },
+                    onClick = { onNavigateToRequiredUpdatePrompt() }
+                )
+                SettingsMenuLink(
+                    icon = { Icon(Icons.Outlined.Update, contentDescription = "update") },
+                    title = { Text(text = "DEBUG: Open update in progress screen") },
+                    onClick = { onNavigateToUpdateInProgress() }
                 )
             }
             SettingsMenuLink(
@@ -165,6 +191,15 @@ fun SettingsScreen(
            },
            onRefreshUser = {
                viewModel.getUser(forceRefresh = true)
+           },
+           onNavigateToOptionalUpdateBottomSheet = {
+               viewModel.navigateToOptionalUpdateBottomSheet()
+           },
+           onNavigateToRequiredUpdatePrompt = {
+               viewModel.navigateToRequiredUpdatePrompt()
+           },
+           onNavigateToUpdateInProgress = {
+               viewModel.navigateToUpdateInProgress()
            }
        )
     }
@@ -181,5 +216,8 @@ private fun SettingsPreview() {
         onOpenPrivacyPolicy = {},
         onOpenMakeAWish = {},
         onRefreshUser = {},
+        onNavigateToOptionalUpdateBottomSheet = {},
+        onNavigateToRequiredUpdatePrompt = {},
+        onNavigateToUpdateInProgress = {},
     )
 }
