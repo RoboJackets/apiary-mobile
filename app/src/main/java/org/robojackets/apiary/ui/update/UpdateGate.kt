@@ -7,6 +7,17 @@ import se.warting.inappupdate.compose.InAppUpdateState
 import se.warting.inappupdate.compose.rememberInAppUpdateState
 import timber.log.Timber
 
+@Composable
+fun rememberInAppUpdateStateWithDefaults(): InAppUpdateState {
+    return rememberInAppUpdateState(
+        highPrioritizeUpdates = 5,
+        mediumPrioritizeUpdates = 3,
+        promptIntervalHighPrioritizeUpdateInDays = 1,
+        promptIntervalMediumPrioritizeUpdateInDays = 4,
+        promptIntervalLowPrioritizeUpdateInDays = 8,
+    )
+}
+
 @Suppress("ComplexMethod", "LongMethod")
 @Composable
 fun UpdateGate(
@@ -17,15 +28,7 @@ fun UpdateGate(
     content: @Composable () -> Unit,
 ) {
     content()
-    val inAppUpdateState = rememberInAppUpdateState(
-        highPrioritizeUpdates = 5,
-        mediumPrioritizeUpdates = 3,
-        promptIntervalHighPrioritizeUpdateInDays = 1,
-        promptIntervalMediumPrioritizeUpdateInDays = 4,
-        promptIntervalLowPrioritizeUpdateInDays = 8,
-    )
-
-    when (inAppUpdateState) {
+    when (val inAppUpdateState = rememberInAppUpdateStateWithDefaults()) {
         is InAppUpdateState.DownloadedUpdate -> {
             if (inAppUpdateState.isRequiredUpdate) {
                 LaunchedEffect(navReady) {
@@ -86,14 +89,7 @@ fun UpdateGate(
 
 @Composable
 fun UpdateStatus() {
-    val inAppUpdateState = rememberInAppUpdateState(
-        highPrioritizeUpdates = 5,
-        mediumPrioritizeUpdates = 3,
-        promptIntervalHighPrioritizeUpdateInDays = 1,
-        promptIntervalMediumPrioritizeUpdateInDays = 4,
-        promptIntervalLowPrioritizeUpdateInDays = 8,
-    )
-    when (inAppUpdateState) {
+    when (val inAppUpdateState = rememberInAppUpdateStateWithDefaults()) {
         is InAppUpdateState.DownloadedUpdate -> {
             if (inAppUpdateState.isRequiredUpdate) {
                 Text("Downloaded > required")

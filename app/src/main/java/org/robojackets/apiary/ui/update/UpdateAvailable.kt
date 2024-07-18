@@ -27,19 +27,12 @@ import kotlinx.coroutines.launch
 import org.robojackets.apiary.base.ui.icons.UpdateIcon
 import se.warting.inappupdate.compose.InAppUpdateState
 import se.warting.inappupdate.compose.Mode
-import se.warting.inappupdate.compose.rememberInAppUpdateState
 import timber.log.Timber
 
 @Suppress("LongMethod")
 @Composable
 fun InstallUpdateButton(onIgnoreUpdate: () -> Unit = {}) {
-    val inAppUpdateState = rememberInAppUpdateState(
-        highPrioritizeUpdates = 5,
-        mediumPrioritizeUpdates = 3,
-        promptIntervalHighPrioritizeUpdateInDays = 1,
-        promptIntervalMediumPrioritizeUpdateInDays = 4,
-        promptIntervalLowPrioritizeUpdateInDays = 8,
-    )
+    val inAppUpdateState = rememberInAppUpdateStateWithDefaults()
     var updateCanceled by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
@@ -149,13 +142,7 @@ fun RequiredUpdatePrompt() {
 fun OptionalUpdatePrompt(
     onIgnoreUpdate: () -> Unit
 ) {
-    val inAppUpdateState = rememberInAppUpdateState(
-        highPrioritizeUpdates = 5,
-        mediumPrioritizeUpdates = 3,
-        promptIntervalHighPrioritizeUpdateInDays = 1,
-        promptIntervalMediumPrioritizeUpdateInDays = 4,
-        promptIntervalLowPrioritizeUpdateInDays = 8,
-    )
+    val inAppUpdateState = rememberInAppUpdateStateWithDefaults()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
