@@ -7,12 +7,16 @@ import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.compose.ui.graphics.toArgb
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skydoves.sandwich.getOrThrow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.robojackets.apiary.auth.AuthStateManager
 import org.robojackets.apiary.auth.model.UserInfo
@@ -28,6 +32,7 @@ import io.sentry.protocol.User as SentryUser
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    @Suppress("UnusedPrivateMember") private val savedStateHandle: SavedStateHandle,
     val globalSettings: GlobalSettings,
     val navigationManager: NavigationManager,
     val serverInfoRepository: ServerInfoRepository,
@@ -35,9 +40,11 @@ class SettingsViewModel @Inject constructor(
     val authStateManager: AuthStateManager,
 ) : ViewModel() {
     val privacyPolicyUrl: Uri = Uri.withAppendedPath(globalSettings.appEnv.apiBaseUrl, "privacy")
-    val makeAWishUrl: Uri = Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLSelERsYq3" +
+    val makeAWishUrl: Uri = Uri.parse(
+        "https://docs.google.com/forms/d/e/1FAIpQLSelERsYq3" +
             "gLmHbWvVCWha5iCU8z3r9VYC0hCN4ArLpMAiysaQ/viewform?entry.1338203640=MyRoboJackets%20" +
-            "Android")
+            "Android"
+    )
     var customTabsClient: CustomTabsClient? = null
 
     val customTabsServiceConnection = object : CustomTabsServiceConnection() {
@@ -67,11 +74,14 @@ class SettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            combine(listOf(
+            combine(
+                listOf(
                 user,
-            )) {
-                flows -> SettingsState(
-                    flows[0] as UserInfo?
+            )
+            ) {
+                flows ->
+                    SettingsState(
+                    flows[0]
                 )
             }.catch { throwable -> throw throwable }
                 .collect { _state.value = it }
@@ -86,6 +96,18 @@ class SettingsViewModel @Inject constructor(
         authStateManager.replace(null)
         globalSettings.clearLoginInfo()
         navigateToLogin()
+    }
+
+    fun navigateToOptionalUpdateBottomSheet() {
+        navigationManager.navigate(NavigationActions.UpdatePrompts.anyScreenToOptionalUpdatePrompt())
+    }
+
+    fun navigateToRequiredUpdatePrompt() {
+        navigationManager.navigate(NavigationActions.UpdatePrompts.anyScreenToRequiredUpdatePrompt())
+    }
+
+    fun navigateToUpdateInProgress() {
+        navigationManager.navigate(NavigationActions.UpdatePrompts.anyScreenToUpdateInProgress())
     }
 
     fun getCustomTabsIntent(toolbarColor: Int = webNavBarBackground.toArgb()): CustomTabsIntent {

@@ -1,34 +1,42 @@
 package org.robojackets.apiary.ui.update
 
-import android.app.Activity
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.android.play.core.ktx.AppUpdateResult
+import kotlinx.coroutines.launch
 import org.robojackets.apiary.base.ui.icons.UpdateIcon
-import org.robojackets.apiary.base.ui.util.getActivity
-import se.warting.inappupdate.compose.rememberInAppUpdateState
+import se.warting.inappupdate.compose.InAppUpdateState
+import se.warting.inappupdate.compose.Mode
 import timber.log.Timber
 
-// Just a random number so we can identify our update request later if necessary
-const val UPDATE_REQUEST_CODE = 1999
-
-fun triggerImmediateUpdate(appUpdateResult: AppUpdateResult.Available, activity: Activity) {
-    appUpdateResult.startImmediateUpdate(activity, UPDATE_REQUEST_CODE)
-}
-
+@Suppress("LongMethod")
 @Composable
 fun InstallUpdateButton(onIgnoreUpdate: () -> Unit = {}) {
-    val updateState = rememberInAppUpdateState()
+    val inAppUpdateState = rememberInAppUpdateStateWithDefaults()
     var updateCanceled by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var updateError by remember { mutableStateOf<String?>(null) }
 
     when (updateCanceled) {
@@ -37,19 +45,45 @@ fun InstallUpdateButton(onIgnoreUpdate: () -> Unit = {}) {
         }
         false -> {
             Button(onClick = {
-                val result = updateState.appUpdateResult
-                if (result is AppUpdateResult.Available) {
-                    context.getActivity()?.let { triggerImmediateUpdate(result, it) } ?: run {
-                        Timber.e("Context.getActivity() was null while trying to start immediate update")
-                        updateError = "An update is available, but we were unable to start the update process."
+                when (inAppUpdateState) {
+                    is InAppUpdateState.DownloadedUpdate -> {
+                        scope.launch {
+                            inAppUpdateState.appUpdateResult.completeUpdate()
+                        }
                     }
-                } else {
-                    Timber.e("User is in update flow but no update was available")
-                    updateError = "Sorry! It seems there are no updates to install."
+
+                    is InAppUpdateState.RequiredUpdate -> {
+                        inAppUpdateState.onStartUpdate()
+                    }
+
+                    is InAppUpdateState.OptionalUpdate -> {
+                        inAppUpdateState.onStartUpdate(Mode.IMMEDIATE)
+                    }
+
+                    is InAppUpdateState.InProgressUpdate -> {
+                        Timber.w("UpdateAvailable: inAppUpdateState is InProgressUpdate")
+                        updateError = "The update can't be started because an update is already in" +
+                                " progress"
+                    }
+
+                    is InAppUpdateState.Error -> {
+                        Timber.e(
+                            "UpdateAvailable: inAppUpdateState is Error: ${inAppUpdateState.exception}"
+                        )
+                        updateError =
+                            "An update is available, but an error occurred while trying to start" +
+                                    " it."
+                    }
+                    else -> {
+                        updateError = "The update can't be started right now"
+                    }
                 }
-                updateCanceled = true
+                if (updateError?.isNotBlank() == true) {
+                    Timber.e("Update error: $updateError")
+                    updateCanceled = true
+                }
             }) {
-                Text("Download and install update")
+                Text("Update now")
             }
         }
     }
@@ -67,10 +101,14 @@ fun InstallUpdateButton(onIgnoreUpdate: () -> Unit = {}) {
             },
             title = { Text("Update failed") },
             text = {
-                Text("${
-                    updateError ?: ("An unknown error occurred while starting the " +
-                            "update.")
-                }\n\nPlease try again, or post in #it-helpdesk for assistance.")
+                Text(
+                    "${
+                    updateError ?: (
+                        "An unknown error occurred while starting the " +
+                            "update."
+                    )
+                }\n\nPlease try again, or post in #it-helpdesk for assistance."
+                )
             }
         )
     }
@@ -84,11 +122,14 @@ fun RequiredUpdatePrompt() {
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxHeight(),
     ) {
-        UpdateIcon(Modifier
-            .padding(bottom = 18.dp)
-            .size(96.dp))
-        Text("Update to continue", style = MaterialTheme.typography.h4)
-        Text("To continue using MyRoboJackets, install the latest version. It'll only take a minute.",
+        UpdateIcon(
+            Modifier
+                .padding(bottom = 18.dp)
+                .size(96.dp)
+        )
+        Text("Update to continue", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            "To continue using MyRoboJackets, install the latest version. It'll only take a minute.",
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(24.dp)
             )
@@ -102,23 +143,35 @@ fun RequiredUpdatePrompt() {
 fun OptionalUpdatePrompt(
     onIgnoreUpdate: () -> Unit
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxHeight(.5F),
-    ) {
-        UpdateIcon(Modifier
-            .padding(bottom = 9.dp)
-            .size(72.dp))
-        Text("Update available", style = MaterialTheme.typography.h5)
-        Text("Install the latest version of MyRoboJackets for the latest features and " +
-                "bug fixes. It'll only take a minute.",
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(20.dp)
-        )
-        InstallUpdateButton(onIgnoreUpdate)
-        TextButton(onClick = onIgnoreUpdate) {
-            Text("Remind me later")
+    val inAppUpdateState = rememberInAppUpdateStateWithDefaults()
+    Surface {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxHeight(.5F),
+        ) {
+            UpdateIcon(
+                Modifier
+                    .padding(bottom = 9.dp)
+                    .size(72.dp)
+            )
+            Text("Update available", style = MaterialTheme.typography.headlineSmall)
+            Text(
+                "Install the latest version of MyRoboJackets for the latest features and " +
+                        "bug fixes. It'll only take a minute.",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(20.dp)
+            )
+            InstallUpdateButton(onIgnoreUpdate)
+            TextButton(onClick = {
+                Timber.w("DEBUG: Optional update declined. $inAppUpdateState")
+                if (inAppUpdateState is InAppUpdateState.OptionalUpdate) {
+                    inAppUpdateState.onDeclineUpdate()
+                }
+                onIgnoreUpdate()
+            }) {
+                Text("Not now")
+            }
         }
     }
 }
@@ -133,8 +186,9 @@ fun UpdateInProgress() {
         modifier = Modifier.fillMaxHeight(),
     ) {
         CircularProgressIndicator(Modifier.padding(bottom = 28.dp))
-        Text("Please wait...", style = MaterialTheme.typography.h5)
-        Text("We're finishing installing an update. It'll just be a minute or two!",
+        Text("Please wait...", style = MaterialTheme.typography.headlineSmall)
+        Text(
+            "We're finishing installing an update. It'll just be a minute or two!",
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(20.dp)
         )

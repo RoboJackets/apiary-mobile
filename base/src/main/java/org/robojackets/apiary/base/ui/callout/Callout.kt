@@ -2,10 +2,14 @@ package org.robojackets.apiary.base.ui.callout
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.robojackets.apiary.base.ui.IconWithText
 import org.robojackets.apiary.base.ui.icons.ErrorIcon
+import org.robojackets.apiary.base.ui.theme.isLight
 import org.robojackets.apiary.base.ui.theme.warningDarkSubtle
 import org.robojackets.apiary.base.ui.theme.warningLightMuted
 import org.robojackets.apiary.base.ui.theme.warningLightSubtle
@@ -49,7 +54,7 @@ fun WarningCallout(
     padding: PaddingValues? = null,
     body: @Composable () -> Unit,
 ) {
-    val isLightTheme = MaterialTheme.colors.isLight
+    val isLightTheme = MaterialTheme.colorScheme.isLight()
 
     Callout(
         title = {
@@ -57,7 +62,7 @@ fun WarningCallout(
                 Text(
                     titleText,
                     modifier = Modifier.padding(start = 8.dp),
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.titleLarge
                 )
             }
         },
@@ -76,7 +81,9 @@ private fun WarningCalloutPreview() {
     WarningCallout(
         titleText = "Some teams are hidden",
     ) {
-        Text("Your account doesn't have permission to view all teams, including training " +
-                "teams. Ask in #it-helpdesk for access.")
+        Text(
+            "Your account doesn't have permission to view all teams, including training " +
+                "teams. Ask in #it-helpdesk for access."
+        )
     }
 }

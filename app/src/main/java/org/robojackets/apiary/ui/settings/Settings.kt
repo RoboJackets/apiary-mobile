@@ -8,11 +8,19 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.Feedback
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Logout
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.PrivacyTip
+import androidx.compose.material.icons.outlined.Update
+import androidx.compose.material.icons.outlined.VerifiedUser
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,13 +42,16 @@ import org.robojackets.apiary.ui.update.UpdateStatus
 
 @Suppress("LongMethod", "LongParameterList")
 @Composable
- private fun Settings(
+private fun Settings(
      appEnv: AppEnvironment,
      user: UserInfo?,
      onLogout: () -> Unit,
      onOpenPrivacyPolicy: () -> Unit,
      onOpenMakeAWish: () -> Unit,
      onRefreshUser: () -> Unit,
+     onNavigateToOptionalUpdateBottomSheet: () -> Unit,
+     onNavigateToRequiredUpdatePrompt: () -> Unit,
+     onNavigateToUpdateInProgress: () -> Unit,
  ) {
     val context = LocalContext.current
 
@@ -66,6 +77,21 @@ import org.robojackets.apiary.ui.update.UpdateStatus
                     subtitle = { Text(text = user?.allPermissions?.joinToString(separator = ", ") ?: "None") },
                     onClick = { onRefreshUser() }
                 )
+                SettingsMenuLink(
+                    icon = { Icon(Icons.Outlined.Update, contentDescription = "update") },
+                    title = { Text(text = "DEBUG: Open optional update bottom sheet") },
+                    onClick = { onNavigateToOptionalUpdateBottomSheet() }
+                )
+                SettingsMenuLink(
+                    icon = { Icon(Icons.Outlined.Update, contentDescription = "update") },
+                    title = { Text(text = "DEBUG: Open required update prompt") },
+                    onClick = { onNavigateToRequiredUpdatePrompt() }
+                )
+                SettingsMenuLink(
+                    icon = { Icon(Icons.Outlined.Update, contentDescription = "update") },
+                    title = { Text(text = "DEBUG: Open update in progress screen") },
+                    onClick = { onNavigateToUpdateInProgress() }
+                )
             }
             SettingsMenuLink(
                 icon = { Icon(Icons.Outlined.Logout, contentDescription = "logout") },
@@ -76,17 +102,21 @@ import org.robojackets.apiary.ui.update.UpdateStatus
             SettingsMenuLink(
                 icon = { Icon(Icons.Outlined.Home, contentDescription = "home") },
                 title = { Text(text = "Server") },
-                subtitle = { Text(
+                subtitle = {
+                    Text(
                     text = "${appEnv.name} (${appEnv.apiBaseUrl})"
-                ) },
+                )
+                },
                 onClick = {}
             )
             SettingsMenuLink(
                 icon = { Icon(Icons.Outlined.Build, contentDescription = "build") },
                 title = { Text(text = "Version") },
-                subtitle = { Text(
+                subtitle = {
+                    Text(
                     text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
-                ) },
+                )
+                },
                 onClick = {}
             )
             SettingsMenuLink(
@@ -143,7 +173,7 @@ fun SettingsScreen(
     }
 
     val state by viewModel.state.collectAsState()
-    val secondaryThemeColor = MaterialTheme.colors.background
+    val secondaryThemeColor = MaterialTheme.colorScheme.background
     ContentPadding {
        Settings(
            appEnv = viewModel.globalSettings.appEnv,
@@ -161,6 +191,15 @@ fun SettingsScreen(
            },
            onRefreshUser = {
                viewModel.getUser(forceRefresh = true)
+           },
+           onNavigateToOptionalUpdateBottomSheet = {
+               viewModel.navigateToOptionalUpdateBottomSheet()
+           },
+           onNavigateToRequiredUpdatePrompt = {
+               viewModel.navigateToRequiredUpdatePrompt()
+           },
+           onNavigateToUpdateInProgress = {
+               viewModel.navigateToUpdateInProgress()
            }
        )
     }
@@ -177,5 +216,8 @@ private fun SettingsPreview() {
         onOpenPrivacyPolicy = {},
         onOpenMakeAWish = {},
         onRefreshUser = {},
+        onNavigateToOptionalUpdateBottomSheet = {},
+        onNavigateToRequiredUpdatePrompt = {},
+        onNavigateToUpdateInProgress = {},
     )
 }

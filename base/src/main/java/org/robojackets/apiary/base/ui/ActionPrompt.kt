@@ -1,8 +1,12 @@
 package org.robojackets.apiary.base.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,12 +27,12 @@ fun ActionPrompt(
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp, start = 4.dp, end = 4.dp)
     ) {
         icon()
         Text(
             text = title,
-            style = MaterialTheme.typography.h4,
+            style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(top = 6.dp),
             textAlign = TextAlign.Center,
         )
@@ -40,7 +44,7 @@ fun ActionPrompt(
         subtitle?.let {
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
             )
         }
@@ -74,7 +78,9 @@ fun ActionPromptCardReadErrorWrongType() {
         title = "Card read error",
         subtitle = "Try tapping again"
     ) {
-        IconWithText(icon = { WarningIcon(tint = danger) },
-            text = "We only support BuzzCards 😉")
+        IconWithText(
+            icon = { WarningIcon(tint = danger) },
+            text = "We only support BuzzCards 😉"
+        )
     }
 }

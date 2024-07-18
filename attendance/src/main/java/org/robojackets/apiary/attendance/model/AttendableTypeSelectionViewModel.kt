@@ -3,7 +3,12 @@ package org.robojackets.apiary.attendance.model
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.skydoves.sandwich.*
+import com.skydoves.sandwich.StatusCode
+import com.skydoves.sandwich.message
+import com.skydoves.sandwich.onError
+import com.skydoves.sandwich.onException
+import com.skydoves.sandwich.onSuccess
+import com.skydoves.sandwich.retrofit.statusCode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +16,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.robojackets.apiary.auth.model.Permission
-import org.robojackets.apiary.auth.model.Permission.*
+import org.robojackets.apiary.auth.model.Permission.CREATE_ATTENDANCE
+import org.robojackets.apiary.auth.model.Permission.READ_USERS
 import org.robojackets.apiary.auth.model.UserInfo
 import org.robojackets.apiary.auth.network.UserRepository
 import org.robojackets.apiary.auth.util.getMissingPermissions
@@ -88,13 +94,14 @@ class AttendableTypeSelectionViewModel @Inject constructor(
                             "A server error occurred while checking if you have permission to " +
                                     "use this feature. Check your internet connection and try " +
                                     "again, or ask in #it-helpdesk for assistance."
-                        else -> "An error occurred while checking if you have permission to use " +
+                        else ->
+                            "An error occurred while checking if you have permission to use " +
                                 "this feature. Check your internet connection and try again, or " +
                                 "ask in #it-helpdesk for assistance."
                     }
                 }
                 .onException {
-                    Timber.e(this.exception)
+                    Timber.e(this.throwable)
                     permissionsCheckError.value = "An error occurred while checking if you have " +
                             "permission to use this feature. Check your internet connection and " +
                             "try again, or ask in #it-helpdesk for assistance."

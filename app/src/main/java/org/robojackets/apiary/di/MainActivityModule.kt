@@ -2,7 +2,7 @@ package org.robojackets.apiary.di
 
 import android.content.Context
 import com.nxp.nfclib.NxpNfcLib
-import com.skydoves.sandwich.coroutines.CoroutinesResponseCallAdapterFactory
+import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import dagger.Module
@@ -45,8 +45,11 @@ object MainActivityModule {
     ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(
-            if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
-            else HttpLoggingInterceptor.Level.BASIC
+            if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.BASIC
+            }
         ) // Only log detailed
         // network requests in debug builds
         loggingInterceptor.redactHeader("Authorization") // Redact access tokens in headers
@@ -76,7 +79,7 @@ object MainActivityModule {
     ): Retrofit = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(globalSettings.appEnv.apiBaseUrl.toString())
-        .addCallAdapterFactory(CoroutinesResponseCallAdapterFactory.create())
+        .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
 

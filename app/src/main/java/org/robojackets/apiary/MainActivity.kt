@@ -6,29 +6,45 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Contactless
-import androidx.compose.runtime.*
+import androidx.compose.material.navigation.ModalBottomSheetLayout
+import androidx.compose.material.navigation.bottomSheet
+import androidx.compose.material.navigation.rememberBottomSheetNavigator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.*
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
-import com.google.accompanist.navigation.material.bottomSheet
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
+import androidx.navigation.navArgument
+import androidx.navigation.navigation
+import androidx.navigation.plusAssign
 import com.nxp.nfclib.NxpNfcLib
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -55,6 +71,8 @@ import org.robojackets.apiary.ui.update.UpdateInProgress
 import timber.log.Timber
 import javax.inject.Inject
 
+// TODO: see if we can make app launch screen match light/dark mode?
+
 sealed class Screen(
     val navigationDestination: String,
     @StringRes val resourceId: Int,
@@ -71,7 +89,7 @@ sealed class Screen(
 
     object Settings :
         Screen(
-            NavigationDestinations.settings,
+            NavigationDestinations.settingsSubgraph,
             R.string.settings,
             Icons.Filled.Settings,
             "settings"
@@ -115,8 +133,6 @@ class MainActivity : ComponentActivity() {
         nfcLib.registerActivity(this, BuildConfig.taplinxKey, BuildConfig.taplinxOfflineKey)
     }
 
-    @OptIn(ExperimentalMaterialNavigationApi::class)
-    @ExperimentalMaterialApi
     @Suppress("LongMethod")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,7 +153,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Apiary_MobileTheme {
-                window.statusBarColor = MaterialTheme.colors.primaryVariant.toArgb()
+                window.statusBarColor = MaterialTheme.colorScheme.secondary.toArgb()
                 val navController = rememberNavController()
                 val bottomSheetNavigator = rememberBottomSheetNavigator()
                 navController.navigatorProvider += bottomSheetNavigator
@@ -155,7 +171,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
+                Surface(color = MaterialTheme.colorScheme.background) {
                     ModalBottomSheetLayout(bottomSheetNavigator) {
                         UpdateGate(
                             navReady = navReady,
@@ -180,9 +196,9 @@ class MainActivity : ComponentActivity() {
                                 bottomBar = {
                                     val current = currentRoute(navController)
                                     if (shouldShowBottomNav(nfcEnabled, current)) {
-                                        BottomNavigation {
+                                        NavigationBar {
                                             navItems.forEach { screen ->
-                                                BottomNavigationItem(
+                                                NavigationBarItem(
                                                     icon = {
                                                         Icon(
                                                             screen.icon,
@@ -232,21 +248,24 @@ class MainActivity : ComponentActivity() {
             currentScreen != NavigationDestinations.updateInProgress
 
     @Suppress("LongMethod")
-    @OptIn(ExperimentalMaterialNavigationApi::class)
-    @ExperimentalMaterialApi
     @Composable
     private fun AppNavigation(
         navController: NavHostController,
         modifier: Modifier = Modifier,
     ) {
         val startDestination =
-            if (!authStateManager.current.isAuthorized) NavigationDestinations.authentication
-            else NavigationDestinations.attendanceSubgraph
+            if (!authStateManager.current.isAuthorized) {
+                NavigationDestinations.authentication
+            } else {
+                NavigationDestinations.attendanceSubgraph
+            }
 
         NavHost(
             navController = navController,
             startDestination = startDestination,
             modifier = modifier,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
         ) {
             composable(NavigationDestinations.authentication) {
                 AuthenticationScreen(hiltViewModel(), authManager)
@@ -266,7 +285,7 @@ class MainActivity : ComponentActivity() {
                         navArgument("attendableType") { type = NavType.StringType }
                     ),
                 ) {
-                    val attendableType = it.arguments?.get("attendableType")
+                    val attendableType = it.arguments?.getString("attendableType")
 
                     AttendableSelectionScreen(
                         hiltViewModel(),
@@ -281,8 +300,8 @@ class MainActivity : ComponentActivity() {
                         navArgument("attendableId") { type = NavType.IntType },
                     )
                 ) {
-                    val attendableType = it.arguments?.get("attendableType")
-                    val attendableId = it.arguments?.get("attendableId")
+                    val attendableType = it.arguments?.getString("attendableType")
+                    val attendableId = it.arguments?.getInt("attendableId")
 
                     AttendanceScreen(
                         hiltViewModel(),
@@ -292,9 +311,15 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
-            composable(NavigationDestinations.settings) {
-                SettingsScreen(hiltViewModel())
+            navigation(
+                startDestination = NavigationDestinations.settings,
+                route = NavigationDestinations.settingsSubgraph,
+            ) {
+                composable(NavigationDestinations.settings) {
+                    SettingsScreen(hiltViewModel())
+                }
             }
+
             composable(NavigationDestinations.requiredUpdatePrompt) {
                 RequiredUpdatePrompt()
             }

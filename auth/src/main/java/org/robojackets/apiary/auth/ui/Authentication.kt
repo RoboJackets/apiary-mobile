@@ -1,33 +1,53 @@
 package org.robojackets.apiary.auth.ui
 
-import android.app.Activity.*
+import android.app.Activity.RESULT_OK
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationResponse
 import org.robojackets.apiary.auth.R
 import org.robojackets.apiary.auth.model.AuthenticationState
 import org.robojackets.apiary.auth.model.AuthenticationViewModel
-import org.robojackets.apiary.auth.model.LoginStatus.*
+import org.robojackets.apiary.auth.model.LoginStatus.COMPLETE
+import org.robojackets.apiary.auth.model.LoginStatus.ERROR
+import org.robojackets.apiary.auth.model.LoginStatus.NOT_STARTED
 import org.robojackets.apiary.auth.oauth2.AuthManager
 import org.robojackets.apiary.base.AppEnvironment
-import org.robojackets.apiary.base.ui.theme.BottomSheetShape
 import org.robojackets.apiary.base.ui.util.MadeWithLove
 
-@OptIn(ExperimentalMaterialApi::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Suppress("LongMethod", "MagicNumber")
 @Composable
 private fun Authentication(
@@ -36,17 +56,8 @@ private fun Authentication(
     onAppEnvChange: (newEnv: AppEnvironment) -> Unit,
     viewModel: AuthenticationViewModel,
 ) {
-    // You have to `remember` two things here for some reason
-    // In any case, thanks to https://proandroiddev.com/getting-your-bottomsheetscaffold-working-on-jetpack-compose-beta-03-aa829b0c9b6c
-    val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberBottomSheetState(
-            initialValue = BottomSheetValue.Collapsed
-        )
-    )
-    val coroutineScope = rememberCoroutineScope()
-
     val systemUiController = rememberSystemUiController()
-    val backgroundColor = MaterialTheme.colors.background
+    val backgroundColor = MaterialTheme.colorScheme.background
     SideEffect {
         systemUiController.setSystemBarsColor(backgroundColor)
     }
@@ -82,11 +93,13 @@ private fun Authentication(
                                         viewModel.navigateToAttendance()
                                     }
                                 }
+
                                 ex != null -> viewModel.recordAuthError(ex)
                                 else -> viewModel.recordAuthError(null)
                             }
                         }
                     }
+
                     authException != null -> viewModel.recordAuthError(authException)
                 }
             } else {
@@ -94,120 +107,130 @@ private fun Authentication(
             }
         }
 
-    BottomSheetScaffold(
-        scaffoldState = scaffoldState,
-        sheetShape = BottomSheetShape,
-        sheetPeekHeight = 0.dp,
-        sheetContent = {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .defaultMinSize(minHeight = 56.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly,
-                content = {
-                    ChangeEnvironmentBottomSheetContent(
-                        viewState,
-                        onAppEnvChange,
-                        scaffoldState
-                    )
-                }
-            )
-        }) {
-        Surface(
-            color = MaterialTheme.colors.background,
-            modifier = Modifier.padding(8.dp)
+    var showChangeEnvBottomSheet by remember { mutableStateOf(false) }
+
+    if (showChangeEnvBottomSheet) {
+        ChangeEnvBottomSheet(
+            onDismiss = { showChangeEnvBottomSheet = false },
+            viewState = viewState,
+            onAppEnvChange = {
+                showChangeEnvBottomSheet = false
+                onAppEnvChange(it)
+            }
+        )
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_robobuzz_white_outline),
+            contentDescription = "RoboJackets logo",
+            modifier = Modifier
+                .fillMaxWidth(.45f)
+                .weight(1.0f)
+        )
+        Column(
+            modifier = Modifier.weight(.5f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceAround
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_robobuzz_white_outline),
-                    contentDescription = "RoboJackets logo",
-                    modifier = Modifier
-                        .fillMaxWidth(.45f)
-                        .weight(1.0f)
-                )
-                Column(
-                    modifier = Modifier.weight(.5f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceAround
-                ) {
 
-                    Button(
-                        onClick = {
-                            val authRequest = authManager.getAuthRequest()
-                            launcher.launch(
-                                authManager.authService.getAuthorizationRequestIntent(
-                                    authRequest
-                                )
-                            )
-                        },
-                    ) {
-                        Text("Sign in with MyRoboJackets")
-                    }
-                }
-
-                if (viewState.loginStatus == ERROR) {
-                    AlertDialog(
-                        onDismissRequest = {
-                            viewModel.setLoginStatus(NOT_STARTED)
-                        },
-                        confirmButton = {
-                            TextButton(onClick = { viewModel.setLoginStatus(NOT_STARTED) }) {
-                                Text("Close")
-                            }
-                        },
-                        title = { Text("Login failed") },
-                        text = {
-                            Text(
-                                "${viewState.loginErrorMessage}\n\nTry logging in again. " +
-                                        "If that does not work, please post in #it-helpdesk in Slack."
-                            )
-                        },
+            Button(
+                onClick = {
+                    val authRequest = authManager.getAuthRequest()
+                    launcher.launch(
+                        authManager.authService.getAuthorizationRequestIntent(
+                            authRequest
+                        )
                     )
-                }
-
-                TextButton(onClick = {
-                    coroutineScope.launch {
-                        scaffoldState.bottomSheetState.expand()
-                    }
-                }) {
-                    Text("Change server")
-                }
-                Text("Server: ${viewState.appEnv.name} (${viewState.appEnv.apiBaseUrl})")
-                MadeWithLove()
+                },
+            ) {
+                Text("Sign in with MyRoboJackets")
             }
         }
+
+        if (viewState.loginStatus == ERROR) {
+            AlertDialog(
+                onDismissRequest = {
+                    viewModel.setLoginStatus(NOT_STARTED)
+                },
+                confirmButton = {
+                    TextButton(onClick = { viewModel.setLoginStatus(NOT_STARTED) }) {
+                        Text("Close")
+                    }
+                },
+                title = { Text("Login failed") },
+                text = {
+                    Text(
+                        "${viewState.loginErrorMessage}\n\nTry logging in again. " +
+                                "If that does not work, please post in #it-helpdesk in Slack."
+                    )
+                },
+            )
+        }
+
+        TextButton(onClick = {
+            showChangeEnvBottomSheet = true
+        }) {
+            Text("Change server")
+        }
+        Text("Server: ${viewState.appEnv.name} (${viewState.appEnv.apiBaseUrl})")
+        MadeWithLove()
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChangeEnvBottomSheet(
+    onDismiss: () -> Unit,
+    viewState: AuthenticationState,
+    onAppEnvChange: (newEnv: AppEnvironment) -> Unit
+) {
+    val modalBottomSheetState = rememberModalBottomSheetState()
+
+    ModalBottomSheet(
+        onDismissRequest = { onDismiss() },
+        sheetState = modalBottomSheetState,
+    ) {
+        Column(
+            Modifier
+                .padding(bottom = 40.dp)
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 56.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly,
+            content = {
+                ChangeEnvironmentBottomSheetContent(
+                    viewState,
+                    onAppEnvChange,
+                )
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChangeEnvironmentBottomSheetContent(
     viewState: AuthenticationState,
     onAppEnvChange: (newEnv: AppEnvironment) -> Unit,
-    scaffoldState: BottomSheetScaffoldState
 ) {
-    val coroutineScope = rememberCoroutineScope()
     var unsavedAppEnvSelection by remember { mutableStateOf(viewState.appEnv) }
     val appEnvChoices = AppEnvironment.values()
     val saveNewAppEnvChoice: (() -> Unit) = {
         onAppEnvChange(unsavedAppEnvSelection)
-        coroutineScope.launch {
-            scaffoldState.bottomSheetState.collapse()
-        }
     }
 
     Text(
         "Change server",
         modifier = Modifier
             .padding(16.dp),
-        style = MaterialTheme.typography.h5
+        style = MaterialTheme.typography.headlineSmall
     )
 
     Column(Modifier.selectableGroup()) {
@@ -230,7 +253,7 @@ private fun ChangeEnvironmentBottomSheetContent(
                 )
                 Text(
                     text = "${it.name} (${it.apiBaseUrl})",
-                    style = MaterialTheme.typography.body1.merge(),
+                    style = MaterialTheme.typography.bodyLarge.merge(),
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
@@ -248,7 +271,7 @@ private fun ChangeEnvironmentBottomSheetContent(
 @Composable
 fun AuthenticationScreen(
     viewModel: AuthenticationViewModel,
-    authManager: AuthManager
+    authManager: AuthManager,
 ) {
     val viewState by viewModel.state.collectAsState()
     Authentication(

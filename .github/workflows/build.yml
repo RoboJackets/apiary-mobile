@@ -24,7 +24,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v4
       with:
-        java-version: '11'
+        java-version: '17'
         distribution: 'corretto'
         cache: gradle
 
@@ -85,7 +85,7 @@ jobs:
         GOOGLE_PLAY_PRIVATE_KEY: ${{ secrets.GOOGLE_PLAY_PRIVATE_KEY }}
         IS_CI: true
 
-    - name: Perform CodeQL Analysis
+    - name: Perform CodeQL Analysis for Java/Kotlin
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:java-kotlin"

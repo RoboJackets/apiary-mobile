@@ -2,7 +2,7 @@ plugins {
     id("com.android.library")
     kotlin("android")
     id("kotlin-android")
-    kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
@@ -21,29 +21,31 @@ dependencies {
     implementation(AndroidToolDependencies.timber)
 
     implementation(AndroidXDependencies.androidx_activity_compose)
-    implementation(AndroidXDependencies.androidx_lifecycle_runtime_ktx)
+    implementation(AndroidXDependencies.androidx_lifecycle_runtime)
     implementation(AndroidXDependencies.androidx_navigation_compose)
 
     implementation(AuthDependencies.appauth)
 
     implementation(ComposeDependencies.accompanist_systemuicontroller)
     implementation(ComposeDependencies.compose_foundation)
-    implementation(ComposeDependencies.compose_material)
+    implementation(ComposeDependencies.compose_material3)
     implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.compose_ui_tooling)
 
     implementation(HiltDependencies.hilt)
-    kapt(HiltDependencies.hilt_android_compiler)
+    ksp(HiltDependencies.hilt_android_compiler)
 
     implementation(MaterialDependencies.material_android)
 
     implementation(NetworkDependencies.moshi)
-    kapt(NetworkDependencies.moshi_kotlin_codegen)
+    ksp(NetworkDependencies.moshi_kotlin_codegen)
     implementation(NetworkDependencies.okhttp)
     implementation(platform(NetworkDependencies.okhttp_bom))
     implementation(NetworkDependencies.retrofit)
     implementation(NetworkDependencies.retrofuture)
     implementation(NetworkDependencies.sandwich)
+    implementation(NetworkDependencies.sandwich_retrofit)
+    implementation(NetworkDependencies.sandwich_retrofit_serialization)
 
     // Test dependencies
     androidTestImplementation(ComposeDependencies.compose_ui_test)
@@ -52,10 +54,9 @@ dependencies {
 }
 
 android {
-    compileSdk = 32
+    compileSdk = 35
     defaultConfig {
         minSdk = 21
-        targetSdk = 32
 
         vectorDrawables {
             useSupportLibrary = true
@@ -69,17 +70,18 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.2.0-beta03"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     namespace = "org.robojackets.apiary.auth"
     hilt {
