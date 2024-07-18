@@ -10,6 +10,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -143,31 +144,34 @@ fun OptionalUpdatePrompt(
     onIgnoreUpdate: () -> Unit
 ) {
     val inAppUpdateState = rememberInAppUpdateStateWithDefaults()
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxHeight(.5F),
-    ) {
-        UpdateIcon(
-            Modifier
-                .padding(bottom = 9.dp)
-                .size(72.dp)
-        )
-        Text("Update available", style = MaterialTheme.typography.headlineSmall)
-        Text(
-            "Install the latest version of MyRoboJackets for the latest features and " +
-                "bug fixes. It'll only take a minute.",
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(20.dp)
-        )
-        InstallUpdateButton(onIgnoreUpdate)
-        TextButton(onClick = {
-            if (inAppUpdateState is InAppUpdateState.OptionalUpdate) {
-                inAppUpdateState.onDeclineUpdate()
+    Surface {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxHeight(.5F),
+        ) {
+            UpdateIcon(
+                Modifier
+                    .padding(bottom = 9.dp)
+                    .size(72.dp)
+            )
+            Text("Update available", style = MaterialTheme.typography.headlineSmall)
+            Text(
+                "Install the latest version of MyRoboJackets for the latest features and " +
+                        "bug fixes. It'll only take a minute.",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(20.dp)
+            )
+            InstallUpdateButton(onIgnoreUpdate)
+            TextButton(onClick = {
+                Timber.w("DEBUG: Optional update declined. $inAppUpdateState")
+                if (inAppUpdateState is InAppUpdateState.OptionalUpdate) {
+                    inAppUpdateState.onDeclineUpdate()
+                }
+                onIgnoreUpdate()
+            }) {
+                Text("Not now")
             }
-            onIgnoreUpdate()
-        }) {
-            Text("Not now")
         }
     }
 }
