@@ -5,7 +5,8 @@ import androidx.navigation.NavOptions
 // Based on https://proandroiddev.com/how-to-make-jetpack-compose-navigation-easier-and-testable-b4b19fd5f2e4
 object NavigationDestinations {
     const val authentication = "authentication"
-    const val settings = "settings"
+    const val settingsSubgraph = "settings"
+    const val settings = "settingsMain"
     const val attendanceSubgraph = "attendance"
     const val attendableTypeSelection = "attendableTypeSelection"
     const val attendableSelection = "attendableSelection"
@@ -20,7 +21,8 @@ object NavigationActions {
         fun anyScreenToAuthentication() = object : NavigationAction {
             override val destination = NavigationDestinations.authentication
             override val navOptions = NavOptions.Builder()
-                .setPopUpTo(0, true)
+//                .setPopUpTo(NavigationDestinations.authentication, true)
+                .setLaunchSingleTop(true)
                 .build()
         }
     }

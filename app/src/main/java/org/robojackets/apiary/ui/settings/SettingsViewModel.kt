@@ -7,12 +7,16 @@ import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.compose.ui.graphics.toArgb
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skydoves.sandwich.getOrThrow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.robojackets.apiary.auth.AuthStateManager
 import org.robojackets.apiary.auth.model.UserInfo
@@ -28,6 +32,7 @@ import io.sentry.protocol.User as SentryUser
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    @Suppress("UnusedPrivateMember") private val savedStateHandle: SavedStateHandle,
     val globalSettings: GlobalSettings,
     val navigationManager: NavigationManager,
     val serverInfoRepository: ServerInfoRepository,
@@ -76,7 +81,7 @@ class SettingsViewModel @Inject constructor(
             ) {
                 flows ->
                     SettingsState(
-                    flows[0] as UserInfo?
+                    flows[0]
                 )
             }.catch { throwable -> throw throwable }
                 .collect { _state.value = it }

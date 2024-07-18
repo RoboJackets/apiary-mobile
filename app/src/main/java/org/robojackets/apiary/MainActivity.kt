@@ -6,6 +6,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -87,7 +89,7 @@ sealed class Screen(
 
     object Settings :
         Screen(
-            NavigationDestinations.settings,
+            NavigationDestinations.settingsSubgraph,
             R.string.settings,
             Icons.Filled.Settings,
             "settings"
@@ -262,6 +264,8 @@ class MainActivity : ComponentActivity() {
             navController = navController,
             startDestination = startDestination,
             modifier = modifier,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
         ) {
             composable(NavigationDestinations.authentication) {
                 AuthenticationScreen(hiltViewModel(), authManager)
@@ -307,9 +311,15 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
-            composable(NavigationDestinations.settings) {
-                SettingsScreen(hiltViewModel())
+            navigation(
+                startDestination = NavigationDestinations.settings,
+                route = NavigationDestinations.settingsSubgraph,
+            ) {
+                composable(NavigationDestinations.settings) {
+                    SettingsScreen(hiltViewModel())
+                }
             }
+
             composable(NavigationDestinations.requiredUpdatePrompt) {
                 RequiredUpdatePrompt()
             }
