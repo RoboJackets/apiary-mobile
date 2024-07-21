@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Contactless
+import androidx.compose.material.icons.outlined.Storefront
 import androidx.compose.material.navigation.ModalBottomSheetLayout
 import androidx.compose.material.navigation.bottomSheet
 import androidx.compose.material.navigation.rememberBottomSheetNavigator
@@ -59,6 +60,8 @@ import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.ui.nfc.NfcRequired
 import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
+import org.robojackets.apiary.merchandise.ui.MerchandiseDistributionScreen
+import org.robojackets.apiary.merchandise.ui.MerchandiseIndexScreen
 import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationDestinations
 import org.robojackets.apiary.navigation.NavigationManager
@@ -85,6 +88,14 @@ sealed class Screen(
             R.string.attendance,
             Icons.Outlined.Contactless,
             "contactless"
+        )
+
+    object Merchandise :
+        Screen(
+            NavigationDestinations.merchandiseSubgraph,
+            R.string.merchandise,
+            Icons.Outlined.Storefront,
+            "storefront",
         )
 
     object Settings :
@@ -139,6 +150,7 @@ class MainActivity : ComponentActivity() {
 
         val navItems = listOf(
             Screen.Attendance,
+            Screen.Merchandise,
             Screen.Settings,
         )
 
@@ -311,6 +323,30 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+
+            navigation(
+                startDestination = NavigationDestinations.merchandiseIndex,
+                route = NavigationDestinations.merchandiseSubgraph
+            ) {
+                composable(NavigationDestinations.merchandiseIndex) {
+                    MerchandiseIndexScreen(hiltViewModel())
+                }
+
+                composable(
+                    route = "${NavigationDestinations.merchandiseDistribution}/{merchandiseItemId}",
+                    arguments = listOf(
+                        navArgument("merchandiseItemId") { type = NavType.IntType },
+                    )
+                ) {
+                    val merchandiseItemId = it.arguments?.getInt("merchandiseItemId")
+
+                    MerchandiseDistributionScreen(
+                        hiltViewModel(),
+                        merchandiseItemId as Int
+                    )
+                }
+            }
+
             navigation(
                 startDestination = NavigationDestinations.settings,
                 route = NavigationDestinations.settingsSubgraph,
