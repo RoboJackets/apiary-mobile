@@ -25,7 +25,7 @@ val warningLightMuted = Color(0x66D4A72C) // outline
 // Dark mode warning callout
 val warningDarkSubtle = Color(0x26BB8009) // bg
 val warningDarkMuted = Color(0x66BB8009) // outline
-val success = Color(0xFF4CAF50)
+val success = Color(0xFF36B92B)
 
 val webNavBarBackground = Color(0xFF343A40)
 

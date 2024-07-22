@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
+import com.skydoves.sandwich.onFailure
 import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
 import org.robojackets.apiary.merchandise.network.MerchandiseRepository
 import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationManager
@@ -98,6 +100,29 @@ class MerchandiseViewModel @Inject constructor(
             error.value = "Could not find merchandise item with ID $merchandiseItemId"
             Timber.e("Could not find merchandise item with ID $merchandiseItemId")
         }
+    }
+
+    fun onBuzzCardTap(buzzCardTap: BuzzCardTap) {
+        Timber.d("onbuzzcardtap")
+        val selectedItemId = selectedItem.value?.id
+
+        if (selectedItemId == null) { // FIXME
+            Timber.d("No merchandise item selected")
+            return
+        }
+
+        viewModelScope.launch {
+            merchandiseRepository.getDistributionStatus(selectedItemId, buzzCardTap.gtid)
+                .onSuccess {
+                    Timber.d("Successfully fetched distribution status")
+                    Timber.d(this.data.toString())
+                }
+                .onFailure {
+                    Timber.e("Failed to fetch distribution status")
+                    Timber.e(this.toString())
+                }
+        }
+
     }
 }
 

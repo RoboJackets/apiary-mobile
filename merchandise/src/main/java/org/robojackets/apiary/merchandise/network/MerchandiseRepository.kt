@@ -8,4 +8,5 @@ class MerchandiseRepository @Inject constructor(
     val merchandiseApiService: MerchandiseApiService,
 ) {
     suspend fun listMerchandiseItems() = merchandiseApiService.getMerchandiseItems()
+    suspend fun getDistributionStatus(itemId: Int, gtid: Int) = merchandiseApiService.getDistributionStatus(itemId, gtid)
 }

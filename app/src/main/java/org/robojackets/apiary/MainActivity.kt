@@ -342,6 +342,7 @@ class MainActivity : ComponentActivity() {
 
                     MerchandiseDistributionScreen(
                         hiltViewModel(),
+                        nfcLib,
                         merchandiseItemId as Int
                     )
                 }
