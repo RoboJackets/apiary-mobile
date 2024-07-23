@@ -32,6 +32,8 @@ class MerchandiseViewModel @Inject constructor(
     private val loadingMerchandiseItems = MutableStateFlow(false)
     private val error = MutableStateFlow<String?>(null)
     private val selectedItem = MutableStateFlow<MerchandiseItem?>(null)
+    private val screenState = MutableStateFlow(MerchandiseDistributionScreenState.ReadyForTap)
+    private val lastDistributionStatus: MutableStateFlow<DistributionHolder?> = MutableStateFlow(null)
 
     init {
         viewModelScope.launch {
@@ -41,6 +43,8 @@ class MerchandiseViewModel @Inject constructor(
                     loadingMerchandiseItems,
                     error,
                     selectedItem,
+                    screenState,
+                    lastDistributionStatus,
                 )
             ) {
                 flows ->
@@ -49,6 +53,8 @@ class MerchandiseViewModel @Inject constructor(
                         loadingMerchandiseItems = flows[1] as Boolean,
                         error = flows[2] as String?,
                         selectedItem = flows[3] as MerchandiseItem?,
+                        screenState = flows[4] as MerchandiseDistributionScreenState,
+                        lastDistributionStatus = flows[5] as DistributionHolder?,
                     )
             }
             .catch { throwable -> throw throwable }
@@ -111,18 +117,32 @@ class MerchandiseViewModel @Inject constructor(
             return
         }
 
+        screenState.value = MerchandiseDistributionScreenState.LoadingDistributionStatus
+
         viewModelScope.launch {
             merchandiseRepository.getDistributionStatus(selectedItemId, buzzCardTap.gtid)
                 .onSuccess {
                     Timber.d("Successfully fetched distribution status")
                     Timber.d(this.data.toString())
+                    lastDistributionStatus.value = this.data
+                    screenState.value = MerchandiseDistributionScreenState.ShowStatusDialog
                 }
                 .onFailure {
                     Timber.e("Failed to fetch distribution status")
                     Timber.e(this.toString())
+                    screenState.value = MerchandiseDistributionScreenState.ReadyForTap
+                    error.value = "Failed to fetch distribution status"
                 }
         }
+    }
 
+    fun confirmPickup() {
+        // FIXME
+        screenState.value = MerchandiseDistributionScreenState.ReadyForTap
+    }
+
+    fun dismissPickupDialog() {
+        screenState.value = MerchandiseDistributionScreenState.ReadyForTap
     }
 }
 
@@ -131,4 +151,6 @@ data class MerchandiseState(
     val loadingMerchandiseItems: Boolean = false,
     val error: String? = null,
     val selectedItem: MerchandiseItem? = null,
+    val screenState: MerchandiseDistributionScreenState = MerchandiseDistributionScreenState.ReadyForTap,
+    val lastDistributionStatus: DistributionHolder? = null,
 )

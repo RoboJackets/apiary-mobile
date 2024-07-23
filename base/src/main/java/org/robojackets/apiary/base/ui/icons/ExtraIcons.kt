@@ -13,65 +13,65 @@ import org.robojackets.apiary.base.R
 @Composable
 fun ContactlessIcon(
     modifier: Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface
+    tint: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_outline_contactless_24dp),
         contentDescription = "NFC symbol",
         modifier = modifier,
-        tint = tint
+        tint = tint,
     )
 }
 
 @Composable
 fun WarningIcon(
     modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface
+    tint: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Icon(
         Icons.Default.Warning,
         tint = tint,
         modifier = modifier,
-        contentDescription = "warning"
+        contentDescription = "warning",
     )
 }
 
 @Composable
 fun ErrorIcon(
     modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface
+    tint: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_baseline_error_outline_24),
         tint = tint,
         modifier = modifier,
-        contentDescription = "error"
+        contentDescription = "error",
     )
 }
 
 @Composable
 fun CreditCardIcon(
     modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface
+    tint: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_baseline_credit_card_24),
         tint = tint,
         modifier = modifier,
-        contentDescription = "credit card"
+        contentDescription = "credit card",
     )
 }
 
 @Composable
 fun PendingIcon(
     modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface
+    tint: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_outline_pending_24dp),
         tint = tint,
         modifier = modifier,
-        contentDescription = "pending"
+        contentDescription = "pending",
     )
 }
 
@@ -84,45 +84,46 @@ fun GroupsIcon(
         painter = painterResource(id = R.drawable.ic_outline_groups_24dp),
         tint = tint,
         modifier = modifier,
-        contentDescription = "groups"
+        contentDescription = "groups",
     )
 }
 
 @Composable
 fun EventIcon(
     modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface
+    tint: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_outline_event_24dp),
         tint = tint,
         modifier = modifier,
-        contentDescription = "event"
+        contentDescription = "event",
     )
 }
 
 @Composable
 fun UpdateIcon(
     modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface
+    tint: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_baseline_update_24),
         tint = tint,
         modifier = modifier,
-        contentDescription = "update"
+        contentDescription = "update",
     )
 }
 
 @Composable
-fun TaskAltIcon(
+fun ApparelIcon(
     modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String = "apparel",
 ) {
     Icon(
-        painter = painterResource(id = R.drawable.ic_outline_task_alt_24dp),
+        painter = painterResource(id = R.drawable.ic_outline_apparel_24dp),
         tint = tint,
         modifier = modifier,
-        contentDescription = "checkmark"
+        contentDescription = contentDescription,
     )
 }

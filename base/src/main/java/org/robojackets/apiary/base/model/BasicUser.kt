@@ -9,6 +9,8 @@ data class BasicUser(
     val uid: String,
     val name: String,
     val preferred_first_name: String,
+    val shirt_size: ShirtSize?,
+    val polo_size: ShirtSize?,
 )
 
 @JsonClass(generateAdapter = true)

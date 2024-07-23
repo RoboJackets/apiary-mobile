@@ -27,7 +27,9 @@ fun MerchandiseDistributionScreen(
             onBuzzcardTap = {
                 viewModel.onBuzzCardTap(it)
             },
-            onNavigateToMerchandiseIndex = { viewModel.navigateToMerchandiseIndex() }
+            onNavigateToMerchandiseIndex = { viewModel.navigateToMerchandiseIndex() },
+            onConfirmPickup = { viewModel.confirmPickup() },
+            onDismissPickupDialog = { viewModel.dismissPickupDialog() },
         )
     }
 }

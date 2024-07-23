@@ -136,6 +136,7 @@ object NetworkDependencies {
     }
 
     const val moshi = "com.squareup.moshi:moshi:${Versions.moshi_version}"
+    const val moshi_adapters = "com.squareup.moshi:moshi-adapters:${Versions.moshi_version}"
     const val moshi_converter_factory =
         "com.squareup.retrofit2:converter-moshi:${Versions.moshi_converter_factory_version}"
     const val moshi_kotlin_codegen = "com.squareup.moshi:moshi-kotlin-codegen:${Versions.moshi_version}"
