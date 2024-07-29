@@ -12,6 +12,7 @@ import org.robojackets.apiary.merchandise.model.MerchandiseDistributionScreenSta
 import org.robojackets.apiary.merchandise.model.MerchandiseState
 import org.robojackets.apiary.merchandise.ui.pickup_dialog.AlreadyPickedUpDialog
 import org.robojackets.apiary.merchandise.ui.pickup_dialog.ConfirmPickupDialog
+import org.robojackets.apiary.merchandise.ui.pickup_dialog.DistributionErrorDialog
 import timber.log.Timber
 
 @Composable
@@ -29,7 +30,7 @@ fun MerchandiseDistribution(
               if (state.lastDistributionStatus.can_distribute) {
                   ConfirmPickupDialog(
                         userFullName = state.lastDistributionStatus.user.name,
-                        userShirtSize = state.lastDistributionStatus.user.shirt_size!!, // FIXME
+                        userShirtSize = state.lastDistributionStatus.distribution.size, // FIXME
                         onConfirm = { onConfirmPickup() },
                         onDismissRequest = { onDismissPickupDialog() }
                   )
@@ -41,6 +42,11 @@ fun MerchandiseDistribution(
                       onDismissRequest = onDismissPickupDialog
                   )
               }
+          } else if (state.error != null) {
+              DistributionErrorDialog(
+                  error = state.error,
+                  onDismissRequest = onDismissPickupDialog
+              )
           }
         }
         else -> {}

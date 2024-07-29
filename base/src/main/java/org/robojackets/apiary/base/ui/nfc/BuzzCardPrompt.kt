@@ -11,23 +11,37 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.nxp.nfclib.CardType
 import com.nxp.nfclib.NxpNfcLib
 import com.nxp.nfclib.desfire.DESFireFactory
 import com.nxp.nfclib.exceptions.NxpNfcLibException
+import kotlinx.coroutines.android.awaitFrame
+import org.robojackets.apiary.base.BuildConfig
 import org.robojackets.apiary.base.ui.ActionPrompt
 import org.robojackets.apiary.base.ui.IconWithText
 import org.robojackets.apiary.base.ui.icons.ContactlessIcon
 import org.robojackets.apiary.base.ui.icons.CreditCardIcon
 import org.robojackets.apiary.base.ui.icons.ErrorIcon
 import org.robojackets.apiary.base.ui.icons.WarningIcon
-import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.*
-import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource.*
+import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.InvalidBuzzCardData
+import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.NotABuzzCard
+import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.TagLost
+import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.UnknownNfcError
+import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource.Debug
+import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource.Keyboard
 import org.robojackets.apiary.base.ui.theme.danger
 import timber.log.Timber
 import java.nio.charset.StandardCharsets
@@ -55,6 +69,7 @@ fun BuzzCardPrompt(
     externalError: BuzzCardPromptExternalError?,
 ) {
     var error by remember { mutableStateOf<BuzzCardPromptError?>(null) }
+    var lastTap by remember { mutableStateOf<BuzzCardTap?>(null) }
     val nfcPresenceDelayCheckMs = 50 // the minimum number of ms allowed between successive NFC
     // tag reads. Lower is better, but too low seems to cause an increase in NFC read errors when
     // tapping many BuzzCards as quickly as possible
@@ -104,7 +119,9 @@ fun BuzzCardPrompt(
                     }
 
                     error = null
-                    onBuzzCardTap(BuzzCardTap(gtid.toInt()))
+                    val buzzCardTap = BuzzCardTap(gtid.toInt())
+                    lastTap = buzzCardTap
+                    onBuzzCardTap(buzzCardTap)
                 } else {
                     Timber.i("Unknown card type ($cardType) presented")
                     error = NotABuzzCard
@@ -153,12 +170,38 @@ fun BuzzCardPrompt(
             ) {
                 Text("Enter GTID manually")
             }
+
+            if (BuildConfig.DEBUG) {
+                when(lastTap) {
+                    null -> {
+                        Button(
+                            onClick = {
+                                onBuzzCardTap(BuzzCardTap(BuildConfig.localGTID.toInt(), source = Debug))
+                            },
+                            Modifier.align(CenterHorizontally)
+                        ) {
+                            Text("Tap ${BuildConfig.localGTID.toInt()} again")
+                        }
+                    }
+                    else -> {
+                        Button(
+                            onClick = {
+                                onBuzzCardTap(BuzzCardTap(lastTap!!.gtid, source = Debug))
+                            },
+                            Modifier.align(CenterHorizontally)
+                        ) {
+                            Text("Tap ${lastTap?.gtid ?: "unknown GTID"} again")
+                        }
+                    }
+                }
+            }
         }
     }
 
     if (showGtidPrompt) {
         ManualGtidEntryPrompt(
             onGtidEntered = {
+                lastTap = it
                 onBuzzCardTap(it)
                 error = null
             },
@@ -174,6 +217,13 @@ fun ManualGtidEntryPrompt(
     onGtidEntered: (entry: BuzzCardTap) -> Unit,
 ) {
     var gtid by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(focusRequester) {
+        awaitFrame()
+        focusRequester.requestFocus()
+    }
+
     AlertDialog(
         onDismissRequest = {
             gtid = ""
@@ -209,7 +259,9 @@ fun ManualGtidEntryPrompt(
                     label = { Text("GTID") },
                     singleLine = true,
                     isError = gtid.isNotEmpty() && !GTID_REGEX.matches(gtid),
-                    modifier = Modifier.padding(top = 14.dp),
+                    modifier = Modifier.padding(top = 14.dp)
+                        .focusRequester(focusRequester), // Focuses this field and shows the keyboard
+                    // when this text field is visible on screen. See https://stackoverflow.com/a/76321706
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     leadingIcon = { CreditCardIcon() }
                 )
@@ -264,14 +316,6 @@ fun NfcInvalidBuzzCardDataError() {
 }
 
 @Composable
-fun NfcInvalidTypedGtidError() {
-    ActionPrompt(
-        icon = { ContactlessIcon(Modifier.size(114.dp), tint = danger) },
-        title = "Invalid typed GTID",
-    )
-}
-
-@Composable
 fun NfcReadUnknownError() {
     ActionPrompt(
         icon = { ContactlessIcon(Modifier.size(114.dp), tint = danger) },
@@ -291,30 +335,3 @@ fun ExternalError(externalError: BuzzCardPromptExternalError) {
         subtitle = externalError.message,
     )
 }
-
-// Unused for now but useful once NFC disabled support is added back
-// @Composable
-// fun NfcUnsupportedError() {
-//    ActionPrompt(
-//        icon = { ErrorIcon(Modifier.size(114.dp), tint = danger) },
-//        title = "NFC is unavailable",
-//        subtitle = "Your device cannot read BuzzCards because it does not support NFC",
-//    ) {
-//        IconWithText(icon = { WarningIcon(tint = danger) }, text = "NFC adapter was null")
-//    }
-// }
-//
-// @Composable
-// fun NfcDisabledError() {
-//    ActionPrompt(
-//        icon = { ContactlessIcon(Modifier.size(114.dp), tint = danger) },
-//        title = "NFC is disabled",
-//        subtitle = "",
-//    ) {
-//        Button(onClick = {
-//
-//        }) {
-//            Text(text = "Enable NFC")
-//        }
-//    }
-// }

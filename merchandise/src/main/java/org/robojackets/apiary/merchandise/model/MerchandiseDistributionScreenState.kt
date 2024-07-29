@@ -4,5 +4,6 @@ enum class MerchandiseDistributionScreenState {
     ReadyForTap,
     LoadingDistributionStatus,
     Error,
+    SavingPickupStatus,
     ShowStatusDialog,
 }

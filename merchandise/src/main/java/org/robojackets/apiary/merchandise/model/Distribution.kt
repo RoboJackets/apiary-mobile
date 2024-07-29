@@ -18,4 +18,5 @@ data class Distribution(
     val id: Int,
     val provided_by: UserRef?,
     val provided_at: Date?,
+    val size: MerchandiseSize?,
 )

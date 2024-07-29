@@ -34,6 +34,8 @@ plugins {
     id("io.gitlab.arturbosch.detekt").version("1.23.0")
     id("com.autonomousapps.dependency-analysis").version("1.21.0")
     id("com.github.ben-manes.versions").version("0.46.0")
+    id("com.android.library") version "8.5.1" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.0" apply false
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

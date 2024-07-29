@@ -27,10 +27,7 @@ fun DistributionErrorDialog(
         title = {
             Text("Ineligible for item")
         },
-        details = listOf(
-            { DistributeTo("Kristaps Berzinch") },
-            { DistributionErrorDetails(error) }
-        ),
+        details = listOf { DistributionErrorDetails(error) },
         dismissButton = {
             Button(
                 onClick = onDismissRequest

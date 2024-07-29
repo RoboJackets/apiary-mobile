@@ -129,12 +129,14 @@ object NetworkDependencies {
     object Versions {
         const val moshi_version = "1.15.1"
         const val moshi_converter_factory_version = "2.11.0"
+        const val kotlinx_serialization_json_version = "1.6.3"
         const val okhttp_bom_version = "4.12.0"
         const val retrofit_version = "2.11.0"
         const val retrofuture_version = "1.7.4"
         const val sandwich_version = "2.0.8"
     }
 
+    const val kotlinx_serialization_json = "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinx_serialization_json_version}"
     const val moshi = "com.squareup.moshi:moshi:${Versions.moshi_version}"
     const val moshi_adapters = "com.squareup.moshi:moshi-adapters:${Versions.moshi_version}"
     const val moshi_converter_factory =

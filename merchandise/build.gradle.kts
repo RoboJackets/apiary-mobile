@@ -5,6 +5,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 dependencies {
@@ -30,6 +31,7 @@ dependencies {
     implementation(ComposeDependencies.compose_material_icons_core)
     implementation(ComposeDependencies.compose_material_icons_extended)
 
+    implementation(NetworkDependencies.kotlinx_serialization_json)
     implementation(NetworkDependencies.moshi)
     ksp(NetworkDependencies.moshi_kotlin_codegen)
     implementation(NetworkDependencies.okhttp)

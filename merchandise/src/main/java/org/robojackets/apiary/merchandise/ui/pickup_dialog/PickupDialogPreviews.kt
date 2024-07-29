@@ -6,6 +6,7 @@ import org.robojackets.apiary.base.model.BasicUser
 import org.robojackets.apiary.base.model.ShirtSize
 import org.robojackets.apiary.base.model.UserRef
 import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
+import org.robojackets.apiary.merchandise.model.MerchandiseSize
 import java.time.Instant
 
 @Preview
@@ -13,8 +14,8 @@ import java.time.Instant
 fun ConfirmDistributionDialogPreview() {
     Apiary_MobileTheme {
         ConfirmPickupDialog(
-            userFullName = "Kristaps Berzinch",
-            userShirtSize = ShirtSize.SMALL,
+            userFullName = "George Burdell",
+            userShirtSize = MerchandiseSize("s", "Small"),
             onConfirm = {},
             onDismissRequest = {},
         )
@@ -26,8 +27,8 @@ fun ConfirmDistributionDialogPreview() {
 fun NoPaidTransactionErrorDialogPreview() {
     Apiary_MobileTheme {
         DistributionErrorDialog(
-            onDismissRequest = {},
-            error = "This person doesn't have a paid transaction for this item."
+            error = "This person doesn't have a paid transaction for this item.",
+            onDismissRequest = {}
         )
     }
 }
@@ -37,8 +38,8 @@ fun NoPaidTransactionErrorDialogPreview() {
 fun NotDistributableDialogPreview() {
     Apiary_MobileTheme {
         DistributionErrorDialog(
-            onDismissRequest = {},
-            error = "This item cannot be distributed."
+            error = "This item cannot be distributed.",
+            onDismissRequest = {}
         )
     }
 }

@@ -11,5 +11,4 @@ data class MerchandiseItemsHolder(
 data class MerchandiseItem(
     val id: Int,
     val name: String,
-    // TODO: do the other fields matter?
 )

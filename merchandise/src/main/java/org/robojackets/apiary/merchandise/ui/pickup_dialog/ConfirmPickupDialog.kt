@@ -13,14 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import org.robojackets.apiary.base.model.ShirtSize
 import org.robojackets.apiary.base.ui.dialog.DetailsDialog
 import org.robojackets.apiary.base.ui.theme.success
+import org.robojackets.apiary.merchandise.model.MerchandiseSize
 
 @Composable
 fun ConfirmPickupDialog(
     userFullName: String,
-    userShirtSize: ShirtSize,
+    userShirtSize: MerchandiseSize?,
     onConfirm: () -> Unit,
     onDismissRequest: () -> Unit,
 ) {
@@ -35,7 +35,13 @@ fun ConfirmPickupDialog(
         },
         details = listOf(
             { DistributeTo(userFullName) },
-            { ShirtSizeInfo(userShirtSize.toString()) }
+            {
+                when {
+                    userShirtSize?.display_name != null && userShirtSize.short != null -> {
+                        ShirtSizeInfo(userShirtSize.display_name)
+                    } // FIXME if backend logic changes
+                }
+            }
         ),
         confirmButton = {
             Button(
