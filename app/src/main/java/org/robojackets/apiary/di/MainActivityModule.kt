@@ -5,6 +5,7 @@ import com.nxp.nfclib.NxpNfcLib
 import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,6 +26,7 @@ import org.robojackets.apiary.base.service.ServerInfoApiService
 import org.robojackets.apiary.network.UserAgentInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.Date
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
@@ -68,6 +70,7 @@ object MainActivityModule {
                 Types.newParameterizedType(List::class.java, Permission::class.java),
                 SkipNotFoundEnumInEnumListAdapter(Permission::class.java)
             )
+            .add(Date::class.java, Rfc3339DateJsonAdapter())
             .build()
     }
 

@@ -13,6 +13,7 @@ dependencies {
     implementation(project(mapOf("path" to ":attendance")))
     implementation(project(mapOf("path" to ":auth")))
     implementation(project(mapOf("path" to ":base")))
+    implementation(project(mapOf("path" to ":merchandise")))
     implementation(project(mapOf("path" to ":navigation")))
 
     // Dependencies
@@ -47,6 +48,7 @@ dependencies {
 
     implementation(MaterialDependencies.material_android)
 
+    implementation(NetworkDependencies.moshi_adapters)
     implementation(NetworkDependencies.moshi_converter_factory)
     implementation(NetworkDependencies.okhttp)
     implementation(platform(NetworkDependencies.okhttp_bom))
