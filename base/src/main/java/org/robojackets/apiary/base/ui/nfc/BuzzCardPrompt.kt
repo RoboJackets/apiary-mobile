@@ -29,7 +29,6 @@ import com.nxp.nfclib.NxpNfcLib
 import com.nxp.nfclib.desfire.DESFireFactory
 import com.nxp.nfclib.exceptions.NxpNfcLibException
 import kotlinx.coroutines.android.awaitFrame
-import org.robojackets.apiary.base.BuildConfig
 import org.robojackets.apiary.base.ui.ActionPrompt
 import org.robojackets.apiary.base.ui.IconWithText
 import org.robojackets.apiary.base.ui.icons.ContactlessIcon
@@ -40,7 +39,6 @@ import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.InvalidBuzzCardDat
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.NotABuzzCard
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.TagLost
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.UnknownNfcError
-import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource.Debug
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource.Keyboard
 import org.robojackets.apiary.base.ui.theme.danger
 import timber.log.Timber
@@ -171,37 +169,37 @@ fun BuzzCardPrompt(
             ) {
                 Text("Enter GTID manually")
             }
-
-            if (BuildConfig.DEBUG) {
-                when (lastTap) {
-                    null -> {
-                        Button(
-                            onClick = {
-                                onBuzzCardTap(
-                                    BuzzCardTap(
-                                        BuildConfig.localGTID.toInt(),
-                                        source = Debug
-                                    )
-                                )
-                            },
-                            Modifier.align(CenterHorizontally)
-                        ) {
-                            Text("Tap ${BuildConfig.localGTID.toInt()} again")
-                        }
-                    }
-
-                    else -> {
-                        Button(
-                            onClick = {
-                                onBuzzCardTap(BuzzCardTap(lastTap!!.gtid, source = Debug))
-                            },
-                            Modifier.align(CenterHorizontally)
-                        ) {
-                            Text("Tap ${lastTap?.gtid ?: "unknown GTID"} again")
-                        }
-                    }
-                }
-            }
+// TODO(before merge): Figure out how to make this compile in CI when uncommented
+//            if (BuildConfig.DEBUG) {
+//                when (lastTap) {
+//                    null -> {
+//                        Button(
+//                            onClick = {
+//                                onBuzzCardTap(
+//                                    BuzzCardTap(
+//                                        BuildConfig.localGTID.toInt(),
+//                                        source = Debug
+//                                    )
+//                                )
+//                            },
+//                            Modifier.align(CenterHorizontally)
+//                        ) {
+//                            Text("Tap ${BuildConfig.localGTID.toInt()} again")
+//                        }
+//                    }
+//
+//                    else -> {
+//                        Button(
+//                            onClick = {
+//                                onBuzzCardTap(BuzzCardTap(lastTap!!.gtid, source = Debug))
+//                            },
+//                            Modifier.align(CenterHorizontally)
+//                        ) {
+//                            Text("Tap ${lastTap?.gtid ?: "unknown GTID"} again")
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 
