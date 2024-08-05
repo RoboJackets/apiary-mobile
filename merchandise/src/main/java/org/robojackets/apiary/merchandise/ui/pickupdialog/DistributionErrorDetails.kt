@@ -1,4 +1,4 @@
-package org.robojackets.apiary.merchandise.ui.pickup_dialog
+package org.robojackets.apiary.merchandise.ui.pickupdialog
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
@@ -8,10 +8,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-fun ItemPickupInfo(details: String) {
+fun DistributionErrorDetails(details: String) {
     ListItem(
         leadingContent = {
-            Icon(Icons.Outlined.ErrorOutline, contentDescription = "Past pickup info")
+            Icon(Icons.Outlined.ErrorOutline, contentDescription = "Distribution error")
         },
         headlineContent = {
             Text(details)

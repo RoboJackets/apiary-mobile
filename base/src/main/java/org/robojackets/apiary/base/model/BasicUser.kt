@@ -13,6 +13,7 @@ data class BasicUser(
     val polo_size: ShirtSize?,
 )
 
+@Suppress("ConstructorParameterNaming")
 @JsonClass(generateAdapter = true)
 data class UserRef(
     val id: Int,

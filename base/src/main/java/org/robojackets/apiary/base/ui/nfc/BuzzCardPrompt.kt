@@ -60,6 +60,7 @@ import java.nio.charset.StandardCharsets
  */
 val GTID_REGEX = Regex("90[0-9]{7}")
 const val GTID_LENGTH = 9
+
 @Suppress("MagicNumber", "LongMethod", "ComplexMethod")
 @Composable
 fun BuzzCardPrompt(
@@ -151,8 +152,8 @@ fun BuzzCardPrompt(
     }
 
     var showGtidPrompt by remember { mutableStateOf(false) }
-    Column {
-        if (!hidePrompt) {
+    if (!hidePrompt) {
+        Column {
             if (externalError != null) {
                 ExternalError(externalError)
             } else {
@@ -172,17 +173,23 @@ fun BuzzCardPrompt(
             }
 
             if (BuildConfig.DEBUG) {
-                when(lastTap) {
+                when (lastTap) {
                     null -> {
                         Button(
                             onClick = {
-                                onBuzzCardTap(BuzzCardTap(BuildConfig.localGTID.toInt(), source = Debug))
+                                onBuzzCardTap(
+                                    BuzzCardTap(
+                                        BuildConfig.localGTID.toInt(),
+                                        source = Debug
+                                    )
+                                )
                             },
                             Modifier.align(CenterHorizontally)
                         ) {
                             Text("Tap ${BuildConfig.localGTID.toInt()} again")
                         }
                     }
+
                     else -> {
                         Button(
                             onClick = {
@@ -240,7 +247,12 @@ fun ManualGtidEntryPrompt(
                 Text("Submit")
             }
         },
-        title = { Text(text = "Manual GTID entry", style = MaterialTheme.typography.headlineSmall) },
+        title = {
+            Text(
+                text = "Manual GTID entry",
+                style = MaterialTheme.typography.headlineSmall
+            )
+        },
         text = {
             Column {
                 Text("Type the entire 9-digit GTID, starting with 90")
@@ -259,7 +271,8 @@ fun ManualGtidEntryPrompt(
                     label = { Text("GTID") },
                     singleLine = true,
                     isError = gtid.isNotEmpty() && !GTID_REGEX.matches(gtid),
-                    modifier = Modifier.padding(top = 14.dp)
+                    modifier = Modifier
+                        .padding(top = 14.dp)
                         .focusRequester(focusRequester), // Focuses this field and shows the keyboard
                     // when this text field is visible on screen. See https://stackoverflow.com/a/76321706
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

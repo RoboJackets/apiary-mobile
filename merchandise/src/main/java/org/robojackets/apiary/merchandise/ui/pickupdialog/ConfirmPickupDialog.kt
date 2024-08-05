@@ -1,4 +1,4 @@
-package org.robojackets.apiary.merchandise.ui.pickup_dialog
+package org.robojackets.apiary.merchandise.ui.pickupdialog
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,9 +37,9 @@ fun ConfirmPickupDialog(
             { DistributeTo(userFullName) },
             {
                 when {
-                    userShirtSize?.display_name != null && userShirtSize.short != null -> {
-                        ShirtSizeInfo(userShirtSize.display_name)
-                    } // FIXME if backend logic changes
+                    userShirtSize != null -> {
+                        ItemSizeInfo(userShirtSize.displayName)
+                    }
                 }
             }
         ),
@@ -47,9 +47,7 @@ fun ConfirmPickupDialog(
             Button(
                 onClick = {
                     onConfirm()
-                    onDismissRequest()
                 },
-                // FIXME: Button is too bright in dark mode
                 colors = ButtonDefaults.buttonColors(containerColor = success, contentColor = Color.White)
             ) {
                 Text("Mark picked up")
@@ -65,4 +63,3 @@ fun ConfirmPickupDialog(
         modifier = Modifier.padding(0.dp)
     )
 }
-

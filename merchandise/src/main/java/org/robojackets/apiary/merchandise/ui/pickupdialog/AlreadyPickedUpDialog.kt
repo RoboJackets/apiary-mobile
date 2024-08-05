@@ -1,4 +1,4 @@
-package org.robojackets.apiary.merchandise.ui.pickup_dialog
+package org.robojackets.apiary.merchandise.ui.pickupdialog
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,7 +20,6 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
 import java.util.TimeZone
-
 
 @Composable
 fun AlreadyPickedUpDialog(
@@ -47,7 +46,8 @@ fun AlreadyPickedUpDialog(
         ),
         dismissButton = {
             Button(
-                onClick = onDismissRequest) {
+                onClick = onDismissRequest
+            ) {
                 Text("Go back")
             }
         },

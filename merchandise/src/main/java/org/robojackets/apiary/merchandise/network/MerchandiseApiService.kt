@@ -24,6 +24,6 @@ interface MerchandiseApiService {
     suspend fun distributeItem(
         @Path("itemId") itemId: Int,
         @Path("gtid") gtid: Int,
-        @Field("provided_via") provided_via: String,
+        @Field("provided_via") providedVia: String,
     ): ApiResponse<DistributionHolder>
 }

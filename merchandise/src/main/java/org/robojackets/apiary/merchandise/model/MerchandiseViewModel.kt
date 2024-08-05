@@ -2,12 +2,10 @@ package org.robojackets.apiary.merchandise.model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.skydoves.sandwich.StatusCode
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
 import com.skydoves.sandwich.onSuccess
 import com.skydoves.sandwich.retrofit.serialization.deserializeErrorBody
-import com.skydoves.sandwich.retrofit.statusCode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,19 +23,22 @@ import javax.inject.Inject
 @HiltViewModel
 class MerchandiseViewModel @Inject constructor(
     val merchandiseRepository: MerchandiseRepository,
-    val navManager: NavigationManager
+    val navManager: NavigationManager,
 ) : ViewModel() {
     private val _state = MutableStateFlow(MerchandiseState())
     val state: StateFlow<MerchandiseState>
         get() = _state
 
-    private val merchandiseItems = MutableStateFlow<List<MerchandiseItem>>(emptyList())
+    private val merchandiseItems = MutableStateFlow<List<MerchandiseItem>?>(null)
     private val loadingMerchandiseItems = MutableStateFlow(false)
+    private val merchandiseItemsListError = MutableStateFlow<String?>(null)
     private val error = MutableStateFlow<String?>(null)
     private val selectedItem = MutableStateFlow<MerchandiseItem?>(null)
     private val screenState = MutableStateFlow(MerchandiseDistributionScreenState.ReadyForTap)
-    private val lastDistributionStatus: MutableStateFlow<DistributionHolder?> = MutableStateFlow(null)
+    private val lastDistributionStatus: MutableStateFlow<DistributionHolder?> =
+        MutableStateFlow(null)
     private val lastAcceptedBuzzCardTap: MutableStateFlow<BuzzCardTap?> = MutableStateFlow(null)
+    private val lastStorePickupStatus: MutableStateFlow<StorePickupStatus?> = MutableStateFlow(null)
 
     init {
         viewModelScope.launch {
@@ -50,29 +51,33 @@ class MerchandiseViewModel @Inject constructor(
                     screenState,
                     lastDistributionStatus,
                     lastAcceptedBuzzCardTap,
+                    lastStorePickupStatus,
+                    merchandiseItemsListError,
                 )
-            ) {
-                flows ->
-                    MerchandiseState(
-                        merchandiseItems = flows[0] as List<MerchandiseItem>,
-                        loadingMerchandiseItems = flows[1] as Boolean,
-                        error = flows[2] as String?,
-                        selectedItem = flows[3] as MerchandiseItem?,
-                        screenState = flows[4] as MerchandiseDistributionScreenState,
-                        lastDistributionStatus = flows[5] as DistributionHolder?,
-                        lastAcceptedBuzzCardTap = flows[6] as BuzzCardTap?,
-                    )
+            ) { flows ->
+                MerchandiseState(
+                    merchandiseItems = flows[0] as List<MerchandiseItem>?,
+                    loadingMerchandiseItems = flows[1] as Boolean,
+                    error = flows[2] as String?,
+                    selectedItem = flows[3] as MerchandiseItem?,
+                    screenState = flows[4] as MerchandiseDistributionScreenState,
+                    lastDistributionStatus = flows[5] as DistributionHolder?,
+                    lastAcceptedBuzzCardTap = flows[6] as BuzzCardTap?,
+                    lastStorePickupStatus = flows[7] as StorePickupStatus?,
+                    merchandiseItemsListError = flows[8] as String?,
+                )
             }
-            .catch { throwable -> throw throwable }
-            .collect { _state.value = it }
+                .catch { throwable -> throw throwable }
+                .collect { _state.value = it }
         }
     }
 
     fun loadMerchandiseItems(
         forceRefresh: Boolean = false,
-        selectedItemId: Int? = null
+        selectedItemId: Int? = null,
     ) {
-        if (merchandiseItems.value.isNotEmpty() && !forceRefresh) {
+        merchandiseItemsListError.value = null
+        if (merchandiseItems.value?.isNotEmpty() == true && !forceRefresh) {
             Timber.d("Using cached merchandise items")
             selectedItemId?.let { selectItemForDistribution(it) }
             return
@@ -86,11 +91,11 @@ class MerchandiseViewModel @Inject constructor(
                 loadingMerchandiseItems.value = false
             }.onError {
                 Timber.e(this.toString(), "Could not fetch merchandise items due to an error")
-                error.value = "Unable to fetch merchandise items"
+                merchandiseItemsListError.value = "Could not load available merchandise items"
                 loadingMerchandiseItems.value = false
             }.onException {
                 Timber.e(this.throwable, "Could not fetch merchandise items due to an exception")
-                error.value = "Unable to fetch merchandise items"
+                merchandiseItemsListError.value = "Could not load available merchandise items"
                 loadingMerchandiseItems.value = false
             }
         }
@@ -105,7 +110,7 @@ class MerchandiseViewModel @Inject constructor(
     }
 
     private fun selectItemForDistribution(merchandiseItemId: Int) {
-        val item = merchandiseItems.value.find { it.id == merchandiseItemId }
+        val item = merchandiseItems.value?.find { it.id == merchandiseItemId }
         if (item != null) {
             selectedItem.value = item
         } else {
@@ -114,23 +119,27 @@ class MerchandiseViewModel @Inject constructor(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun onBuzzCardTap(buzzCardTap: BuzzCardTap) {
-        // TODO: What happens if this is called while the screen is in the wrong state?
-
-        Timber.d("onbuzzcardtap")
-        val selectedItemId = selectedItem.value?.id
-
-        if (selectedItemId == null) { // FIXME
-            Timber.d("No merchandise item selected")
+        if (screenState.value != MerchandiseDistributionScreenState.ReadyForTap) {
+            Timber.d("onBuzzCardTap: Screen state is not ready for tap, ignoring")
             return
         }
 
-        if (screenState.value != MerchandiseDistributionScreenState.ReadyForTap) {
-            Timber.d("Screen state is not ready for tap")
+        screenState.value = MerchandiseDistributionScreenState.LoadingDistributionStatus
+
+        val selectedItemId = selectedItem.value?.id
+
+        if (selectedItemId == null) {
+            error.value = "No merchandise item selected"
+            Timber.e("onBuzzCardTap called with no merchandise item selected")
+            return
         }
 
+        error.value = null
+        lastStorePickupStatus.value = null
+        lastDistributionStatus.value = null
         lastAcceptedBuzzCardTap.value = buzzCardTap
-        screenState.value = MerchandiseDistributionScreenState.LoadingDistributionStatus
 
         viewModelScope.launch {
             merchandiseRepository.getDistributionStatus(selectedItemId, buzzCardTap.gtid)
@@ -138,7 +147,7 @@ class MerchandiseViewModel @Inject constructor(
                     Timber.d("Successfully fetched distribution status")
                     Timber.d(this.data.toString())
                     lastDistributionStatus.value = this.data
-                    screenState.value = MerchandiseDistributionScreenState.ShowStatusDialog
+                    screenState.value = MerchandiseDistributionScreenState.ShowPickupStatusDialog
                 }
                 .onError {
                     // `this.errorBody` can only be consumed once. If you add a log statement
@@ -152,70 +161,68 @@ class MerchandiseViewModel @Inject constructor(
                         // method, or you get build errors like "None of the following candidates is
                         // applicable because of receiver type mismatch," it's probably because
                         // you're specifying the wrong type for A
-                        errorModel = this.deserializeErrorBody<DistributionHolder, ApiErrorMessage>()
+                        errorModel =
+                            this.deserializeErrorBody<DistributionHolder, ApiErrorMessage>()
                     } catch (e: Exception) {
                         Timber.e(e, "Could not deserialize error body")
                     }
                     Timber.d("status: ${errorModel?.status}, message: ${errorModel?.message}")
-                    screenState.value = MerchandiseDistributionScreenState.ShowStatusDialog
+                    screenState.value = MerchandiseDistributionScreenState.ShowPickupStatusDialog
 
-                    error.value = when {
-                        this.statusCode == StatusCode.NotFound && errorModel?.status == null -> {
-                            "No user found for this GTID"
-                        }
-                        else -> {
-                            errorModel?.message ?: "Failed to fetch distribution status"
-                        }
-                    }
+                    error.value = errorModel?.message ?: "Failed to fetch distribution status"
+                }.onException {
+                    Timber.e(this.throwable, "Failed to fetch distribution status due to an exception")
+                    error.value = "Failed to fetch distribution status"
+                    screenState.value = MerchandiseDistributionScreenState.ShowPickupStatusDialog
                 }
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun confirmPickup() {
-        // FIXME
         screenState.value = MerchandiseDistributionScreenState.SavingPickupStatus
         viewModelScope.launch {
-            // FIXME: nested lets is so gross
-            selectedItem.value?.let { itemId ->
-                lastAcceptedBuzzCardTap.value?.let { buzzCardTap ->
-                    merchandiseRepository.distributeItem(
-                        itemId = itemId.id,
-                        gtid = buzzCardTap.gtid,
-                        providedVia = "MyRoboJackets Android - ${buzzCardTap.source}" // FIXME: figure out how to get tap source here
-                    ).onSuccess {
-                        screenState.value = MerchandiseDistributionScreenState.ReadyForTap
-                    }.onError { // TODO: Reduce code duplication
-                        // TODO: If distribution fails, what should we do?
-                        // TODO: Implement loading state while saving distribution
-                        // `this.errorBody` can only be consumed once. If you add a log statement
-                        // including it, then the deserializeErrorBody call will fail
-                        var errorModel: ApiErrorMessage? = null
-                        try {
-                            // Sandwich docs on deserializing errors: https://skydoves.github.io/sandwich/retrofit/#error-body-deserialization
-                            // <A, B> where A is the return type of the outer API call (getDistributionStatus)
-                            // and B is the type to parse the error body as
-                            // If Android Studio is constantly suggesting to import the deserializeErrorBody
-                            // method, or you get build errors like "None of the following candidates is
-                            // applicable because of receiver type mismatch," it's probably because
-                            // you're specifying the wrong type for A
-                            errorModel = this.deserializeErrorBody<DistributionHolder, ApiErrorMessage>()
-                        } catch (e: Exception) {
-                            Timber.e(e, "Could not deserialize error body")
-                        }
-                        Timber.d("status: ${errorModel?.status}, message: ${errorModel?.message}")
-                        screenState.value = MerchandiseDistributionScreenState.ShowStatusDialog
+            val selectedItem = selectedItem.value
+            val lastAcceptedBuzzCardTap = lastAcceptedBuzzCardTap.value
 
-                        error.value = when {
-                            this.statusCode == StatusCode.NotFound && errorModel?.status == null -> {
-                                "No user found for this GTID"
-                            }
+            if (selectedItem == null) {
+                error.value = "No merchandise item selected"
+                Timber.e("No merchandise item selected")
+                return@launch
+            }
 
-                            else -> {
-                                errorModel?.message ?: "Failed to fetch distribution status"
-                            }
-                        }
-                    }
+            if (lastAcceptedBuzzCardTap == null) {
+                error.value = "BuzzCard data for pickup was not found"
+                Timber.e("Last BuzzCardTap is null")
+                return@launch
+            }
+
+            merchandiseRepository.distributeItem(
+                itemId = selectedItem.id,
+                gtid = lastAcceptedBuzzCardTap.gtid,
+                providedVia = "MyRoboJackets Android - ${lastAcceptedBuzzCardTap.source}"
+            ).onSuccess {
+                screenState.value = MerchandiseDistributionScreenState.ReadyForTap
+                lastStorePickupStatus.value = StorePickupStatus(
+                    error = null,
+                    user = this.data.user
+                )
+            }.onError {
+                // `this.errorBody` can only be consumed once. If you add a log statement
+                // including it, then the deserializeErrorBody call will fail
+                var errorModel: ApiErrorMessage? = null
+                try {
+                    errorModel = this.deserializeErrorBody<DistributionHolder, ApiErrorMessage>()
+                } catch (e: Exception) {
+                    Timber.e(e, "Could not deserialize error body")
                 }
+                Timber.d("status: ${errorModel?.status}, message: ${errorModel?.message}")
+                error.value = errorModel?.message ?: "Unable to record merchandise distribution"
+                screenState.value = MerchandiseDistributionScreenState.ShowDistributionErrorDialog
+            }.onException {
+                Timber.e(this.throwable, "Unable to record merchandise distribution due to an exception")
+                error.value = "Unable to record merchandise distribution"
+                screenState.value = MerchandiseDistributionScreenState.ShowDistributionErrorDialog
             }
         }
     }
@@ -226,11 +233,13 @@ class MerchandiseViewModel @Inject constructor(
 }
 
 data class MerchandiseState(
-    val merchandiseItems: List<MerchandiseItem> = emptyList(),
+    val merchandiseItems: List<MerchandiseItem>? = null,
     val loadingMerchandiseItems: Boolean = false,
     val error: String? = null,
     val selectedItem: MerchandiseItem? = null,
     val screenState: MerchandiseDistributionScreenState = MerchandiseDistributionScreenState.ReadyForTap,
     val lastDistributionStatus: DistributionHolder? = null,
     val lastAcceptedBuzzCardTap: BuzzCardTap? = null,
+    val lastStorePickupStatus: StorePickupStatus? = null,
+    val merchandiseItemsListError: String? = null,
 )

@@ -45,7 +45,6 @@ fun CurrentlySelectedItem(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-
         }
 
         TextButton(onClick = onChangeItem) { Text("Change") }

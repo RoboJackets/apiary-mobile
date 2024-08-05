@@ -1,4 +1,4 @@
-package org.robojackets.apiary.merchandise.ui.pickup_dialog
+package org.robojackets.apiary.merchandise.ui.pickupdialog
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,6 +16,7 @@ import org.robojackets.apiary.base.ui.theme.danger
 @Composable
 fun DistributionErrorDialog(
     error: String,
+    title: String = "Ineligible for item",
     onDismissRequest: () -> Unit,
 ) {
     DetailsDialog(
@@ -25,14 +26,14 @@ fun DistributionErrorDialog(
         },
         iconContentColor = danger,
         title = {
-            Text("Ineligible for item")
+            Text(title)
         },
         details = listOf { DistributionErrorDetails(error) },
         dismissButton = {
             Button(
                 onClick = onDismissRequest
             ) {
-                Text("Go back")
+                Text("Close")
             }
         },
         modifier = Modifier.padding(0.dp)

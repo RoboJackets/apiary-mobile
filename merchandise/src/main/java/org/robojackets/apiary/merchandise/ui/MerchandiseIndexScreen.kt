@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import org.robojackets.apiary.base.ui.error.ErrorMessageWithRetry
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.LoadingSpinner
 import org.robojackets.apiary.merchandise.model.MerchandiseViewModel
@@ -21,15 +22,19 @@ fun MerchandiseIndexScreen(
 
     val state by viewModel.state.collectAsState()
 
-
     // ContentPadding ensures the outer container fills the entire available width + height.
     // This is important for navigation to avoid weird animations/effects when moving between
     // screens, even with nav transition animations disabled.
     ContentPadding {
         Column {
-            when (state.loadingMerchandiseItems) {
-                true -> LoadingSpinner()
-                false -> MerchandiseItemSelection(
+            when {
+                state.merchandiseItemsListError != null -> ErrorMessageWithRetry(
+                    message = state.merchandiseItemsListError
+                        ?: "Unable to load merchandise items available for distribution",
+                    onRetry = { viewModel.loadMerchandiseItems(forceRefresh = true) }
+                )
+                state.merchandiseItems == null || state.loadingMerchandiseItems -> LoadingSpinner()
+                else -> MerchandiseItemSelection(
                     title = {
                         Text(
                             "Pick a merchandise item to distribute",
@@ -39,7 +44,10 @@ fun MerchandiseIndexScreen(
                     items = state.merchandiseItems,
                     onItemSelected = {
                         viewModel.navigateToMerchandiseItemDistribution(it)
-                    }
+                    },
+                    onRefreshList = {
+                        viewModel.loadMerchandiseItems(forceRefresh = true)
+                    },
                 )
             }
         }

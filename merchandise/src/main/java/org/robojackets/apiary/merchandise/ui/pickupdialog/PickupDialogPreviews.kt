@@ -1,4 +1,4 @@
-package org.robojackets.apiary.merchandise.ui.pickup_dialog
+package org.robojackets.apiary.merchandise.ui.pickupdialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview

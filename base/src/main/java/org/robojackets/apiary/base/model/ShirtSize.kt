@@ -27,7 +27,8 @@ enum class ShirtSize {
             "EXTRA_LARGE" -> "Extra Large"
             "XXL" -> "XXL"
             "XXXL" -> "XXXL"
-            else -> name
+            else ->
+                name
                 .lowercase(Locale.getDefault())
                 .replaceFirstChar {
                     if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()

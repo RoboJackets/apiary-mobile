@@ -136,7 +136,8 @@ object NetworkDependencies {
         const val sandwich_version = "2.0.8"
     }
 
-    const val kotlinx_serialization_json = "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinx_serialization_json_version}"
+    const val kotlinx_serialization_json =
+        "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinx_serialization_json_version}"
     const val moshi = "com.squareup.moshi:moshi:${Versions.moshi_version}"
     const val moshi_adapters = "com.squareup.moshi:moshi-adapters:${Versions.moshi_version}"
     const val moshi_converter_factory =

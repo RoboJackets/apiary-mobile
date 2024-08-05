@@ -1,20 +1,28 @@
 package org.robojackets.apiary.merchandise.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.nxp.nfclib.NxpNfcLib
+import org.robojackets.apiary.base.ui.ActionPrompt
+import org.robojackets.apiary.base.ui.icons.PendingIcon
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPrompt
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
 import org.robojackets.apiary.merchandise.model.MerchandiseDistributionScreenState
 import org.robojackets.apiary.merchandise.model.MerchandiseState
-import org.robojackets.apiary.merchandise.ui.pickup_dialog.AlreadyPickedUpDialog
-import org.robojackets.apiary.merchandise.ui.pickup_dialog.ConfirmPickupDialog
-import org.robojackets.apiary.merchandise.ui.pickup_dialog.DistributionErrorDialog
-import timber.log.Timber
+import org.robojackets.apiary.merchandise.ui.pickupdialog.AlreadyPickedUpDialog
+import org.robojackets.apiary.merchandise.ui.pickupdialog.ConfirmPickupDialog
+import org.robojackets.apiary.merchandise.ui.pickupdialog.DistributionErrorDialog
 
+// TODO(before merge): Shorten method and implement empty ifs, then remove next line
+@Suppress("LongMethod", "CyclomaticComplexMethod", "EmptyIfBlock")
 @Composable
 fun MerchandiseDistribution(
     state: MerchandiseState,
@@ -24,37 +32,53 @@ fun MerchandiseDistribution(
     onDismissPickupDialog: () -> Unit,
     onNavigateToMerchandiseIndex: () -> Unit,
 ) {
-    when(state.screenState) {
-        MerchandiseDistributionScreenState.ShowStatusDialog -> {
+    // This when handles showing dialogs on screen
+    when (state.screenState) {
+        MerchandiseDistributionScreenState.ShowPickupStatusDialog -> {
           if (state.lastDistributionStatus != null) {
-              if (state.lastDistributionStatus.can_distribute) {
+              if (state.lastDistributionStatus.canDistribute) {
                   ConfirmPickupDialog(
                         userFullName = state.lastDistributionStatus.user.name,
-                        userShirtSize = state.lastDistributionStatus.distribution.size, // FIXME
+                        userShirtSize = state.lastDistributionStatus.distribution.size,
                         onConfirm = { onConfirmPickup() },
-                        onDismissRequest = { onDismissPickupDialog() }
+                        onDismissRequest = { onDismissPickupDialog() },
                   )
-              } else if (!state.lastDistributionStatus.can_distribute) {
+              } else if (!state.lastDistributionStatus.canDistribute) {
                   AlreadyPickedUpDialog(
                       distributeTo = state.lastDistributionStatus.user,
-                      providedBy = state.lastDistributionStatus.distribution.provided_by!!, // FIXME: Remove these !!s
-                      providedAt = state.lastDistributionStatus.distribution.provided_at!!.toInstant(),
-                      onDismissRequest = onDismissPickupDialog
+                      // TODO(before merge): Remove these !!s
+                      providedBy = state.lastDistributionStatus.distribution.providedBy!!,
+                      providedAt =
+                        state.lastDistributionStatus.distribution.providedAt!!.toInstant(),
+                      onDismissRequest = onDismissPickupDialog,
                   )
               }
           } else if (state.error != null) {
               DistributionErrorDialog(
                   error = state.error,
-                  onDismissRequest = onDismissPickupDialog
+                  onDismissRequest = onDismissPickupDialog,
               )
           }
+        }
+        MerchandiseDistributionScreenState.ShowDistributionErrorDialog -> {
+            if (state.error != null) {
+                DistributionErrorDialog(
+                    error = state.error,
+                    title = "Distribution error",
+                    onDismissRequest = onDismissPickupDialog,
+                )
+            }
         }
         else -> {}
     }
 
-    Column() {
+    if (state.selectedItem == null) {
+        // TODO(before merge): implement this
+    }
+
+    Column {
         Text("Record merchandise distribution", style = MaterialTheme.typography.headlineSmall)
-        when(state.selectedItem) {
+        when (state.selectedItem) {
             null -> Text("No merchandise item selected")
             else -> CurrentlySelectedItem(
                 item = state.selectedItem,
@@ -62,16 +86,33 @@ fun MerchandiseDistribution(
             )
         }
         HorizontalDivider()
+        if (state.lastStorePickupStatus != null) {
+            // TODO: show toast
+        }
 
-        // TODO: the rest of the handling
-        BuzzCardPrompt(
-            hidePrompt = false,
-            nfcLib = nfcLib,
-            onBuzzCardTap = {
-                Timber.d("Buzzcard tapped: ${it.gtid}, ${it.source}")
-                onBuzzcardTap(it)
-            },
-            externalError = null
-        )
+        Column(
+            verticalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier.fillMaxSize()
+        ) {
+
+            BuzzCardPrompt(
+                hidePrompt = state.screenState == MerchandiseDistributionScreenState.LoadingDistributionStatus,
+                nfcLib = nfcLib,
+                onBuzzCardTap = {
+                    onBuzzcardTap(it)
+                },
+                externalError = null
+            )
+
+            when (state.screenState) {
+                MerchandiseDistributionScreenState.LoadingDistributionStatus -> {
+                    ActionPrompt(icon = { PendingIcon(Modifier.size(114.dp)) }, title = "Processing...")
+                }
+                MerchandiseDistributionScreenState.SavingPickupStatus -> {
+                    ActionPrompt(icon = { PendingIcon(Modifier.size(114.dp)) }, title = "Processing...")
+                }
+                else -> {}
+            }
+        }
     }
 }
