@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.robojackets.apiary.base.model.ApiErrorMessage
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
+import org.robojackets.apiary.base.ui.snackbar.SnackbarController
 import org.robojackets.apiary.merchandise.network.MerchandiseRepository
 import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationManager
@@ -91,11 +92,11 @@ class MerchandiseViewModel @Inject constructor(
                 loadingMerchandiseItems.value = false
             }.onError {
                 Timber.e(this.toString(), "Could not fetch merchandise items due to an error")
-                merchandiseItemsListError.value = "Could not load available merchandise items"
+                merchandiseItemsListError.value = "Failed to load merchandise items"
                 loadingMerchandiseItems.value = false
             }.onException {
                 Timber.e(this.throwable, "Could not fetch merchandise items due to an exception")
-                merchandiseItemsListError.value = "Could not load available merchandise items"
+                merchandiseItemsListError.value = "Failed to load merchandise items"
                 loadingMerchandiseItems.value = false
             }
         }
@@ -207,6 +208,7 @@ class MerchandiseViewModel @Inject constructor(
                     error = null,
                     user = this.data.user
                 )
+                SnackbarController.showMessage("Saved pickup for ${this.data.user.name}")
             }.onError {
                 // `this.errorBody` can only be consumed once. If you add a log statement
                 // including it, then the deserializeErrorBody call will fail
@@ -217,11 +219,11 @@ class MerchandiseViewModel @Inject constructor(
                     Timber.e(e, "Could not deserialize error body")
                 }
                 Timber.d("status: ${errorModel?.status}, message: ${errorModel?.message}")
-                error.value = errorModel?.message ?: "Unable to record merchandise distribution"
+                error.value = errorModel?.message ?: "Error recording merchandise distribution"
                 screenState.value = MerchandiseDistributionScreenState.ShowDistributionErrorDialog
             }.onException {
                 Timber.e(this.throwable, "Unable to record merchandise distribution due to an exception")
-                error.value = "Unable to record merchandise distribution"
+                error.value = "Error recording merchandise distribution"
                 screenState.value = MerchandiseDistributionScreenState.ShowDistributionErrorDialog
             }
         }

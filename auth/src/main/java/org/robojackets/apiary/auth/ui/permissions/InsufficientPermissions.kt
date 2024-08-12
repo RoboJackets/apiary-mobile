@@ -30,9 +30,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.robojackets.apiary.auth.model.Permission
-import org.robojackets.apiary.auth.model.Permission.*
+import org.robojackets.apiary.auth.model.Permission.CREATE_ATTENDANCE
+import org.robojackets.apiary.auth.model.Permission.READ_TEAMS_HIDDEN
+import org.robojackets.apiary.auth.model.Permission.READ_USERS
 import org.robojackets.apiary.base.ui.error.GoToItHelpdesk
 import org.robojackets.apiary.base.ui.icons.ErrorIcon
+import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
 import org.robojackets.apiary.base.ui.theme.danger
 import org.robojackets.apiary.base.ui.theme.success
 import org.robojackets.apiary.base.ui.util.ContentPadding
@@ -55,18 +58,20 @@ fun InsufficientPermissions(
     ) {
         ErrorIcon(Modifier.size(90.dp), tint = danger)
         Text(
-            text = "$featureName unavailable",
+            text = "$featureName permissions required",
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(top = 12.dp),
         )
         Text(
-            text = "You don't have permission to use this feature. Please ask in #it-helpdesk for assistance.",
+            text = "You don't have permission to use this feature",
             modifier = Modifier.padding(top = 12.dp),
             textAlign = TextAlign.Center,
         )
 
         Row(Modifier.padding(top = 18.dp)) {
             OutlinedButton(onClick = { onRefreshRequest() }) {
-                Text("Try again")
+                Text("Retry")
             }
             GoToItHelpdesk(modifier = Modifier.padding(start = 8.dp))
         }
@@ -74,7 +79,7 @@ fun InsufficientPermissions(
         TextButton(onClick = {
             showPermissionDetailsDialog = true
         }, Modifier.padding(top = 0.dp)) {
-            Text("More info")
+            Text("View details")
         }
 
         if (showPermissionDetailsDialog) {
@@ -157,12 +162,14 @@ fun PermissionsListItem(hasPermission: Boolean, permissionName: String) {
 @Composable
 @Preview
 fun InsufficientPermissionsPreview() {
-    ContentPadding {
-        InsufficientPermissions(
-            featureName = "Attendance",
-            onRefreshRequest = {},
-            missingPermissions = listOf(READ_TEAMS_HIDDEN),
-            requiredPermissions = listOf(CREATE_ATTENDANCE, READ_USERS, READ_TEAMS_HIDDEN),
-        )
+    Apiary_MobileTheme {
+        ContentPadding {
+            InsufficientPermissions(
+                featureName = "Attendance",
+                onRefreshRequest = {},
+                missingPermissions = listOf(READ_TEAMS_HIDDEN),
+                requiredPermissions = listOf(CREATE_ATTENDANCE, READ_USERS, READ_TEAMS_HIDDEN),
+            )
+        }
     }
 }

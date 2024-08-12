@@ -16,8 +16,9 @@ fun MerchandiseItemSelection(
 ) {
     when {
         items.isNullOrEmpty() -> ErrorMessageWithRetry(
-            message = "No distributable merchandise items found",
+            title = "No merchandise to distribute",
             onRetry = { onRefreshList() },
+            prioritizeRetryButton = true,
         )
         else -> ItemList(
             items = items,

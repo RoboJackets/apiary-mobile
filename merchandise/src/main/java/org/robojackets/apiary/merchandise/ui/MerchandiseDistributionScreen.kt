@@ -9,6 +9,7 @@ import org.robojackets.apiary.base.ui.error.ErrorMessageWithRetry
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.LoadingSpinner
 import org.robojackets.apiary.merchandise.model.MerchandiseViewModel
+import timber.log.Timber
 
 @Composable
 fun MerchandiseDistributionScreen(
@@ -17,6 +18,7 @@ fun MerchandiseDistributionScreen(
     merchandiseItemId: Int,
 ) {
     LaunchedEffect(merchandiseItemId) {
+        Timber.d("Launched effect: $merchandiseItemId")
         viewModel.loadMerchandiseItems(selectedItemId = merchandiseItemId)
     }
 
@@ -26,13 +28,14 @@ fun MerchandiseDistributionScreen(
         when {
             state.merchandiseItemsListError != null -> {
                 ErrorMessageWithRetry(
-                    message = "Unable to load details about the selected merchandise item",
+                    title = "Failed to load merchandise item",
                     onRetry = {
                         viewModel.loadMerchandiseItems(
-                        forceRefresh = true,
-                        selectedItemId = merchandiseItemId
-                    )
-                    },
+                            forceRefresh = true,
+                            selectedItemId = merchandiseItemId
+                        )
+                              },
+                    prioritizeRetryButton = true,
                 )
             }
             state.loadingMerchandiseItems || state.selectedItem == null -> LoadingSpinner()
@@ -42,9 +45,11 @@ fun MerchandiseDistributionScreen(
                 onBuzzcardTap = {
                     viewModel.onBuzzCardTap(it)
                 },
-                onNavigateToMerchandiseIndex = { viewModel.navigateToMerchandiseIndex() },
                 onConfirmPickup = { viewModel.confirmPickup() },
                 onDismissPickupDialog = { viewModel.dismissPickupDialog() },
+                onNavigateToMerchandiseIndex = {
+                    viewModel.navigateToMerchandiseIndex()
+                                               },
             )
         }
     }

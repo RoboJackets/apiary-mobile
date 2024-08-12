@@ -86,9 +86,6 @@ fun MerchandiseDistribution(
             )
         }
         HorizontalDivider()
-        if (state.lastStorePickupStatus != null) {
-            // TODO: show toast
-        }
 
         Column(
             verticalArrangement = Arrangement.SpaceAround,

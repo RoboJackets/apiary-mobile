@@ -28,11 +28,14 @@ fun MerchandiseIndexScreen(
     ContentPadding {
         Column {
             when {
-                state.merchandiseItemsListError != null -> ErrorMessageWithRetry(
-                    message = state.merchandiseItemsListError
-                        ?: "Unable to load merchandise items available for distribution",
-                    onRetry = { viewModel.loadMerchandiseItems(forceRefresh = true) }
-                )
+                state.merchandiseItemsListError != null ->
+                    ErrorMessageWithRetry(
+                        title = state.merchandiseItemsListError
+                            ?: "Unable to load merchandise items available for distribution",
+                        onRetry = { viewModel.loadMerchandiseItems(forceRefresh = true) },
+                        prioritizeRetryButton = true,
+                    )
+
                 state.merchandiseItems == null || state.loadingMerchandiseItems -> LoadingSpinner()
                 else -> MerchandiseItemSelection(
                     title = {

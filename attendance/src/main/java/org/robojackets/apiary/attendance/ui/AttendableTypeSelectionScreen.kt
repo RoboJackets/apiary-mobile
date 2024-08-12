@@ -46,7 +46,8 @@ fun AttendableTypeSelectionScreen(
         if (state.permissionsCheckError?.isNotEmpty() == true) {
             ErrorMessageWithRetry(
                 message = state.permissionsCheckError ?: "An unknown error occurred",
-                onRetry = { viewModel.checkUserAttendanceAccess(forceRefresh = true) }
+                onRetry = { viewModel.checkUserAttendanceAccess(forceRefresh = true) },
+                prioritizeRetryButton = true,
             )
             return@ContentPadding
         }

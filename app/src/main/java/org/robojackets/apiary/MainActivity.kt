@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,6 +60,7 @@ import org.robojackets.apiary.auth.ui.AuthenticationScreen
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.ui.nfc.NfcRequired
+import org.robojackets.apiary.base.ui.snackbar.SnackbarControllerProvider
 import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
 import org.robojackets.apiary.merchandise.ui.MerchandiseDistributionScreen
 import org.robojackets.apiary.merchandise.ui.MerchandiseIndexScreen
@@ -182,64 +184,67 @@ class MainActivity : ComponentActivity() {
                     navReady = true
                 }
 
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    ModalBottomSheetLayout(bottomSheetNavigator) {
-                        UpdateGate(
-                            navReady = navReady,
-                            onShowRequiredUpdatePrompt = {
-                                navigationManager.navigate(
-                                    NavigationActions.UpdatePrompts.anyScreenToRequiredUpdatePrompt()
-                                )
-                            },
-                            onShowOptionalUpdatePrompt = {
-                                navigationManager.navigate(
-                                    NavigationActions.UpdatePrompts.anyScreenToOptionalUpdatePrompt()
-                                )
-                            },
-                            onShowUpdateInProgressScreen = {
-                                navigationManager.navigate(
-                                    NavigationActions.UpdatePrompts.anyScreenToUpdateInProgress()
-                                )
-                            }
-                        ) {
-                            Scaffold(
-                                topBar = { AppTopBar(settings.appEnv.production) },
-                                bottomBar = {
-                                    val current = currentRoute(navController)
-                                    if (shouldShowBottomNav(nfcEnabled, current)) {
-                                        NavigationBar {
-                                            navItems.forEach { screen ->
-                                                NavigationBarItem(
-                                                    icon = {
-                                                        Icon(
-                                                            screen.icon,
-                                                            contentDescription = screen.imgContentDescriptor
-                                                        )
-                                                    },
-                                                    label = { Text(stringResource(screen.resourceId)) },
-                                                    selected = currentDestination
-                                                        ?.hierarchy
-                                                        ?.any {
-                                                            it.route == screen.navigationDestination
-                                                        } == true,
-                                                    onClick = {
-                                                        navigationManager.navigate(
-                                                            NavigationActions.BottomNavTabs.withinBottomNavTabs(
-                                                                screen.navigationDestination,
-                                                                navController.graph.findStartDestination().id
+                SnackbarControllerProvider { snackbarHost ->
+                    // A surface container using the 'background' color from the theme
+                    Surface(color = MaterialTheme.colorScheme.background) {
+                        ModalBottomSheetLayout(bottomSheetNavigator) {
+                            UpdateGate(
+                                navReady = navReady,
+                                onShowRequiredUpdatePrompt = {
+                                    navigationManager.navigate(
+                                        NavigationActions.UpdatePrompts.anyScreenToRequiredUpdatePrompt()
+                                    )
+                                },
+                                onShowOptionalUpdatePrompt = {
+                                    navigationManager.navigate(
+                                        NavigationActions.UpdatePrompts.anyScreenToOptionalUpdatePrompt()
+                                    )
+                                },
+                                onShowUpdateInProgressScreen = {
+                                    navigationManager.navigate(
+                                        NavigationActions.UpdatePrompts.anyScreenToUpdateInProgress()
+                                    )
+                                }
+                            ) {
+                                Scaffold(
+                                    snackbarHost = { SnackbarHost(hostState = snackbarHost) },
+                                    topBar = { AppTopBar(settings.appEnv.production) },
+                                    bottomBar = {
+                                        val current = currentRoute(navController)
+                                        if (shouldShowBottomNav(nfcEnabled, current)) {
+                                            NavigationBar {
+                                                navItems.forEach { screen ->
+                                                    NavigationBarItem(
+                                                        icon = {
+                                                            Icon(
+                                                                screen.icon,
+                                                                contentDescription = screen.imgContentDescriptor
                                                             )
-                                                        )
-                                                    }
-                                                )
+                                                        },
+                                                        label = { Text(stringResource(screen.resourceId)) },
+                                                        selected = currentDestination
+                                                            ?.hierarchy
+                                                            ?.any {
+                                                                it.route == screen.navigationDestination
+                                                            } == true,
+                                                        onClick = {
+                                                            navigationManager.navigate(
+                                                                NavigationActions.BottomNavTabs.withinBottomNavTabs(
+                                                                    screen.navigationDestination,
+                                                                    navController.graph.findStartDestination().id
+                                                                )
+                                                            )
+                                                        }
+                                                    )
+                                                }
                                             }
                                         }
                                     }
-                                }
-                            ) { innerPadding ->
-                                Box(modifier = Modifier.padding(innerPadding)) {
-                                    NfcRequired(nfcEnabled = nfcEnabled) {
-                                        AppNavigation(navController)
+                                ) { innerPadding ->
+                                    Box(modifier = Modifier.padding(innerPadding)) {
+                                        NfcRequired(nfcEnabled = nfcEnabled) {
+                                            AppNavigation(navController)
+                                        }
                                     }
                                 }
                             }
