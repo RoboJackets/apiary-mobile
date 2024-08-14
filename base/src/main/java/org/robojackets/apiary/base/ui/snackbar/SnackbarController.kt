@@ -93,7 +93,6 @@ class SnackbarController(
         }
     }
 
-
     fun showMessage(
         message: String,
         action: SnackbarAction? = null,
@@ -128,6 +127,5 @@ data class SnackbarChannelMessage(
     val action: SnackbarAction?,
     val duration: SnackbarDuration = SnackbarDuration.Short,
 )
-
 
 data class SnackbarAction(val title: String, val onActionPress: () -> Unit)

@@ -2,27 +2,32 @@ package org.robojackets.apiary.merchandise.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.nxp.nfclib.NxpNfcLib
 import org.robojackets.apiary.base.ui.ActionPrompt
+import org.robojackets.apiary.base.ui.IconWithText
 import org.robojackets.apiary.base.ui.icons.PendingIcon
+import org.robojackets.apiary.base.ui.icons.WarningIcon
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPrompt
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
+import org.robojackets.apiary.base.ui.theme.danger
 import org.robojackets.apiary.merchandise.model.MerchandiseDistributionScreenState
 import org.robojackets.apiary.merchandise.model.MerchandiseState
-import org.robojackets.apiary.merchandise.ui.pickupdialog.AlreadyPickedUpDialog
-import org.robojackets.apiary.merchandise.ui.pickupdialog.ConfirmPickupDialog
-import org.robojackets.apiary.merchandise.ui.pickupdialog.DistributionErrorDialog
 
-// TODO(before merge): Shorten method and implement empty ifs, then remove next line
-@Suppress("LongMethod", "CyclomaticComplexMethod", "EmptyIfBlock")
+@Suppress("LongMethod")
 @Composable
 fun MerchandiseDistribution(
     state: MerchandiseState,
@@ -32,48 +37,32 @@ fun MerchandiseDistribution(
     onDismissPickupDialog: () -> Unit,
     onNavigateToMerchandiseIndex: () -> Unit,
 ) {
-    // This when handles showing dialogs on screen
-    when (state.screenState) {
-        MerchandiseDistributionScreenState.ShowPickupStatusDialog -> {
-          if (state.lastDistributionStatus != null) {
-              if (state.lastDistributionStatus.canDistribute) {
-                  ConfirmPickupDialog(
-                        userFullName = state.lastDistributionStatus.user.name,
-                        userShirtSize = state.lastDistributionStatus.distribution.size,
-                        onConfirm = { onConfirmPickup() },
-                        onDismissRequest = { onDismissPickupDialog() },
-                  )
-              } else if (!state.lastDistributionStatus.canDistribute) {
-                  AlreadyPickedUpDialog(
-                      distributeTo = state.lastDistributionStatus.user,
-                      // TODO(before merge): Remove these !!s
-                      providedBy = state.lastDistributionStatus.distribution.providedBy!!,
-                      providedAt =
-                        state.lastDistributionStatus.distribution.providedAt!!.toInstant(),
-                      onDismissRequest = onDismissPickupDialog,
-                  )
-              }
-          } else if (state.error != null) {
-              DistributionErrorDialog(
-                  error = state.error,
-                  onDismissRequest = onDismissPickupDialog,
-              )
-          }
-        }
-        MerchandiseDistributionScreenState.ShowDistributionErrorDialog -> {
-            if (state.error != null) {
-                DistributionErrorDialog(
-                    error = state.error,
-                    title = "Distribution error",
-                    onDismissRequest = onDismissPickupDialog,
-                )
-            }
-        }
-        else -> {}
-    }
+    MerchandiseDialog(
+        state = state,
+        onConfirmPickup = onConfirmPickup,
+        onDismissPickupDialog = onDismissPickupDialog
+    )
 
     if (state.selectedItem == null) {
-        // TODO(before merge): implement this
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        ) {
+            IconWithText(
+                { WarningIcon(tint = danger) },
+                "There's no merchandise item selected. Try going back and selecting an item again",
+                TextAlign.Center
+            )
+            Button(onClick = {
+                onNavigateToMerchandiseIndex()
+            }, modifier = Modifier.padding(top = 8.dp)) {
+                Text("Go back")
+            }
+        }
+        return
     }
 
     Column {
@@ -93,7 +82,8 @@ fun MerchandiseDistribution(
         ) {
 
             BuzzCardPrompt(
-                hidePrompt = state.screenState == MerchandiseDistributionScreenState.LoadingDistributionStatus,
+                hidePrompt =
+                state.screenState == MerchandiseDistributionScreenState.LoadingDistributionStatus,
                 nfcLib = nfcLib,
                 onBuzzCardTap = {
                     onBuzzcardTap(it)
@@ -103,10 +93,14 @@ fun MerchandiseDistribution(
 
             when (state.screenState) {
                 MerchandiseDistributionScreenState.LoadingDistributionStatus -> {
-                    ActionPrompt(icon = { PendingIcon(Modifier.size(114.dp)) }, title = "Processing...")
+                    ActionPrompt(icon = {
+                        PendingIcon(Modifier.size(114.dp))
+                    }, title = "Processing...")
                 }
                 MerchandiseDistributionScreenState.SavingPickupStatus -> {
-                    ActionPrompt(icon = { PendingIcon(Modifier.size(114.dp)) }, title = "Processing...")
+                    ActionPrompt(icon = {
+                        PendingIcon(Modifier.size(114.dp))
+                    }, title = "Processing...")
                 }
                 else -> {}
             }

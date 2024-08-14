@@ -24,8 +24,11 @@ fun MerchandiseItemSelection(
             items = items,
             onItemSelected = onItemSelected,
             title = title,
+            itemKey = {
+                items[it].id
+            },
             postItem = { idx ->
-                if (idx < (items.size - 1)) {
+                if (idx < items.lastIndex) {
                     HorizontalDivider()
                 }
             },

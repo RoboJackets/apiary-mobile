@@ -25,11 +25,21 @@ import org.robojackets.apiary.base.ui.icons.ErrorIcon
 import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
 import org.robojackets.apiary.base.ui.theme.danger
 
+/**
+ * Display an error message with retry and help buttons
+ *
+ * @param title The title of the error message
+ * @param message An optional description to include more detail. Try to omit and convey information
+ *                via just the title if possible
+ * @param onRetry The action to take when the retry button is clicked
+ * @param prioritizeRetryButton If true, the retry button will be displayed as the primary action
+ * @param icon The icon to display with the error message, defaults to a large error icon
+ */
 @Composable
 fun ErrorMessageWithRetry(
+    title: String? = null,
     message: String? = null,
     onRetry: () -> Unit,
-    title: String? = null,
     prioritizeRetryButton: Boolean = true,
     icon: @Composable () -> Unit = {
         ErrorIcon(Modifier.size(90.dp), tint = danger)

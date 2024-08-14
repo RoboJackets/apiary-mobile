@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,7 +45,7 @@ fun AttendableTypeSelectionScreen(
     ContentPadding {
         if (state.permissionsCheckError?.isNotEmpty() == true) {
             ErrorMessageWithRetry(
-                message = state.permissionsCheckError ?: "An unknown error occurred",
+                title = state.permissionsCheckError ?: "Error while checking permissions",
                 onRetry = { viewModel.checkUserAttendanceAccess(forceRefresh = true) },
                 prioritizeRetryButton = true,
             )
@@ -71,7 +71,7 @@ fun AttendableTypeSelectionScreen(
         ) {
             Text("What do you want to take attendance for?", style = MaterialTheme.typography.headlineSmall)
             Spacer(Modifier.defaultMinSize(minHeight = 16.dp))
-            Divider()
+            HorizontalDivider()
             ListItem(
                 leadingContent = {
                     GroupsIcon(Modifier.size(36.dp))
@@ -83,7 +83,7 @@ fun AttendableTypeSelectionScreen(
                     .defaultMinSize(minHeight = 80.dp)
                     .clickable { viewModel.navigateToAttendableSelection(AttendableType.Team) }
             )
-            Divider()
+            HorizontalDivider()
             ListItem(
                 leadingContent = {
                     EventIcon(Modifier.size(36.dp))
@@ -95,7 +95,7 @@ fun AttendableTypeSelectionScreen(
                     .defaultMinSize(minHeight = 80.dp)
                     .clickable { viewModel.navigateToAttendableSelection(AttendableType.Event) }
             )
-            Divider()
+            HorizontalDivider()
         }
     }
 }

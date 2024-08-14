@@ -169,37 +169,6 @@ fun BuzzCardPrompt(
             ) {
                 Text("Enter GTID manually")
             }
-// TODO(before merge): Figure out how to make this compile in CI when uncommented
-//            if (BuildConfig.DEBUG) {
-//                when (lastTap) {
-//                    null -> {
-//                        Button(
-//                            onClick = {
-//                                onBuzzCardTap(
-//                                    BuzzCardTap(
-//                                        BuildConfig.localGTID.toInt(),
-//                                        source = Debug
-//                                    )
-//                                )
-//                            },
-//                            Modifier.align(CenterHorizontally)
-//                        ) {
-//                            Text("Tap ${BuildConfig.localGTID.toInt()} again")
-//                        }
-//                    }
-//
-//                    else -> {
-//                        Button(
-//                            onClick = {
-//                                onBuzzCardTap(BuzzCardTap(lastTap!!.gtid, source = Debug))
-//                            },
-//                            Modifier.align(CenterHorizontally)
-//                        ) {
-//                            Text("Tap ${lastTap?.gtid ?: "unknown GTID"} again")
-//                        }
-//                    }
-//                }
-//            }
         }
     }
 

@@ -63,11 +63,6 @@ fun InsufficientPermissions(
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(top = 12.dp),
         )
-        Text(
-            text = "You don't have permission to use this feature",
-            modifier = Modifier.padding(top = 12.dp),
-            textAlign = TextAlign.Center,
-        )
 
         Row(Modifier.padding(top = 18.dp)) {
             OutlinedButton(onClick = { onRefreshRequest() }) {

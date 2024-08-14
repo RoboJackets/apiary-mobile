@@ -24,12 +24,15 @@ import java.util.TimeZone
 @Composable
 fun AlreadyPickedUpDialog(
     distributeTo: BasicUser,
-    providedBy: UserRef,
-    providedAt: Instant,
+    providedBy: UserRef?,
+    providedAt: Instant?,
     onDismissRequest: () -> Unit,
 ) {
     val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.getDefault())
-    val localProvidedAt = LocalDateTime.ofInstant(providedAt, TimeZone.getDefault().toZoneId())
+    val localProvidedAt: LocalDateTime? = when (providedAt) {
+        null -> null
+        else -> LocalDateTime.ofInstant(providedAt, TimeZone.getDefault().toZoneId())
+    }
 
     DetailsDialog(
         onDismissRequest = onDismissRequest,
@@ -42,7 +45,12 @@ fun AlreadyPickedUpDialog(
         },
         details = listOf(
             { DistributeTo(distributeTo.name) },
-            { ItemPickupInfo("Distributed by ${providedBy.full_name} on ${localProvidedAt.format(dateFormatter)}") }
+            {
+                ItemPickupInfo(
+                    "Distributed by ${providedBy?.full_name ?: "unknown user"} on " +
+                            (localProvidedAt?.format(dateFormatter) ?: "unknown date")
+                )
+            }
         ),
         dismissButton = {
             Button(

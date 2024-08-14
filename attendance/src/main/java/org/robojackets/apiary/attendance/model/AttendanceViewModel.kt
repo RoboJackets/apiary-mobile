@@ -130,6 +130,7 @@ class AttendanceViewModel @Inject constructor(
     fun loadAttendables(attendableType: AttendableType, forceRefresh: Boolean = false) {
         error.value = null
         loadingAttendables.value = true
+
         viewModelScope.launch {
             if (attendableType == AttendableType.Team &&
                 (attendableTeams.value.isEmpty() || forceRefresh)
@@ -146,9 +147,10 @@ class AttendanceViewModel @Inject constructor(
                 }.onException {
                     Timber.e(this.message, "Could not fetch attendable teams due to an exception")
                     error.value = "Unable to fetch teams"
+                }.also {
+                    loadingAttendables.value = false
                 }
-            }
-            if (attendableType == AttendableType.Event &&
+            } else if (attendableType == AttendableType.Event &&
                 (attendableEvents.value.isEmpty() || forceRefresh)
             ) {
                 meetingsRepository.getEvents().onSuccess {
@@ -159,9 +161,12 @@ class AttendanceViewModel @Inject constructor(
                 }.onException {
                     Timber.e(this.message, "Could not fetch attendable events due to an exception")
                     error.value = "Unable to fetch events"
+                }.also {
+                    loadingAttendables.value = false
                 }
+            } else {
+                loadingAttendables.value = false
             }
-            loadingAttendables.value = false
         }
     }
 

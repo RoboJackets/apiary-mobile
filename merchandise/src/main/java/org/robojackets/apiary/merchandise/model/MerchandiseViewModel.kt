@@ -2,8 +2,10 @@ package org.robojackets.apiary.merchandise.model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
+import com.skydoves.sandwich.onFailure
 import com.skydoves.sandwich.onSuccess
 import com.skydoves.sandwich.retrofit.serialization.deserializeErrorBody
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,6 +14,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import org.robojackets.apiary.auth.model.Permission
+import org.robojackets.apiary.auth.model.Permission.DISTRIBUTE_SWAG
+import org.robojackets.apiary.auth.model.Permission.READ_MERCHANDISE
+import org.robojackets.apiary.auth.model.UserInfo
+import org.robojackets.apiary.auth.network.UserRepository
+import org.robojackets.apiary.auth.util.getMissingPermissions
 import org.robojackets.apiary.base.model.ApiErrorMessage
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
 import org.robojackets.apiary.base.ui.snackbar.SnackbarController
@@ -25,10 +33,13 @@ import javax.inject.Inject
 class MerchandiseViewModel @Inject constructor(
     val merchandiseRepository: MerchandiseRepository,
     val navManager: NavigationManager,
+    val userRepository: UserRepository,
 ) : ViewModel() {
     private val _state = MutableStateFlow(MerchandiseState())
     val state: StateFlow<MerchandiseState>
         get() = _state
+
+    val requiredPermissions = listOf(READ_MERCHANDISE, DISTRIBUTE_SWAG)
 
     private val merchandiseItems = MutableStateFlow<List<MerchandiseItem>?>(null)
     private val loadingMerchandiseItems = MutableStateFlow(false)
@@ -40,6 +51,10 @@ class MerchandiseViewModel @Inject constructor(
         MutableStateFlow(null)
     private val lastAcceptedBuzzCardTap: MutableStateFlow<BuzzCardTap?> = MutableStateFlow(null)
     private val lastStorePickupStatus: MutableStateFlow<StorePickupStatus?> = MutableStateFlow(null)
+    private val loadingUserPermissions = MutableStateFlow(false)
+    private val permissionsCheckError = MutableStateFlow<String?>(null)
+    private val userMissingPermissions = MutableStateFlow(emptyList<Permission>())
+    private var user = MutableStateFlow<UserInfo?>(null)
 
     init {
         viewModelScope.launch {
@@ -54,6 +69,10 @@ class MerchandiseViewModel @Inject constructor(
                     lastAcceptedBuzzCardTap,
                     lastStorePickupStatus,
                     merchandiseItemsListError,
+                    loadingUserPermissions,
+                    permissionsCheckError,
+                    userMissingPermissions,
+                    user,
                 )
             ) { flows ->
                 MerchandiseState(
@@ -66,10 +85,44 @@ class MerchandiseViewModel @Inject constructor(
                     lastAcceptedBuzzCardTap = flows[6] as BuzzCardTap?,
                     lastStorePickupStatus = flows[7] as StorePickupStatus?,
                     merchandiseItemsListError = flows[8] as String?,
+                    loadingUserPermissions = flows[9] as Boolean,
+                    permissionsCheckError = flows[10] as String?,
+                    userMissingPermissions = flows[11] as List<Permission>,
+                    user = flows[12] as UserInfo?,
                 )
             }
                 .catch { throwable -> throw throwable }
                 .collect { _state.value = it }
+        }
+    }
+
+    fun checkUserAccess(
+        forceRefresh: Boolean = false,
+                        onSuccess: () -> Unit = {}
+    ) {
+        if (user.value != null && !forceRefresh) {
+            return
+        }
+
+        permissionsCheckError.value = null
+
+        viewModelScope.launch {
+            loadingUserPermissions.value = true
+            userRepository.getLoggedInUserInfo()
+                .onSuccess {
+                    val missingPermissions =
+                        getMissingPermissions(this.data.user.allPermissions, requiredPermissions)
+                    userMissingPermissions.value = missingPermissions
+                    user.value = this.data.user
+                    onSuccess()
+                }
+                .onFailure {
+                    Timber.e(this.message())
+                    permissionsCheckError.value = "Error while checking permissions"
+                }
+                .also {
+                    loadingUserPermissions.value = false
+                }
         }
     }
 
@@ -244,4 +297,8 @@ data class MerchandiseState(
     val lastAcceptedBuzzCardTap: BuzzCardTap? = null,
     val lastStorePickupStatus: StorePickupStatus? = null,
     val merchandiseItemsListError: String? = null,
+    val loadingUserPermissions: Boolean = false,
+    val permissionsCheckError: String? = null,
+    val userMissingPermissions: List<Permission> = emptyList(),
+    val user: UserInfo? = null,
 )
