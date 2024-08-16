@@ -15,7 +15,6 @@ val danger = Color(0xFFB00020)
 
 // Warning colors
 val warningLightSubtle = Color(0xFFFFF8C5)
-val warning = warningLightSubtle
 val warningLightEmphasis = Color(0xFFBF8700)
 
 // Light mode warning callout
@@ -24,8 +23,7 @@ val warningLightMuted = Color(0x66D4A72C) // outline
 
 // Dark mode warning callout
 val warningDarkSubtle = Color(0x26BB8009) // bg
-val warningDarkMuted = Color(0x66BB8009) // outline
-val success = Color(0xFF4CAF50)
+val success = Color(0xFF36B92B)
 
 val webNavBarBackground = Color(0xFF343A40)
 

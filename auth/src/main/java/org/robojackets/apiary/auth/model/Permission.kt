@@ -1,7 +1,7 @@
 package org.robojackets.apiary.auth.model
 
 import com.squareup.moshi.Json
-import java.util.*
+import java.util.Locale
 
 /**
  * Nov-2022 (evan10s): This class has a custom serializer; see MainActivityModule in the `app`
@@ -19,7 +19,11 @@ enum class Permission {
     @Json(name = "read-teams-hidden")
     READ_TEAMS_HIDDEN,
     @Json(name = "read-users")
-    READ_USERS;
+    READ_USERS,
+    @Json(name = "read-merchandise")
+    READ_MERCHANDISE,
+    @Json(name = "distribute-swag")
+    DISTRIBUTE_SWAG;
 
     override fun toString(): String {
         return name.replace("_", "-").lowercase(Locale.getDefault())

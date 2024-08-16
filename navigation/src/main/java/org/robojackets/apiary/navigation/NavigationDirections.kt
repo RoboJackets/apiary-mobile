@@ -14,6 +14,9 @@ object NavigationDestinations {
     const val optionalUpdatePrompt = "optionalUpdatePrompt"
     const val requiredUpdatePrompt = "requiredUpdatePrompt"
     const val updateInProgress = "updateInProgress"
+    const val merchandiseSubgraph = "merchandiseSubgraph"
+    const val merchandiseIndex = "merchandiseIndex"
+    const val merchandiseDistribution = "$merchandiseIndex/distribution"
 }
 
 object NavigationActions {
@@ -85,6 +88,22 @@ object NavigationActions {
             override val navOptions: NavOptions
                 get() = NavOptions.Builder()
                     .setPopUpTo(NavigationDestinations.attendance, inclusive = true)
+                    .build()
+        }
+    }
+
+    object Merchandise {
+        fun merchandiseIndexToDistribution(
+            merchandiseId: Int,
+        ) = object : NavigationAction {
+            override val destination = "${NavigationDestinations.merchandiseDistribution}/$merchandiseId"
+        }
+
+        fun merchandiseDistributionToIndex() = object : NavigationAction {
+            override val destination = NavigationDestinations.merchandiseIndex
+            override val navOptions: NavOptions
+                get() = NavOptions.Builder()
+                    .setPopUpTo(NavigationDestinations.merchandiseIndex, inclusive = true)
                     .build()
         }
     }

@@ -3,12 +3,9 @@ package org.robojackets.apiary.attendance.model
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.skydoves.sandwich.StatusCode
 import com.skydoves.sandwich.message
-import com.skydoves.sandwich.onError
-import com.skydoves.sandwich.onException
+import com.skydoves.sandwich.onFailure
 import com.skydoves.sandwich.onSuccess
-import com.skydoves.sandwich.retrofit.statusCode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -77,34 +74,16 @@ class AttendableTypeSelectionViewModel @Inject constructor(
 
         viewModelScope.launch {
             loadingUserPermissions.value = true
-            userRepository.getLoggedInUserInfo().onSuccess {
-                val missingPermissions = getMissingPermissions(this.data.user.allPermissions, requiredPermissions)
-                userMissingPermissions.value = missingPermissions
-                user.value = this.data.user
-            }
-                .onError {
-                    when {
-                        statusCode.code >= StatusCode.InternalServerError.code ->
-                            Timber.e(this.message())
-                        else -> Timber.w(this.message())
-                    }
-
-                    permissionsCheckError.value = when {
-                        this.statusCode.code >= StatusCode.InternalServerError.code ->
-                            "A server error occurred while checking if you have permission to " +
-                                    "use this feature. Check your internet connection and try " +
-                                    "again, or ask in #it-helpdesk for assistance."
-                        else ->
-                            "An error occurred while checking if you have permission to use " +
-                                "this feature. Check your internet connection and try again, or " +
-                                "ask in #it-helpdesk for assistance."
-                    }
+            userRepository.getLoggedInUserInfo()
+                .onSuccess {
+                    val missingPermissions =
+                        getMissingPermissions(this.data.user.allPermissions, requiredPermissions)
+                    userMissingPermissions.value = missingPermissions
+                    user.value = this.data.user
                 }
-                .onException {
-                    Timber.e(this.throwable)
-                    permissionsCheckError.value = "An error occurred while checking if you have " +
-                            "permission to use this feature. Check your internet connection and " +
-                            "try again, or ask in #it-helpdesk for assistance."
+                .onFailure {
+                    Timber.e(this.message())
+                    permissionsCheckError.value = "Error while checking permissions"
                 }
                 .also {
                     loadingUserPermissions.value = false

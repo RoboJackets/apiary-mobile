@@ -1,13 +1,15 @@
 package org.robojackets.apiary.attendance.ui
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,36 +24,10 @@ import org.robojackets.apiary.attendance.model.AttendanceViewModel
 import org.robojackets.apiary.auth.ui.permissions.MissingHiddenTeamsCallout
 import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.ui.IconWithText
+import org.robojackets.apiary.base.ui.form.ItemList
 import org.robojackets.apiary.base.ui.icons.WarningIcon
 import org.robojackets.apiary.base.ui.theme.danger
 import org.robojackets.apiary.base.ui.util.ContentPadding
-
-@Composable
-private fun <T> AttendableList(
-    attendables: List<T>,
-    onAttendableSelected: (attendable: T) -> Unit,
-    title: @Composable () -> Unit,
-    callout: @Composable () -> Unit = {},
-    attendableContent: @Composable (attendable: T) -> Unit,
-) {
-    Column {
-        title()
-        callout()
-        LazyColumn {
-            itemsIndexed(attendables) { idx, attendable ->
-                ListItem(
-                    headlineContent = { attendableContent(attendable) },
-                    Modifier.clickable {
-                        onAttendableSelected(attendable)
-                    }
-                )
-                if (idx < attendables.size - 1) {
-                    Divider()
-                }
-            }
-        }
-    }
-}
 
 @Suppress("LongMethod")
 @Composable
@@ -96,36 +72,67 @@ fun AttendableSelectionScreen(
                     Text("Retry")
                 }
             }
-        }
-        when (attendableType) {
-            AttendableType.Team -> {
-                AttendableList(
-                    attendables = state.attendableTeams,
-                    onAttendableSelected = {
-                        viewModel.onAttendableSelected(it.toAttendable())
-                    },
-                    title = { Text("Select a team", style = MaterialTheme.typography.headlineSmall) },
-                    callout = {
-                        if (state.missingHiddenTeams == true) {
-                            Spacer(Modifier.height(4.dp))
-                            MissingHiddenTeamsCallout(onRefreshTeams = {
-                                viewModel.loadAttendables(attendableType, forceRefresh = true)
-                            })
+        } else {
+            when (attendableType) {
+                AttendableType.Team -> {
+                    ItemList(
+                        items = state.attendableTeams,
+                        onItemSelected = {
+                            viewModel.onAttendableSelected(it.toAttendable())
+                        },
+                        title = {
+                            Text(
+                                "Select a team",
+                                style = MaterialTheme.typography.headlineSmall
+                            )
+                        },
+                        callout = {
+                            if (state.missingHiddenTeams == true) {
+                                Spacer(Modifier.height(4.dp))
+                                MissingHiddenTeamsCallout(onRefreshTeams = {
+                                    viewModel.loadAttendables(attendableType, forceRefresh = true)
+                                })
+                            }
+                        },
+                        // This is missing the empty state, but the empty state is rarely shown and
+                        // was briefly flickering on screen last time I tried it. It wasn't worth
+                        // the flickering for an edge case, so I just omitted it.
+                        postItem = {
+                            when {
+                                it < state.attendableTeams.lastIndex -> HorizontalDivider()
+                            }
+                        },
+                        itemKey = {
+                            state.attendableTeams[it].id
                         }
+                    ) {
+                        Text(it.name)
                     }
-                ) {
-                    Text(it.name)
                 }
-            }
-            AttendableType.Event -> {
-                AttendableList(
-                    attendables = state.attendableEvents,
-                    onAttendableSelected = {
-                        viewModel.onAttendableSelected(it.toAttendable())
-                    },
-                    title = { Text("Select an event", style = MaterialTheme.typography.headlineSmall) }
-                ) {
-                    Text(it.name)
+
+                AttendableType.Event -> {
+                    ItemList(
+                        items = state.attendableEvents,
+                        onItemSelected = {
+                            viewModel.onAttendableSelected(it.toAttendable())
+                        },
+                        title = {
+                            Text("Select an event", style = MaterialTheme.typography.headlineSmall)
+                        },
+                        postItem = {
+                            when {
+                                it < state.attendableEvents.lastIndex -> HorizontalDivider()
+                            }
+                        },
+                        // This is missing the empty state, but the empty state is rarely shown and
+                        // was briefly flickering on screen last time I tried it. It wasn't worth
+                        // the flickering for an edge case, so I just omitted it.
+                        itemKey = {
+                            state.attendableEvents[it].id
+                        }
+                    ) {
+                        Text(it.name)
+                    }
                 }
             }
         }
