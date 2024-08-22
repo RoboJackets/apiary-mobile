@@ -38,6 +38,18 @@ fun MerchandiseDistributionScreen(
                     prioritizeRetryButton = true,
                 )
             }
+            state.error != null -> {
+                ErrorMessageWithRetry(
+                    title = state.error ?: "Merchandise distribution is temporarily unavailable",
+                    onRetry = {
+                        viewModel.loadMerchandiseItems(
+                            forceRefresh = true,
+                            selectedItemId = merchandiseItemId
+                        )
+                              },
+                    prioritizeRetryButton = false,
+                )
+            }
             state.loadingMerchandiseItems || state.selectedItem == null -> LoadingSpinner()
             else -> MerchandiseDistribution(
                 state = state,
