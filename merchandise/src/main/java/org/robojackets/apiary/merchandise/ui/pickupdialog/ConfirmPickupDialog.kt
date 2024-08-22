@@ -43,12 +43,21 @@ fun ConfirmPickupDialog(
                 }
             }
         ),
+        detailsShouldRender = { idx ->
+            when (idx) {
+                1 -> userShirtSize != null
+                else -> true
+            }
+        },
         confirmButton = {
             Button(
                 onClick = {
                     onConfirm()
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = success, contentColor = Color.White)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = success,
+                    contentColor = Color.White
+                )
             ) {
                 Text("Mark picked up")
             }

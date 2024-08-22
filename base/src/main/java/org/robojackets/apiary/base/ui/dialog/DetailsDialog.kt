@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
+@Suppress("LongParameterList")
 @Composable
 fun DetailsDialog(
     icon: @Composable () -> Unit,
@@ -17,6 +18,7 @@ fun DetailsDialog(
     modifier: Modifier = Modifier,
     confirmButton: @Composable () -> Unit = {},
     dismissButton: @Composable () -> Unit,
+    detailsShouldRender: (idx: Int) -> Boolean = { true }
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -25,9 +27,11 @@ fun DetailsDialog(
         title = title,
         text = {
             Column {
-                details.map {
-                    HorizontalDivider()
-                    it()
+                details.forEachIndexed { idx, it ->
+                    if (detailsShouldRender(idx)) {
+                        HorizontalDivider()
+                        it()
+                    }
                 }
                 HorizontalDivider()
             }
