@@ -79,7 +79,7 @@ fun BuzzCardPrompt(
             try {
                 cardType = nfcLib.getCardType(it)
 
-                if (cardType == CardType.DESFireEV1) {
+                if (cardType == CardType.DESFireEV1 || cardType == CardType.DESFireEV3) {
                     val desFireEV1 = DESFireFactory.getInstance().getDESFire(nfcLib.customModules)
 
                     // Below info figured out by :ross: mostly using the NFC TagInfo app
