@@ -19,7 +19,7 @@ fun MerchandiseDistributionScreen(
 ) {
     LaunchedEffect(merchandiseItemId) {
         Timber.d("Launched effect: $merchandiseItemId")
-        viewModel.loadMerchandiseItems(selectedItemId = merchandiseItemId)
+        viewModel.selectMerchandiseItemForDistribution(merchandiseItemId)
     }
 
     val state by viewModel.state.collectAsState()
@@ -29,24 +29,14 @@ fun MerchandiseDistributionScreen(
             state.merchandiseItemsListError != null -> {
                 ErrorMessageWithRetry(
                     title = "Failed to load merchandise item",
-                    onRetry = {
-                        viewModel.loadMerchandiseItems(
-                            forceRefresh = true,
-                            selectedItemId = merchandiseItemId
-                        )
-                              },
+                    onRetry = { viewModel.selectMerchandiseItemForDistribution(merchandiseItemId) },
                     prioritizeRetryButton = true,
                 )
             }
             state.error != null -> {
                 ErrorMessageWithRetry(
                     title = state.error ?: "Merchandise distribution is temporarily unavailable",
-                    onRetry = {
-                        viewModel.loadMerchandiseItems(
-                            forceRefresh = true,
-                            selectedItemId = merchandiseItemId
-                        )
-                              },
+                    onRetry = { viewModel.selectMerchandiseItemForDistribution(merchandiseItemId) },
                     prioritizeRetryButton = false,
                 )
             }
