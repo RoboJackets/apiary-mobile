@@ -151,7 +151,7 @@ class MerchandiseViewModel @Inject constructor(
             }
         }
     }
-
+    @Suppress("TooGenericExceptionCaught")
     fun selectMerchandiseItemForDistribution(itemId: Int) {
         loadingMerchandiseItems.value = true
         viewModelScope.launch {
