@@ -8,6 +8,7 @@ import com.nxp.nfclib.NxpNfcLib
 import org.robojackets.apiary.base.ui.error.ErrorMessageWithRetry
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.LoadingSpinner
+import org.robojackets.apiary.merchandise.model.MerchandiseDistributionScreenState
 import org.robojackets.apiary.merchandise.model.MerchandiseViewModel
 import timber.log.Timber
 
@@ -33,7 +34,7 @@ fun MerchandiseDistributionScreen(
                     prioritizeRetryButton = true,
                 )
             }
-            state.error != null -> {
+            state.error != null && state.screenState == MerchandiseDistributionScreenState.ReadyForTap -> {
                 ErrorMessageWithRetry(
                     title = state.error ?: "Merchandise distribution is temporarily unavailable",
                     onRetry = { viewModel.selectMerchandiseItemForDistribution(merchandiseItemId) },

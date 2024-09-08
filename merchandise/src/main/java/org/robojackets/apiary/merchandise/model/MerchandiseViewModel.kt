@@ -320,6 +320,7 @@ class MerchandiseViewModel @Inject constructor(
     }
 
     fun dismissPickupDialog() {
+        error.value = null
         screenState.value = MerchandiseDistributionScreenState.ReadyForTap
     }
 }
