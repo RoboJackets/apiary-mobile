@@ -1,5 +1,7 @@
 # https://github.com/Shopify/task-list-checker
 name: pr
+permissions:
+  checks: write
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
