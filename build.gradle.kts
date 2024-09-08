@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
-        classpath("com.android.tools.build:gradle:8.6.0-rc01")
+        classpath("com.android.tools.build:gradle:8.6.0")
         classpath("com.google.dagger:hilt-android-gradle-plugin:2.51.1") // This version needs to
         // match the version for other Hilt dependencies defined in Dependencies.kt
         classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
