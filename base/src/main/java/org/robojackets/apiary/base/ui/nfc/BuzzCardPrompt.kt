@@ -80,7 +80,7 @@ fun BuzzCardPrompt(
                 cardType = nfcLib.getCardType(it)
 
                 if (cardType == CardType.DESFireEV1 || cardType == CardType.DESFireEV3) {
-                    val desFireEV1 = DESFireFactory.getInstance().getDESFire(nfcLib.customModules)
+                    val desfire = DESFireFactory.getInstance().getDESFire(nfcLib.customModules)
 
                     // Below info figured out by :ross: mostly using the NFC TagInfo app
                     val buzzApplication = 0xBBBBCD
@@ -88,8 +88,8 @@ fun BuzzCardPrompt(
                     var buzzData = ByteArray(48)
                     val buzzString: String?
 
-                    desFireEV1.selectApplication(buzzApplication)
-                    buzzData = desFireEV1.readData(buzzFile, 0, buzzData.size)
+                    desfire.selectApplication(buzzApplication)
+                    buzzData = desfire.readData(buzzFile, 0, buzzData.size)
 
                     // a string containing "gtid=proxID", such as "901234567=123456"
                     buzzString = String(buzzData, StandardCharsets.UTF_8)
@@ -122,7 +122,7 @@ fun BuzzCardPrompt(
                     lastTap = buzzCardTap
                     onBuzzCardTap(buzzCardTap)
                 } else {
-                    Timber.i("Unknown card type ($cardType) presented")
+                    Timber.w("Unknown card type ($cardType) presented")
                     error = NotABuzzCard
                 }
             } catch (e: NxpNfcLibException) {

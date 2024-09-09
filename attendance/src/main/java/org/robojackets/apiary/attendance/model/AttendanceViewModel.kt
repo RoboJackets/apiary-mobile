@@ -155,6 +155,8 @@ class AttendanceViewModel @Inject constructor(
             ) {
                 meetingsRepository.getEvents().onSuccess {
                     attendableEvents.value = this.data.events
+                        .sortedByDescending { it.startTime }
+                    Timber.d(this.data.events.toString())
                 }.onError {
                     Timber.e(this.toString(), "Could not fetch attendable events due to an error")
                     error.value = "Unable to fetch events"

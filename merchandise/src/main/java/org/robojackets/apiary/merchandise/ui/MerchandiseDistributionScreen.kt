@@ -8,6 +8,7 @@ import com.nxp.nfclib.NxpNfcLib
 import org.robojackets.apiary.base.ui.error.ErrorMessageWithRetry
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.LoadingSpinner
+import org.robojackets.apiary.merchandise.model.MerchandiseDistributionScreenState
 import org.robojackets.apiary.merchandise.model.MerchandiseViewModel
 import timber.log.Timber
 
@@ -19,7 +20,7 @@ fun MerchandiseDistributionScreen(
 ) {
     LaunchedEffect(merchandiseItemId) {
         Timber.d("Launched effect: $merchandiseItemId")
-        viewModel.loadMerchandiseItems(selectedItemId = merchandiseItemId)
+        viewModel.selectMerchandiseItemForDistribution(merchandiseItemId)
     }
 
     val state by viewModel.state.collectAsState()
@@ -29,24 +30,14 @@ fun MerchandiseDistributionScreen(
             state.merchandiseItemsListError != null -> {
                 ErrorMessageWithRetry(
                     title = "Failed to load merchandise item",
-                    onRetry = {
-                        viewModel.loadMerchandiseItems(
-                            forceRefresh = true,
-                            selectedItemId = merchandiseItemId
-                        )
-                              },
+                    onRetry = { viewModel.selectMerchandiseItemForDistribution(merchandiseItemId) },
                     prioritizeRetryButton = true,
                 )
             }
-            state.error != null -> {
+            state.error != null && state.screenState == MerchandiseDistributionScreenState.ReadyForTap -> {
                 ErrorMessageWithRetry(
                     title = state.error ?: "Merchandise distribution is temporarily unavailable",
-                    onRetry = {
-                        viewModel.loadMerchandiseItems(
-                            forceRefresh = true,
-                            selectedItemId = merchandiseItemId
-                        )
-                              },
+                    onRetry = { viewModel.selectMerchandiseItemForDistribution(merchandiseItemId) },
                     prioritizeRetryButton = false,
                 )
             }

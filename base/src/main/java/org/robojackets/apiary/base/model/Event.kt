@@ -1,6 +1,8 @@
 package org.robojackets.apiary.base.model
 
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.util.Date
 
 @JsonClass(generateAdapter = true)
 data class EventsHolder(
@@ -16,8 +18,10 @@ data class EventHolder(
 data class Event(
     val id: Int,
     val name: String,
-//    val startTime: Instant,
-//    val endTime: Instant
+    @Json(name = "start_time")
+    val startTime: Date?,
+    @Json(name = "end_time")
+    val endTime: Date?
 ) {
     fun toAttendable(): Attendable {
         return Attendable(

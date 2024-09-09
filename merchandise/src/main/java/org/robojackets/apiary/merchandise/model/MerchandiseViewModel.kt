@@ -98,7 +98,7 @@ class MerchandiseViewModel @Inject constructor(
 
     fun checkUserAccess(
         forceRefresh: Boolean = false,
-                        onSuccess: () -> Unit = {}
+        onSuccess: () -> Unit = {},
     ) {
         if (user.value != null && !forceRefresh) {
             return
@@ -128,12 +128,10 @@ class MerchandiseViewModel @Inject constructor(
 
     fun loadMerchandiseItems(
         forceRefresh: Boolean = false,
-        selectedItemId: Int? = null,
     ) {
         merchandiseItemsListError.value = null
         if (merchandiseItems.value?.isNotEmpty() == true && !forceRefresh) {
             Timber.d("Using cached merchandise items")
-            selectedItemId?.let { selectItemForDistribution(it) }
             return
         }
 
@@ -141,7 +139,6 @@ class MerchandiseViewModel @Inject constructor(
         viewModelScope.launch {
             merchandiseRepository.listMerchandiseItems().onSuccess {
                 merchandiseItems.value = this.data.merchandise
-                selectedItemId?.let { selectItemForDistribution(it) }
                 loadingMerchandiseItems.value = false
             }.onError {
                 Timber.e(this.toString(), "Could not fetch merchandise items due to an error")
@@ -154,6 +151,50 @@ class MerchandiseViewModel @Inject constructor(
             }
         }
     }
+    @Suppress("TooGenericExceptionCaught")
+    fun selectMerchandiseItemForDistribution(itemId: Int) {
+        loadingMerchandiseItems.value = true
+        viewModelScope.launch {
+            merchandiseRepository.getMerchandiseItem(itemId).onSuccess {
+                selectedItem.value = this.data.merchandise
+
+                if (!this.data.merchandise.distributable) {
+                    Timber.w("Merchandise item is not distributable: ${this.data.merchandise}")
+                    error.value = "${this.data.merchandise.name} is not distributable"
+                }
+                loadingMerchandiseItems.value = false
+            }.onError {
+                // `this.errorBody` can only be consumed once. If you add a log statement
+                // including it, then the deserializeErrorBody call will fail
+                var errorModel: ApiErrorMessage? = null
+                try {
+                    // Sandwich docs on deserializing errors: https://skydoves.github.io/sandwich/retrofit/#error-body-deserialization
+                    // <A, B> where A is the return type of the outer API call (getMerchandiseItem)
+                    // and B is the type to parse the error body as
+                    // If Android Studio is constantly suggesting to import the deserializeErrorBody
+                    // method, or you get build errors like "None of the following candidates is
+                    // applicable because of receiver type mismatch," it's probably because
+                    // you're specifying the wrong type for A
+                    errorModel =
+                        this.deserializeErrorBody<MerchandiseItemHolder, ApiErrorMessage>()
+                } catch (e: Exception) {
+                    Timber.e(e, "Could not deserialize error body")
+                }
+                Timber.d("status: ${errorModel?.status}, message: ${errorModel?.message}")
+
+                Timber.w("Could not fetch merchandise item details: ${errorModel?.message}")
+                error.value = errorModel?.message ?: "Unable to load merchandise item details"
+                loadingMerchandiseItems.value = false
+            }.onException {
+                Timber.e(
+                    this.throwable,
+                    "Could not fetch merchandise item details due to an exception"
+                )
+                error.value = "Unable to load merchandise item details"
+                loadingMerchandiseItems.value = false
+            }
+        }
+    }
 
     fun navigateToMerchandiseItemDistribution(item: MerchandiseItem) {
         navManager.navigate(NavigationActions.Merchandise.merchandiseIndexToDistribution(item.id))
@@ -161,16 +202,6 @@ class MerchandiseViewModel @Inject constructor(
 
     fun navigateToMerchandiseIndex() {
         navManager.navigate(NavigationActions.Merchandise.merchandiseDistributionToIndex())
-    }
-
-    private fun selectItemForDistribution(merchandiseItemId: Int) {
-        val item = merchandiseItems.value?.find { it.id == merchandiseItemId }
-        if (item != null) {
-            selectedItem.value = item
-        } else {
-            error.value = "Could not find merchandise item with ID $merchandiseItemId"
-            Timber.e("Could not find merchandise item with ID $merchandiseItemId")
-        }
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -225,7 +256,10 @@ class MerchandiseViewModel @Inject constructor(
 
                     error.value = errorModel?.message ?: "Failed to fetch distribution status"
                 }.onException {
-                    Timber.e(this.throwable, "Failed to fetch distribution status due to an exception")
+                    Timber.e(
+                        this.throwable,
+                        "Failed to fetch distribution status due to an exception"
+                    )
                     error.value = "Failed to fetch distribution status"
                     screenState.value = MerchandiseDistributionScreenState.ShowPickupStatusDialog
                 }
@@ -275,7 +309,10 @@ class MerchandiseViewModel @Inject constructor(
                 error.value = errorModel?.message ?: "Error recording merchandise distribution"
                 screenState.value = MerchandiseDistributionScreenState.ShowDistributionErrorDialog
             }.onException {
-                Timber.e(this.throwable, "Unable to record merchandise distribution due to an exception")
+                Timber.e(
+                    this.throwable,
+                    "Unable to record merchandise distribution due to an exception"
+                )
                 error.value = "Error recording merchandise distribution"
                 screenState.value = MerchandiseDistributionScreenState.ShowDistributionErrorDialog
             }
@@ -283,6 +320,7 @@ class MerchandiseViewModel @Inject constructor(
     }
 
     fun dismissPickupDialog() {
+        error.value = null
         screenState.value = MerchandiseDistributionScreenState.ReadyForTap
     }
 }

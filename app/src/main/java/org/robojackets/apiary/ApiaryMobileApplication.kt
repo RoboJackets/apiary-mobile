@@ -15,7 +15,7 @@ class ApiaryMobileApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.BUILD_TYPE == "debug") {
             Timber.plant(Timber.DebugTree())
         } else {
             SentryAndroid.init(this) { options ->

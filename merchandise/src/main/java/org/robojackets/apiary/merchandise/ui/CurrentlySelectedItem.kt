@@ -58,7 +58,8 @@ fun PreviewCurrentlySelectedItem() {
         CurrentlySelectedItem(
             MerchandiseItem(
                 2,
-                "Test item with a super duper long name so it will get cut off"
+                "Test item with a super duper long name so it will get cut off",
+                true,
             )
         ) {}
     }
