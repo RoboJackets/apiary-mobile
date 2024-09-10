@@ -154,6 +154,7 @@ class MerchandiseViewModel @Inject constructor(
     @Suppress("TooGenericExceptionCaught")
     fun selectMerchandiseItemForDistribution(itemId: Int) {
         loadingMerchandiseItems.value = true
+        error.value = null
         viewModelScope.launch {
             merchandiseRepository.getMerchandiseItem(itemId).onSuccess {
                 selectedItem.value = this.data.merchandise
