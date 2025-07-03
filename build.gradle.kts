@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 buildscript {
     repositories {
         google()
@@ -5,12 +7,12 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
-        classpath("com.android.tools.build:gradle:8.6.0")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.51.1") // This version needs to
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
+        classpath("com.android.tools.build:gradle:8.11.0")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.56.2") // This version needs to
         // match the version for other Hilt dependencies defined in Dependencies.kt
         classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
-        classpath("com.google.gms:google-services:4.4.2")
+        classpath("com.google.gms:google-services:4.4.3")
         classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
     }
 }
@@ -30,17 +32,18 @@ allprojects {
 }
 
 plugins {
-    id("com.google.devtools.ksp").version("1.9.0-1.0.13").apply(false)
-    id("io.gitlab.arturbosch.detekt").version("1.23.0")
-    id("com.autonomousapps.dependency-analysis").version("1.21.0")
-    id("com.github.ben-manes.versions").version("0.46.0")
-    id("com.android.library") version "8.6.0-rc01" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.0" apply false
+    id("com.google.devtools.ksp").version("2.2.0-2.0.2").apply(false)
+    id("io.gitlab.arturbosch.detekt").version("1.23.8")
+    id("com.autonomousapps.dependency-analysis").version("2.19.0")
+    id("com.github.ben-manes.versions").version("0.52.0")
+    id("com.android.library") version "8.11.0" apply false
+    id("org.jetbrains.kotlin.android") version "2.2.0" apply false
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = "17"
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 
@@ -75,7 +78,7 @@ tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt::class) {
 }
 
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.0")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
 }
 
 // from https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/wiki/ABI-filtering

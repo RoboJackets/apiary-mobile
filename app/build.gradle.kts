@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -6,6 +8,7 @@ plugins {
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.google.android.gms.oss-licenses-plugin")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 dependencies {
@@ -71,16 +74,22 @@ hilt {
     enableExperimentalClasspathAggregation = true
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_21
+    }
+}
+
 android {
     signingConfigs {
         create("release") {
         }
     }
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "org.robojackets.apiary"
         minSdk = 21
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 12
         versionName = "1.0.0"
         vectorDrawables {
@@ -103,15 +112,9 @@ android {
         buildConfig = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
         isCoreLibraryDesugaringEnabled = true
-    }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
     }
     namespace = "org.robojackets.apiary"
     hilt {

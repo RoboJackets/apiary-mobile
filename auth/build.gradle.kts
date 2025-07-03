@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.library")
     kotlin("android")
@@ -5,6 +7,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 hilt {
@@ -26,7 +29,6 @@ dependencies {
 
     implementation(AuthDependencies.appauth)
 
-    implementation(ComposeDependencies.accompanist_systemuicontroller)
     implementation(ComposeDependencies.compose_foundation)
     implementation(ComposeDependencies.compose_material3)
     implementation(ComposeDependencies.compose_ui)
@@ -53,8 +55,14 @@ dependencies {
     androidTestImplementation(TestDependencies.junit)
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_21
+    }
+}
+
 android {
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         minSdk = 21
 
@@ -77,15 +85,9 @@ android {
         buildConfig = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
         isCoreLibraryDesugaringEnabled = true
-    }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
     }
     namespace = "org.robojackets.apiary.auth"
     hilt {
