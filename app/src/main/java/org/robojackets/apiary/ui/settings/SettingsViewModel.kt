@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -22,6 +23,7 @@ import org.robojackets.apiary.auth.AuthStateManager
 import org.robojackets.apiary.auth.model.UserInfo
 import org.robojackets.apiary.auth.network.UserRepository
 import org.robojackets.apiary.base.GlobalSettings
+import org.robojackets.apiary.base.ui.nfc.MobileCredentialKey
 import org.robojackets.apiary.base.repository.ServerInfoRepository
 import org.robojackets.apiary.base.ui.theme.webNavBarBackground
 import org.robojackets.apiary.navigation.NavigationActions
@@ -69,8 +71,45 @@ class SettingsViewModel @Inject constructor(
 
     private val user = MutableStateFlow<UserInfo?>(null)
 
+    private val _mobileCredentialKeyDraft = MutableStateFlow(globalSettings.mobileCredentialAesKeyHex)
+    val mobileCredentialKeyDraft: StateFlow<String> = _mobileCredentialKeyDraft.asStateFlow()
+
+    private val _mobileCredentialKeySaveError = MutableStateFlow<String?>(null)
+    val mobileCredentialKeySaveError: StateFlow<String?> = _mobileCredentialKeySaveError.asStateFlow()
+
     val state: StateFlow<SettingsState>
         get() = _state
+
+    fun setMobileCredentialKeyDraft(value: String) {
+        _mobileCredentialKeyDraft.value = value
+        _mobileCredentialKeySaveError.value = null
+    }
+
+    /** @return true if saved successfully */
+    fun saveMobileCredentialKey(): Boolean {
+        val n = MobileCredentialKey.normalizeHex(_mobileCredentialKeyDraft.value)
+        if (n.isEmpty()) {
+            globalSettings.mobileCredentialAesKeyHex = ""
+            _mobileCredentialKeyDraft.value = ""
+            _mobileCredentialKeySaveError.value = null
+            return true
+        }
+        if (n.length != 32) {
+            _mobileCredentialKeySaveError.value =
+                "Enter exactly 32 hexadecimal characters (128 bits)."
+            return false
+        }
+        globalSettings.mobileCredentialAesKeyHex = n
+        _mobileCredentialKeyDraft.value = n
+        _mobileCredentialKeySaveError.value = null
+        return true
+    }
+
+    fun clearMobileCredentialKey() {
+        globalSettings.mobileCredentialAesKeyHex = ""
+        _mobileCredentialKeyDraft.value = ""
+        _mobileCredentialKeySaveError.value = null
+    }
 
     init {
         viewModelScope.launch {

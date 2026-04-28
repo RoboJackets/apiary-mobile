@@ -4,4 +4,5 @@ enum class BuzzCardTapSource {
     Nfc,
     Keyboard,
     Debug,
+    MobileCredential,
 }

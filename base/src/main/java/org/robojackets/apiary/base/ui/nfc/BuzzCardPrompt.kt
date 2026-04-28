@@ -1,6 +1,8 @@
 package org.robojackets.apiary.base.ui.nfc
 
 import android.nfc.NfcAdapter
+import android.nfc.TagLostException
+import android.nfc.tech.IsoDep
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,10 +38,12 @@ import org.robojackets.apiary.base.ui.icons.CreditCardIcon
 import org.robojackets.apiary.base.ui.icons.ErrorIcon
 import org.robojackets.apiary.base.ui.icons.WarningIcon
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.InvalidBuzzCardData
+import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.MobileCredentialAuthFailed
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.NotABuzzCard
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.TagLost
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.UnknownNfcError
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource.Keyboard
+import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource.MobileCredential
 import org.robojackets.apiary.base.ui.theme.danger
 import timber.log.Timber
 import java.nio.charset.StandardCharsets
@@ -64,6 +68,7 @@ const val GTID_LENGTH = 9
 fun BuzzCardPrompt(
     hidePrompt: Boolean,
     nfcLib: NxpNfcLib,
+    mobileCredentialAesKeyHex: String,
     onBuzzCardTap: (buzzCardTap: BuzzCardTap) -> Unit,
     externalError: BuzzCardPromptExternalError?,
 ) {
@@ -72,12 +77,43 @@ fun BuzzCardPrompt(
     val nfcPresenceDelayCheckMs = 50 // the minimum number of ms allowed between successive NFC
     // tag reads. Lower is better, but too low seems to cause an increase in NFC read errors when
     // tapping many BuzzCards as quickly as possible
+    val nfcFlags = NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
     nfcLib.enableReaderMode(
         nfcPresenceDelayCheckMs,
-        {
+        { tag ->
+            try {
+                val keyBytes = MobileCredentialKey.parse128BitKey(mobileCredentialAesKeyHex)
+                val isoDep = IsoDep.get(tag)
+                if (keyBytes != null && isoDep != null) {
+                    when (val result = MobileBuzzCardCredentialReader.readGtid(isoDep, keyBytes)) {
+                        is MobileBuzzCardCredentialReader.ReadResult.Success -> {
+                            val gtidInt = result.gtid.toInt()
+                            error = null
+                            val buzzCardTap = BuzzCardTap(gtidInt, source = MobileCredential)
+                            lastTap = buzzCardTap
+                            onBuzzCardTap(buzzCardTap)
+                            return@enableReaderMode
+                        }
+                        MobileBuzzCardCredentialReader.ReadResult.AuthFailure -> {
+                            error = MobileCredentialAuthFailed
+                            return@enableReaderMode
+                        }
+                        MobileBuzzCardCredentialReader.ReadResult.Failure -> {
+                            // Continue to plastic-card path below.
+                        }
+                    }
+                }
+            } catch (e: TagLostException) {
+                Timber.w(e, "Tag lost during mobile credential read")
+                error = TagLost
+                return@enableReaderMode
+            } catch (e: Exception) {
+                Timber.w(e, "Mobile credential path failed; trying plastic card")
+            }
+
             val cardType: CardType?
             try {
-                cardType = nfcLib.getCardType(it)
+                cardType = nfcLib.getCardType(tag)
 
                 if (
                     cardType == CardType.DESFireEV1 ||
@@ -142,7 +178,7 @@ fun BuzzCardPrompt(
                 error = InvalidBuzzCardData
             }
         },
-        NfcAdapter.FLAG_READER_NFC_A // NFC adapter flags, BuzzCards are Type A according to TagInfo
+        nfcFlags,
     )
 
     // Make sure we stop responding to card taps when this Composable is disposed (no longer on
@@ -163,6 +199,7 @@ fun BuzzCardPrompt(
                     null -> BuzzCardReadyForTap()
                     TagLost -> NfcTagLostError()
                     NotABuzzCard -> NfcNotABuzzCardError()
+                    MobileCredentialAuthFailed -> NfcMobileCredentialAuthError()
                     InvalidBuzzCardData -> NfcInvalidBuzzCardDataError()
                     UnknownNfcError -> NfcReadUnknownError()
                 }
@@ -297,6 +334,16 @@ fun NfcInvalidBuzzCardDataError() {
             text = "Unexpected BuzzCard data format"
         )
     }
+}
+
+@Composable
+fun NfcMobileCredentialAuthError() {
+    ActionPrompt(
+        icon = { WarningIcon(Modifier.size(114.dp), tint = danger) },
+        title = "Mobile Credential Auth Failed",
+        subtitle = "A credential was detected, but authentication failed. " +
+            "Please verify the key in application settings and try again.",
+    )
 }
 
 @Composable

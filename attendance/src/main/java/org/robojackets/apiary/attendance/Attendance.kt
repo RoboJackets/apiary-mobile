@@ -24,6 +24,7 @@ import com.nxp.nfclib.NxpNfcLib
 import org.robojackets.apiary.attendance.model.AttendanceScreenState.*
 import org.robojackets.apiary.attendance.model.AttendanceState
 import org.robojackets.apiary.attendance.model.AttendanceViewModel
+import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.ui.ActionPrompt
 import org.robojackets.apiary.base.ui.IconWithText
@@ -49,6 +50,7 @@ private fun getExternalError(error: String?): BuzzCardPromptExternalError? {
 private fun Attendance(
     viewState: AttendanceState,
     nfcLib: NxpNfcLib,
+    mobileCredentialAesKeyHex: String,
     onBuzzcardTap: (buzzcardTap: BuzzCardTap) -> Unit,
     onNavigateToAttendableSelection: () -> Unit,
 ) {
@@ -92,6 +94,7 @@ private fun Attendance(
         BuzzCardPrompt(
             hidePrompt = viewState.screenState != ReadyForTap,
             nfcLib = nfcLib,
+            mobileCredentialAesKeyHex = mobileCredentialAesKeyHex,
             onBuzzCardTap = onBuzzcardTap,
             externalError = getExternalError(viewState.error)
         )
@@ -117,6 +120,7 @@ private fun Attendance(
 fun AttendanceScreen(
     viewModel: AttendanceViewModel,
     nfcLib: NxpNfcLib,
+    globalSettings: GlobalSettings,
     attendableType: AttendableType,
     attendableId: Int,
 ) {
@@ -149,6 +153,7 @@ fun AttendanceScreen(
             Attendance(
                 state,
                 nfcLib,
+                mobileCredentialAesKeyHex = globalSettings.mobileCredentialAesKeyHex,
                 onBuzzcardTap = {
                     viewModel.recordScan(it)
                 },

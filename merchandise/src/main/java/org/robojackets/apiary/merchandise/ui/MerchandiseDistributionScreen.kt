@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.nxp.nfclib.NxpNfcLib
+import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.ui.error.ErrorMessageWithRetry
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.LoadingSpinner
@@ -16,6 +17,7 @@ import timber.log.Timber
 fun MerchandiseDistributionScreen(
     viewModel: MerchandiseViewModel,
     nfcLib: NxpNfcLib,
+    globalSettings: GlobalSettings,
     merchandiseItemId: Int,
 ) {
     LaunchedEffect(merchandiseItemId) {
@@ -42,9 +44,10 @@ fun MerchandiseDistributionScreen(
                 )
             }
             state.loadingMerchandiseItems || state.selectedItem == null -> LoadingSpinner()
-            else -> MerchandiseDistribution(
+            else ->             MerchandiseDistribution(
                 state = state,
                 nfcLib = nfcLib,
+                mobileCredentialAesKeyHex = globalSettings.mobileCredentialAesKeyHex,
                 onBuzzcardTap = {
                     viewModel.onBuzzCardTap(it)
                 },

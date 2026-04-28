@@ -32,6 +32,7 @@ import org.robojackets.apiary.merchandise.model.MerchandiseState
 fun MerchandiseDistribution(
     state: MerchandiseState,
     nfcLib: NxpNfcLib,
+    mobileCredentialAesKeyHex: String,
     onBuzzcardTap: (buzzcardTap: BuzzCardTap) -> Unit,
     onConfirmPickup: () -> Unit,
     onDismissPickupDialog: () -> Unit,
@@ -85,6 +86,7 @@ fun MerchandiseDistribution(
                 hidePrompt =
                 state.screenState == MerchandiseDistributionScreenState.LoadingDistributionStatus,
                 nfcLib = nfcLib,
+                mobileCredentialAesKeyHex = mobileCredentialAesKeyHex,
                 onBuzzCardTap = {
                     onBuzzcardTap(it)
                 },
