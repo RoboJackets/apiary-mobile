@@ -7,12 +7,22 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
 interface AttendanceApiService {
+
     @FormUrlEncoded
     @POST("/api/v1/attendance?include=attendee")
-    suspend fun recordAttendance(
+    suspend fun recordAttendanceByGtid(
         @Field("attendable_type") attendableType: String,
         @Field("attendable_id") attendableId: Int,
         @Field("gtid") gtid: Int,
-        @Field("source") source: String
+        @Field("source") source: String,
+    ): ApiResponse<AttendanceHolder>
+
+    @FormUrlEncoded
+    @POST("/api/v1/attendance?include=attendee")
+    suspend fun recordAttendanceByAccessCardNumber(
+        @Field("attendable_type") attendableType: String,
+        @Field("attendable_id") attendableId: Int,
+        @Field("access_card_number") accessCardNumber: String,
+        @Field("source") source: String,
     ): ApiResponse<AttendanceHolder>
 }

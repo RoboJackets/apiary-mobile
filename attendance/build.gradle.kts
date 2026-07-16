@@ -20,6 +20,7 @@ dependencies {
     implementation(AndroidToolDependencies.timber)
 
     implementation(ComposeDependencies.compose_material3)
+    implementation(ComposeDependencies.compose_material_icons_extended)
     implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.lifecycle_viewmodel_compose)
 

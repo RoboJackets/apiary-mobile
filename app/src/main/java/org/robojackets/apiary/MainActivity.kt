@@ -50,6 +50,8 @@ import androidx.navigation.navigation
 import androidx.navigation.plusAssign
 import com.nxp.nfclib.NxpNfcLib
 import dagger.hilt.android.AndroidEntryPoint
+import org.robojackets.apiary.base.ui.mrd5.Mrd5Manager
+import org.robojackets.apiary.base.ui.mrd5.Mrd5Screen
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.robojackets.apiary.attendance.AttendanceScreen
@@ -134,6 +136,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var nfcLib: NxpNfcLib
 
+    @Inject
+    lateinit var mrd5Manager: Mrd5Manager
+
     // Based on https://stackoverflow.com/a/66838316
     @Composable
     fun currentRoute(navController: NavHostController): String? {
@@ -165,6 +170,10 @@ class MainActivity : ComponentActivity() {
         if (nfcEnabled) {
             initMifareLib()
         }
+
+        // If a reader was connected in a previous session, attempt to reconnect
+        // silently in the background as soon as the app opens.
+        mrd5Manager.autoConnect()
 
         setContent {
             Apiary_MobileTheme {
@@ -363,6 +372,10 @@ class MainActivity : ComponentActivity() {
                 composable(NavigationDestinations.settings) {
                     SettingsScreen(hiltViewModel())
                 }
+            }
+
+            composable(NavigationDestinations.mrd5Test) {
+                Mrd5Screen(manager = mrd5Manager)
             }
 
             composable(NavigationDestinations.requiredUpdatePrompt) {

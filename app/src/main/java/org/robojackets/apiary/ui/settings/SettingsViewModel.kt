@@ -110,6 +110,10 @@ class SettingsViewModel @Inject constructor(
         navigationManager.navigate(NavigationActions.UpdatePrompts.anyScreenToUpdateInProgress())
     }
 
+    fun navigateToMrd5Test() {
+        navigationManager.navigate(NavigationActions.Mrd5.toMrd5Test())
+    }
+
     fun getCustomTabsIntent(toolbarColor: Int = webNavBarBackground.toArgb()): CustomTabsIntent {
         val customTabsBuilder = CustomTabsIntent.Builder()
 

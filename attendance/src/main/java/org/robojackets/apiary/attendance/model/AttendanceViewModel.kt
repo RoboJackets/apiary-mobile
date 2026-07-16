@@ -22,6 +22,10 @@ import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.model.Event
 import org.robojackets.apiary.base.model.Team
 import org.robojackets.apiary.base.repository.MeetingsRepository
+import org.robojackets.apiary.base.ui.mrd5.CardRead
+import org.robojackets.apiary.base.ui.mrd5.Mrd5Manager
+import org.robojackets.apiary.base.ui.mrd5.Mrd5State
+import org.robojackets.apiary.base.ui.mrd5.toCardRead
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
 import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationManager
@@ -34,7 +38,8 @@ class AttendanceViewModel @Inject constructor(
     @Suppress("UnusedPrivateMember") private val savedStateHandle: SavedStateHandle,
     val meetingsRepository: MeetingsRepository,
     val attendanceRepository: AttendanceRepository,
-    val navManager: NavigationManager
+    val navManager: NavigationManager,
+    val mrd5Manager: Mrd5Manager,
 ) : ViewModel() {
     private val _state = MutableStateFlow(AttendanceState())
 
@@ -51,6 +56,10 @@ class AttendanceViewModel @Inject constructor(
 
     val state: StateFlow<AttendanceState>
         get() = _state
+
+    // MRD5 state is exposed directly from the singleton — no need to merge
+    // it into AttendanceState since it's independent of attendance flow state.
+    val mrd5State: StateFlow<Mrd5State> = mrd5Manager.state
 
     init {
         viewModelScope.launch {
@@ -85,11 +94,24 @@ class AttendanceViewModel @Inject constructor(
                 .catch { throwable -> throw throwable }
                 .collect { _state.value = it }
         }
+
+        // Collect MRD5 card reads alongside NFC. The MRD5Manager is a singleton
+        // so it stays connected across navigation; this coroutine is scoped to
+        // the ViewModel and cancels automatically when the screen is destroyed.
+        viewModelScope.launch {
+            mrd5Manager.cardData.collect { cardRead ->
+                recordCardRead(cardRead)
+            }
+        }
     }
 
-    fun recordScan(tap: BuzzCardTap) {
+    // Called by the existing NFC path (BuzzCardPrompt callback).
+    fun recordScan(tap: BuzzCardTap) = recordCardRead(tap.toCardRead())
+
+    // Internal: shared logic for both NFC and MRD5 reads.
+    private fun recordCardRead(cardRead: CardRead) {
         if (screenState.value == Loading) {
-            Timber.d("Ignoring BuzzCard tap because another one is currently being processed")
+            Timber.d("Ignoring card read because another is currently being processed")
             return
         }
 
@@ -100,15 +122,14 @@ class AttendanceViewModel @Inject constructor(
             attendanceRepository.recordAttendance(
                 selectedAttendable.value!!.type.toString().toLowerCase(Locale.current),
                 selectedAttendable.value!!.id,
-                tap.gtid,
-                "MyRoboJackets Android - ${tap.source}"
+                cardRead,
             ).onSuccess {
-                if (lastAttendee.value?.tap?.gtid != tap.gtid) {
+                if (lastAttendee.value?.cardRead?.identifier != cardRead.identifier) {
                     totalAttendees.value += 1
                 }
                 lastAttendee.value = AttendanceStoreResult(
-                    tap = tap,
-                    name = this.data.attendance.attendee?.name ?: "Non-member"
+                    cardRead = cardRead,
+                    name = this.data.attendance.attendee?.name ?: "Non-member",
                 )
                 screenState.value = ReadyForTap
             }
@@ -176,6 +197,10 @@ class AttendanceViewModel @Inject constructor(
         navManager.navigate(NavigationActions.Attendance.attendanceToAttendableTypeSelect())
     }
 
+    fun navigateToMrd5Setup() {
+        navManager.navigate(NavigationActions.Mrd5.toMrd5Test())
+    }
+
     fun onAttendableSelected(attendable: Attendable) {
         navManager.navigate(
             NavigationActions.Attendance.attendableSelectionToAttendance(
@@ -193,36 +218,24 @@ class AttendanceViewModel @Inject constructor(
                 AttendableType.Team -> {
                     meetingsRepository.getTeam(attendableId).onSuccess {
                         val team = this.data.team
-
-                        team.let {
-                            selectedAttendable.value = it.toAttendable()
-                        }
+                        team.let { selectedAttendable.value = it.toAttendable() }
                     }.onError {
                         Timber.e(this.toString(), "Unable to get list of attendable teams")
                         error.value = "Unable to fetch team info"
                     }.onException {
-                        Timber.e(
-                            this.throwable,
-                            "Exception occurred while fetching attendable teams"
-                        )
+                        Timber.e(this.throwable, "Exception occurred while fetching attendable teams")
                         error.value = "Unable to fetch team info"
                     }
                 }
                 AttendableType.Event -> {
                     meetingsRepository.getEvent(attendableId).onSuccess {
                         val event = this.data.event
-
-                        event.let {
-                            selectedAttendable.value = it.toAttendable()
-                        }
+                        event.let { selectedAttendable.value = it.toAttendable() }
                     }.onError {
                         Timber.e(this.toString(), "Unable to get list of attendable events")
                         error.value = "Unable to fetch event info"
                     }.onException {
-                        Timber.e(
-                            this.throwable,
-                            "Exception occurred while fetching attendable events"
-                        )
+                        Timber.e(this.throwable, "Exception occurred while fetching attendable events")
                         error.value = "Unable to fetch event info"
                     }
                 }

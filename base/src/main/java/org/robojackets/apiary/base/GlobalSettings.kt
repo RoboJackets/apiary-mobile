@@ -15,6 +15,8 @@ class GlobalSettings @Inject constructor(
     var appEnvName by stringPref("APP_ENV_NAME").withDefault(AppEnvironment.Production.name)
     var accessToken by stringPref("AUTH_TOKEN").withDefault("")
     var refreshToken by stringPref("REFRESH_TOKEN").withDefault("")
+    var mrd5DeviceMac by stringPref("MRD5_DEVICE_MAC").withDefault("")
+    var mrd5DeviceName by stringPref("MRD5_DEVICE_NAME").withDefault("")
 
     val appEnv: AppEnvironment
         get() = AppEnvironment.valueOf(appEnvName)

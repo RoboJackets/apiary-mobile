@@ -17,6 +17,7 @@ object NavigationDestinations {
     const val merchandiseSubgraph = "merchandiseSubgraph"
     const val merchandiseIndex = "merchandiseIndex"
     const val merchandiseDistribution = "$merchandiseIndex/distribution"
+    const val mrd5Test = "mrd5Test"
 }
 
 object NavigationActions {
@@ -89,6 +90,12 @@ object NavigationActions {
                 get() = NavOptions.Builder()
                     .setPopUpTo(NavigationDestinations.attendance, inclusive = true)
                     .build()
+        }
+    }
+
+    object Mrd5 {
+        fun toMrd5Test() = object : NavigationAction {
+            override val destination = NavigationDestinations.mrd5Test
         }
     }
 

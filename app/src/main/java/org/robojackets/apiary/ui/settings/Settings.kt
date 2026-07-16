@@ -52,6 +52,7 @@ private fun Settings(
      onNavigateToOptionalUpdateBottomSheet: () -> Unit,
      onNavigateToRequiredUpdatePrompt: () -> Unit,
      onNavigateToUpdateInProgress: () -> Unit,
+     onNavigateToMrd5Test: () -> Unit,
  ) {
     val context = LocalContext.current
 
@@ -76,6 +77,12 @@ private fun Settings(
                     title = { Text(text = "DEBUG: Recognized permissions") },
                     subtitle = { Text(text = user?.allPermissions?.joinToString(separator = ", ") ?: "None") },
                     onClick = { onRefreshUser() }
+                )
+                SettingsMenuLink(
+                    icon = { Icon(Icons.Outlined.Build, contentDescription = "build") },
+                    title = { Text(text = "DEBUG: MRD5 BLE Reader") },
+                    subtitle = { Text(text = "Test MRD5 card reader over Bluetooth LE") },
+                    onClick = { onNavigateToMrd5Test() }
                 )
                 SettingsMenuLink(
                     icon = { Icon(Icons.Outlined.Update, contentDescription = "update") },
@@ -200,6 +207,9 @@ fun SettingsScreen(
            },
            onNavigateToUpdateInProgress = {
                viewModel.navigateToUpdateInProgress()
+           },
+           onNavigateToMrd5Test = {
+               viewModel.navigateToMrd5Test()
            }
        )
     }
@@ -219,5 +229,6 @@ private fun SettingsPreview() {
         onNavigateToOptionalUpdateBottomSheet = {},
         onNavigateToRequiredUpdatePrompt = {},
         onNavigateToUpdateInProgress = {},
+        onNavigateToMrd5Test = {},
     )
 }
