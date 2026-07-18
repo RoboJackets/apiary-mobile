@@ -2,8 +2,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
-    kotlin("android")
-    id("kotlin-android")
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
@@ -85,10 +83,10 @@ android {
         create("release") {
         }
     }
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId = "org.robojackets.apiary"
-        minSdk = 21
+        minSdk = 31
         targetSdk = 36
         versionCode = 12
         versionName = "1.0.0"

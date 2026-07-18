@@ -1,7 +1,5 @@
 package org.robojackets.apiary.base.ui.icons
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -29,10 +27,23 @@ fun WarningIcon(
     tint: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Icon(
-        Icons.Default.Warning,
+        painter = painterResource(id = R.drawable.ic_baseline_warning_24),
         tint = tint,
         modifier = modifier,
         contentDescription = "warning",
+    )
+}
+
+@Composable
+fun CheckCircleIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_check_circle_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = "check circle",
     )
 }
 

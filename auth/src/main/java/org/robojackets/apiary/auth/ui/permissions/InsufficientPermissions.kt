@@ -9,11 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -34,6 +31,7 @@ import org.robojackets.apiary.auth.model.Permission.CREATE_ATTENDANCE
 import org.robojackets.apiary.auth.model.Permission.READ_TEAMS_HIDDEN
 import org.robojackets.apiary.auth.model.Permission.READ_USERS
 import org.robojackets.apiary.base.ui.error.GoToItHelpdesk
+import org.robojackets.apiary.base.ui.icons.CheckCircleIcon
 import org.robojackets.apiary.base.ui.icons.ErrorIcon
 import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
 import org.robojackets.apiary.base.ui.theme.danger
@@ -141,12 +139,7 @@ fun PermissionsListItem(hasPermission: Boolean, permissionName: String) {
     ListItem(
         leadingContent = {
             when (hasPermission) {
-                true -> Icon(
-                    Icons.Outlined.CheckCircle,
-                    "check circle",
-                    modifier = Modifier.size(28.dp),
-                    tint = success
-                )
+                true -> CheckCircleIcon(modifier = Modifier.size(28.dp), tint = success)
                 false -> ErrorIcon(Modifier.size(28.dp), tint = danger)
             }
         },
