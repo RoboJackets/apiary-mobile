@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package org.robojackets.apiary.base.ui.icons
 
 import androidx.compose.material3.Icon

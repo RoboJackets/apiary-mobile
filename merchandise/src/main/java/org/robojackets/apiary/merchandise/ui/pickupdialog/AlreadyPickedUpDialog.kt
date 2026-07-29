@@ -26,7 +26,8 @@ fun AlreadyPickedUpDialog(
     providedAt: Instant?,
     onDismissRequest: () -> Unit,
 ) {
-    val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(LocalLocale.current.platformLocale)
+    val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+        .withLocale(LocalLocale.current.platformLocale)
     val localProvidedAt: LocalDateTime? = when (providedAt) {
         null -> null
         else -> LocalDateTime.ofInstant(providedAt, TimeZone.getDefault().toZoneId())
