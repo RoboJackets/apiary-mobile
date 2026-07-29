@@ -39,8 +39,6 @@ dependencies {
     implementation(ComposeDependencies.compose_ui_tooling)
     implementation(ComposeDependencies.compose_foundation)
     implementation(ComposeDependencies.compose_material3)
-    implementation(ComposeDependencies.compose_material_icons_core)
-    implementation(ComposeDependencies.compose_material_icons_extended)
     implementation(ComposeDependencies.compose_settings)
 
     implementation(HiltDependencies.hilt)

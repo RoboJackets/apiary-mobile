@@ -43,7 +43,8 @@ class AuthenticationViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            combine(appEnv, loginStatus, loginErrorMessage,
+            combine(
+                appEnv, loginStatus, loginErrorMessage,
             ) { appEnv, loginStatus, loginErrorMessage, ->
                 AuthenticationState(appEnv, loginStatus, loginErrorMessage)
             }

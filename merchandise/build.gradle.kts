@@ -29,8 +29,6 @@ dependencies {
     ksp(HiltDependencies.hilt_android_compiler)
 
     implementation(MaterialDependencies.material_android)
-    implementation(ComposeDependencies.compose_material_icons_core)
-    implementation(ComposeDependencies.compose_material_icons_extended)
 
     implementation(NetworkDependencies.kotlinx_serialization_json)
     implementation(NetworkDependencies.moshi)

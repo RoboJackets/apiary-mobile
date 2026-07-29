@@ -11,14 +11,9 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Contactless
-import androidx.compose.material.icons.outlined.Storefront
 import androidx.compose.material.navigation.ModalBottomSheetLayout
 import androidx.compose.material.navigation.bottomSheet
 import androidx.compose.material.navigation.rememberBottomSheetNavigator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -34,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -60,6 +54,9 @@ import org.robojackets.apiary.auth.oauth2.AuthManager
 import org.robojackets.apiary.auth.ui.AuthenticationScreen
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.model.AttendableType
+import org.robojackets.apiary.base.ui.icons.ContactlessIcon
+import org.robojackets.apiary.base.ui.icons.SettingsIcon
+import org.robojackets.apiary.base.ui.icons.StorefrontIcon
 import org.robojackets.apiary.base.ui.nfc.NfcRequired
 import org.robojackets.apiary.base.ui.snackbar.SnackbarControllerProvider
 import org.robojackets.apiary.base.ui.theme.Apiary_MobileTheme
@@ -82,31 +79,27 @@ import javax.inject.Inject
 sealed class Screen(
     val navigationDestination: String,
     @StringRes val resourceId: Int,
-    val icon: ImageVector,
-    val imgContentDescriptor: String,
+    val icon: @Composable () -> Unit,
 ) {
     object Attendance :
         Screen(
             NavigationDestinations.attendanceSubgraph,
             R.string.attendance,
-            Icons.Outlined.Contactless,
-            "contactless"
+            { ContactlessIcon() }
         )
 
     object Merchandise :
         Screen(
             NavigationDestinations.merchandiseSubgraph,
             R.string.merchandise,
-            Icons.Outlined.Storefront,
-            "storefront",
+            { StorefrontIcon() },
         )
 
     object Settings :
         Screen(
             NavigationDestinations.settingsSubgraph,
             R.string.settings,
-            Icons.Filled.Settings,
-            "settings"
+            { SettingsIcon() }
         )
 }
 
@@ -216,12 +209,7 @@ class MainActivity : ComponentActivity() {
                                             NavigationBar {
                                                 navItems.forEach { screen ->
                                                     NavigationBarItem(
-                                                        icon = {
-                                                            Icon(
-                                                                screen.icon,
-                                                                contentDescription = screen.imgContentDescriptor
-                                                            )
-                                                        },
+                                                        icon = screen.icon,
                                                         label = { Text(stringResource(screen.resourceId)) },
                                                         selected = currentDestination
                                                             ?.hierarchy
@@ -243,7 +231,9 @@ class MainActivity : ComponentActivity() {
                                     }
                                 ) { innerPadding ->
                                     Box(
-                                        modifier = Modifier.padding(innerPadding).consumeWindowInsets(innerPadding),
+                                        modifier = Modifier
+                                            .padding(innerPadding)
+                                            .consumeWindowInsets(innerPadding),
                                     ) {
                                         NfcRequired(nfcEnabled = nfcEnabled) {
                                             AppNavigation(navController)

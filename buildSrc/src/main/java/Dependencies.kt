@@ -5,7 +5,6 @@ object ComposeDependencies {
         const val lifecycle_viewmodel_compose_version = "2.11.0"
         const val compose_material3_version = "1.4.0"
         const val compose_material_navigation_version = "1.11.4"
-        const val compose_material_icons_version = "1.7.8"
     }
 
     const val compose_foundation =
@@ -13,10 +12,6 @@ object ComposeDependencies {
 
     const val compose_material3 =
         "androidx.compose.material3:material3:${Versions.compose_material3_version}"
-    const val compose_material_icons_core =
-        "androidx.compose.material:material-icons-core:${Versions.compose_material_icons_version}"
-    const val compose_material_icons_extended =
-        "androidx.compose.material:material-icons-extended:${Versions.compose_material_icons_version}"
     const val compose_material_navigation =
         "androidx.compose.material:material-navigation:${Versions.compose_material_navigation_version}"
 
