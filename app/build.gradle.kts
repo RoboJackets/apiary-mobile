@@ -85,7 +85,7 @@ android {
     defaultConfig {
         applicationId = "org.robojackets.apiary"
         minSdk = 31
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 12
         versionName = "1.0.0"
         vectorDrawables {
@@ -96,6 +96,7 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            testBuildType = "release"
         }
         getByName("debug") {
             isDebuggable = true
