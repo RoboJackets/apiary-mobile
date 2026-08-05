@@ -54,6 +54,7 @@ import org.robojackets.apiary.auth.oauth2.AuthManager
 import org.robojackets.apiary.auth.ui.AuthenticationScreen
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.model.AttendableType
+import org.robojackets.apiary.base.ui.bluetooth.BleManager
 import org.robojackets.apiary.base.ui.icons.ContactlessIcon
 import org.robojackets.apiary.base.ui.icons.SettingsIcon
 import org.robojackets.apiary.base.ui.icons.StorefrontIcon
@@ -67,6 +68,7 @@ import org.robojackets.apiary.navigation.NavigationDestinations
 import org.robojackets.apiary.navigation.NavigationManager
 import org.robojackets.apiary.ui.global.AppTopBar
 import org.robojackets.apiary.ui.settings.SettingsScreen
+import org.robojackets.apiary.ui.settings.buzzCardReader.BuzzCardReaderConnectionScreen
 import org.robojackets.apiary.ui.update.OptionalUpdatePrompt
 import org.robojackets.apiary.ui.update.RequiredUpdatePrompt
 import org.robojackets.apiary.ui.update.UpdateGate
@@ -126,6 +128,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var nfcLib: NxpNfcLib
+
+    @Inject
+    lateinit var bleManager: BleManager
 
     // Based on https://stackoverflow.com/a/66838316
     @Composable
@@ -352,6 +357,10 @@ class MainActivity : ComponentActivity() {
             ) {
                 composable(NavigationDestinations.settings) {
                     SettingsScreen(hiltViewModel())
+                }
+
+                composable(NavigationDestinations.settingsBuzzCardReaderConnection) {
+                    BuzzCardReaderConnectionScreen(hiltViewModel())
                 }
             }
 

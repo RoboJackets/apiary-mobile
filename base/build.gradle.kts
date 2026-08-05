@@ -23,6 +23,7 @@ dependencies {
     implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.compose_ui_tooling)
     implementation(ComposeDependencies.compose_material_navigation)
+    implementation(ComposeDependencies.compose_accompanist_permissions)
 
     implementation(HiltDependencies.hilt)
     ksp(HiltDependencies.hilt_android_compiler)

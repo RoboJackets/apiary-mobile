@@ -26,6 +26,7 @@ import org.robojackets.apiary.BuildConfig
 import org.robojackets.apiary.auth.model.UserInfo
 import org.robojackets.apiary.base.AppEnvironment
 import org.robojackets.apiary.base.ui.icons.AccountCircleIcon
+import org.robojackets.apiary.base.ui.icons.BluetoothSettingsIcon
 import org.robojackets.apiary.base.ui.icons.DeployedCodeIcon
 import org.robojackets.apiary.base.ui.icons.FeedbackIcon
 import org.robojackets.apiary.base.ui.icons.HomeIcon
@@ -41,15 +42,16 @@ import org.robojackets.apiary.ui.update.UpdateStatus
 @Suppress("LongMethod", "LongParameterList")
 @Composable
 private fun Settings(
-     appEnv: AppEnvironment,
-     user: UserInfo?,
-     onLogout: () -> Unit,
-     onOpenPrivacyPolicy: () -> Unit,
-     onOpenMakeAWish: () -> Unit,
-     onRefreshUser: () -> Unit,
-     onNavigateToOptionalUpdateBottomSheet: () -> Unit,
-     onNavigateToRequiredUpdatePrompt: () -> Unit,
-     onNavigateToUpdateInProgress: () -> Unit,
+    appEnv: AppEnvironment,
+    user: UserInfo?,
+    onLogout: () -> Unit,
+    onOpenPrivacyPolicy: () -> Unit,
+    onOpenMakeAWish: () -> Unit,
+    onRefreshUser: () -> Unit,
+    onNavigateToOptionalUpdateBottomSheet: () -> Unit,
+    onNavigateToRequiredUpdatePrompt: () -> Unit,
+    onNavigateToUpdateInProgress: () -> Unit,
+    onNavigateToBuzzCardReaderConnection: () -> Unit,
  ) {
     val context = LocalContext.current
 
@@ -68,7 +70,19 @@ private fun Settings(
                 subtitle = { Text(text = user?.uid ?: "") },
                 onClick = { onRefreshUser() }
             )
+            SettingsMenuLink(
+                icon = { LogoutIcon() },
+                title = { Text(text = "Logout") },
+                onClick = onLogout
+            )
+            SettingsHeader("Devices")
+            SettingsMenuLink(
+                icon = { BluetoothSettingsIcon() },
+                title = { Text(text = "Connect BuzzCard reader") },
+                onClick = { onNavigateToBuzzCardReaderConnection() }
+            )
             if (BuildConfig.DEBUG) {
+                SettingsHeader("Debug options")
                 SettingsMenuLink(
                     icon = { VerifiedUserIcon() },
                     title = { Text(text = "DEBUG: Recognized permissions") },
@@ -91,11 +105,6 @@ private fun Settings(
                     onClick = { onNavigateToUpdateInProgress() }
                 )
             }
-            SettingsMenuLink(
-                icon = { LogoutIcon() },
-                title = { Text(text = "Logout") },
-                onClick = onLogout
-            )
             SettingsHeader("About")
             SettingsMenuLink(
                 icon = { HomeIcon(contentDescription = "server") },
@@ -198,6 +207,9 @@ fun SettingsScreen(
            },
            onNavigateToUpdateInProgress = {
                viewModel.navigateToUpdateInProgress()
+           },
+           onNavigateToBuzzCardReaderConnection = {
+               viewModel.navigateToBuzzCardReaderConnection()
            }
        )
     }
@@ -217,5 +229,6 @@ private fun SettingsPreview() {
         onNavigateToOptionalUpdateBottomSheet = {},
         onNavigateToRequiredUpdatePrompt = {},
         onNavigateToUpdateInProgress = {},
+        onNavigateToBuzzCardReaderConnection = {}
     )
 }

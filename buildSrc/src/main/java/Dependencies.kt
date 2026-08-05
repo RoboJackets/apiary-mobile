@@ -5,6 +5,7 @@ object ComposeDependencies {
         const val lifecycle_viewmodel_compose_version = "2.11.0"
         const val compose_material3_version = "1.4.0"
         const val compose_material_navigation_version = "1.11.4"
+        const val compose_accompanist_version = "0.37.3"
     }
 
     const val compose_foundation =
@@ -24,6 +25,8 @@ object ComposeDependencies {
 
     const val lifecycle_viewmodel_compose =
         "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle_viewmodel_compose_version}"
+
+    const val compose_accompanist_permissions = "com.google.accompanist:accompanist-permissions:${Versions.compose_accompanist_version}"
 }
 
 object MaterialDependencies {

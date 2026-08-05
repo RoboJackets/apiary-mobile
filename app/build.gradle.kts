@@ -40,6 +40,7 @@ dependencies {
     implementation(ComposeDependencies.compose_foundation)
     implementation(ComposeDependencies.compose_material3)
     implementation(ComposeDependencies.compose_settings)
+    implementation(ComposeDependencies.compose_accompanist_permissions)
 
     implementation(HiltDependencies.hilt)
     ksp(HiltDependencies.hilt_android_compiler)

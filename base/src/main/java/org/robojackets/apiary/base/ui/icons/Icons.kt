@@ -11,6 +11,21 @@ import androidx.compose.ui.res.painterResource
 import org.robojackets.apiary.base.R
 
 @Composable
+fun BluetoothSettingsIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String? = null,
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_baseline_settings_bluetooth_24dp),
+        contentDescription = contentDescription,
+        modifier = modifier,
+        tint = tint,
+    )
+}
+
+
+@Composable
 fun ContactlessIcon(
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.onSurface,
