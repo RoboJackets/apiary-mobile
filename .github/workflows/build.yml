@@ -48,7 +48,7 @@ jobs:
       with:
         languages: java-kotlin
         queries: security-extended,security-and-quality
-        tools: nightly
+        tools: latest
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
