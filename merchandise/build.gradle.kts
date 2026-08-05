@@ -2,8 +2,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library")
-    kotlin("android")
-    id("kotlin-android")
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
@@ -31,8 +29,6 @@ dependencies {
     ksp(HiltDependencies.hilt_android_compiler)
 
     implementation(MaterialDependencies.material_android)
-    implementation(ComposeDependencies.compose_material_icons_core)
-    implementation(ComposeDependencies.compose_material_icons_extended)
 
     implementation(NetworkDependencies.kotlinx_serialization_json)
     implementation(NetworkDependencies.moshi)
@@ -62,9 +58,9 @@ kotlin {
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
-        minSdk = 21
+        minSdk = 31
         vectorDrawables {
             useSupportLibrary = true
         }

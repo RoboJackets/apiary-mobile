@@ -44,10 +44,11 @@ jobs:
         preferLatestVersion: true
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@v4
       with:
         languages: java-kotlin
         queries: security-extended,security-and-quality
+        tools: latest
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -86,7 +87,7 @@ jobs:
         IS_CI: true
 
     - name: Perform CodeQL Analysis for Java/Kotlin
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@v4
       with:
         category: "/language:java-kotlin"
 

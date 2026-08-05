@@ -2,8 +2,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
-    kotlin("android")
-    id("kotlin-android")
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
@@ -41,8 +39,6 @@ dependencies {
     implementation(ComposeDependencies.compose_ui_tooling)
     implementation(ComposeDependencies.compose_foundation)
     implementation(ComposeDependencies.compose_material3)
-    implementation(ComposeDependencies.compose_material_icons_core)
-    implementation(ComposeDependencies.compose_material_icons_extended)
     implementation(ComposeDependencies.compose_settings)
 
     implementation(HiltDependencies.hilt)
@@ -85,11 +81,11 @@ android {
         create("release") {
         }
     }
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId = "org.robojackets.apiary"
-        minSdk = 21
-        targetSdk = 36
+        minSdk = 31
+        targetSdk = 37
         versionCode = 12
         versionName = "1.0.0"
         vectorDrawables {
@@ -100,6 +96,7 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            testBuildType = "release"
         }
         getByName("debug") {
             isDebuggable = true

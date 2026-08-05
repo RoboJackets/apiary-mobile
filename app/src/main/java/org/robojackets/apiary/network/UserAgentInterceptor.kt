@@ -5,7 +5,6 @@ import android.os.Build
 import okhttp3.Interceptor
 import okhttp3.Response
 import org.robojackets.apiary.BuildConfig
-import okhttp3.internal.userAgent as okHttpVersion
 
 // Based on https://medium.com/mobile-app-development-publication/setting-useragent-for-android-network-9daf5264ef3f
 class UserAgentInterceptor(context: Context) : Interceptor {
@@ -18,7 +17,7 @@ class UserAgentInterceptor(context: Context) : Interceptor {
             "(${context.packageName}; " +
             "build:${BuildConfig.VERSION_CODE} " +
             "Android SDK ${Build.VERSION.SDK_INT}) " +
-            okHttpVersion + " " +
+            okhttp3.OkHttp.VERSION + " " +
             getDeviceName()
 
     private fun getApplicationName(context: Context): String {

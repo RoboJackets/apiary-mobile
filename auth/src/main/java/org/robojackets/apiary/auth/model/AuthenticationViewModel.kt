@@ -4,7 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationResponse
@@ -41,17 +44,9 @@ class AuthenticationViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             combine(
-                listOf(
-                    appEnv,
-                    loginStatus,
-                    loginErrorMessage,
-                )
-            ) { flows ->
-                AuthenticationState(
-                    appEnv = flows[0] as AppEnvironment,
-                    loginStatus = flows[1] as LoginStatus,
-                    loginErrorMessage = flows[2] as String?,
-                )
+                appEnv, loginStatus, loginErrorMessage,
+            ) { appEnv, loginStatus, loginErrorMessage, ->
+                AuthenticationState(appEnv, loginStatus, loginErrorMessage)
             }
                 .catch { throwable -> throw throwable }
                 .collect { _state.value = it }

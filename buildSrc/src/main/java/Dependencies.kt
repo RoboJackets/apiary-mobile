@@ -1,11 +1,10 @@
 object ComposeDependencies {
     object Versions {
-        const val compose_settings_version = "2.10.0"
-        const val compose_version = "1.8.3"
-        const val lifecycle_viewmodel_compose_version = "2.9.1"
-        const val compose_material3_version = "1.3.2"
-        const val compose_material_navigation_version = "1.7.0-beta01"
-        const val compose_material_icons_version = "1.7.8"
+        const val compose_settings_version = "3.1.0"
+        const val compose_version = "1.11.4"
+        const val lifecycle_viewmodel_compose_version = "2.11.0"
+        const val compose_material3_version = "1.4.0"
+        const val compose_material_navigation_version = "1.11.4"
     }
 
     const val compose_foundation =
@@ -13,10 +12,6 @@ object ComposeDependencies {
 
     const val compose_material3 =
         "androidx.compose.material3:material3:${Versions.compose_material3_version}"
-    const val compose_material_icons_core =
-        "androidx.compose.material:material-icons-core:${Versions.compose_material_icons_version}"
-    const val compose_material_icons_extended =
-        "androidx.compose.material:material-icons-extended:${Versions.compose_material_icons_version}"
     const val compose_material_navigation =
         "androidx.compose.material:material-navigation:${Versions.compose_material_navigation_version}"
 
@@ -33,7 +28,7 @@ object ComposeDependencies {
 
 object MaterialDependencies {
     object Versions {
-        const val material_android_version = "1.12.0"
+        const val material_android_version = "1.14.0"
     }
 
     const val material_android =
@@ -42,11 +37,11 @@ object MaterialDependencies {
 
 object AndroidXDependencies {
     object Versions {
-        const val androidx_activity_compose_version = "1.10.1"
+        const val androidx_activity_compose_version = "1.13.0"
         const val androidx_appcompat_version = "1.7.1"
-        const val androidx_browser_version = "1.8.0"
-        const val androidx_lifecycle_runtime_version = "2.9.1"
-        const val androidx_navigation_compose_version = "2.9.1"
+        const val androidx_browser_version = "1.10.0"
+        const val androidx_lifecycle_runtime_version = "2.11.0"
+        const val androidx_navigation_compose_version = "2.9.8"
     }
 
     const val androidx_activity_compose =
@@ -85,8 +80,8 @@ object AuthDependencies {
 
 object HiltDependencies {
     object Versions {
-        const val hilt_navigation_compose_version = "1.2.0"
-        const val hilt_version = "2.56.2" // If you update this version, you also need to update
+        const val hilt_navigation_compose_version = "1.4.0"
+        const val hilt_version = "2.60.1" // If you update this version, you also need to update
         // the com.google.dagger:hilt-android-gradle-plugin version in build.gradle files
     }
 
@@ -102,10 +97,10 @@ object AndroidToolDependencies {
     object Versions {
         const val android_tools_desugar_version = "2.1.5"
         const val krate_version = "2.0.0"
-        const val gson_version = "2.13.1"
-        const val in_app_update_compose_version = "1.2.0"
-        const val open_source_licenses_version = "17.1.0"
-        const val sentry_version = "8.16.0"
+        const val gson_version = "2.14.0"
+        const val in_app_update_compose_version = "1.3.1"
+        const val open_source_licenses_version = "17.5.1"
+        const val sentry_version = "8.49.0"
         const val timber_version = "5.0.1"
     }
 
@@ -126,11 +121,11 @@ object NetworkDependencies {
     object Versions {
         const val moshi_version = "1.15.2"
         const val moshi_converter_factory_version = "3.0.0"
-        const val kotlinx_serialization_json_version = "1.9.0"
-        const val okhttp_bom_version = "4.12.0"
+        const val kotlinx_serialization_json_version = "1.11.0"
+        const val okhttp_bom_version = "5.4.0"
         const val retrofit_version = "3.0.0"
         const val retrofuture_version = "1.7.4"
-        const val sandwich_version = "2.1.2"
+        const val sandwich_version = "2.3.0"
     }
 
     const val kotlinx_serialization_json =

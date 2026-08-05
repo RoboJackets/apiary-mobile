@@ -7,13 +7,12 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
-        classpath("com.android.tools.build:gradle:8.11.0")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.56.2") // This version needs to
+        classpath("com.android.tools.build:gradle:9.3.1")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.60.1") // This version needs to
         // match the version for other Hilt dependencies defined in Dependencies.kt
         classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
-        classpath("com.google.gms:google-services:4.4.3")
-        classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
+        classpath("com.google.gms:google-services:4.5.0")
+        classpath("com.google.android.gms:oss-licenses-plugin:0.13.0")
     }
 }
 
@@ -32,13 +31,13 @@ allprojects {
 }
 
 plugins {
-    id("com.google.devtools.ksp").version("2.2.0-2.0.2").apply(false)
+    id("com.google.devtools.ksp").version("2.3.9").apply(false)
     id("io.gitlab.arturbosch.detekt").version("1.23.8")
     id("com.autonomousapps.dependency-analysis").version("2.19.0")
     id("com.github.ben-manes.versions").version("0.52.0")
-    id("com.android.library") version "8.11.0" apply false
-    id("org.jetbrains.kotlin.android") version "2.2.0" apply false
-    id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
+    id("com.android.library") version "9.3.1" apply false
+    id("org.jetbrains.kotlin.android") version "2.4.10" apply false
+    id("org.jetbrains.kotlin.plugin.compose") version "2.4.10"
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

@@ -8,17 +8,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Build
-import androidx.compose.material.icons.outlined.Feedback
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Logout
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.PrivacyTip
-import androidx.compose.material.icons.outlined.Update
-import androidx.compose.material.icons.outlined.VerifiedUser
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,10 +21,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.alorma.compose.settings.ui.SettingsMenuLink
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.google.android.gms.oss.licenses.v2.OssLicensesMenuActivity
 import org.robojackets.apiary.BuildConfig
 import org.robojackets.apiary.auth.model.UserInfo
 import org.robojackets.apiary.base.AppEnvironment
+import org.robojackets.apiary.base.ui.icons.AccountCircleIcon
+import org.robojackets.apiary.base.ui.icons.DeployedCodeIcon
+import org.robojackets.apiary.base.ui.icons.FeedbackIcon
+import org.robojackets.apiary.base.ui.icons.HomeIcon
+import org.robojackets.apiary.base.ui.icons.InfoIcon
+import org.robojackets.apiary.base.ui.icons.LogoutIcon
+import org.robojackets.apiary.base.ui.icons.PrivacyTipIcon
+import org.robojackets.apiary.base.ui.icons.UpdateIcon
+import org.robojackets.apiary.base.ui.icons.VerifiedUserIcon
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.MadeWithLove
 import org.robojackets.apiary.ui.update.UpdateStatus
@@ -65,42 +63,42 @@ private fun Settings(
         Column {
             SettingsHeader("Account")
             SettingsMenuLink(
-                icon = { Icon(Icons.Outlined.Person, contentDescription = "person") },
+                icon = { AccountCircleIcon(contentDescription = "person") },
                 title = { Text(text = user?.name ?: "Refreshing data...") },
                 subtitle = { Text(text = user?.uid ?: "") },
                 onClick = { onRefreshUser() }
             )
             if (BuildConfig.DEBUG) {
                 SettingsMenuLink(
-                    icon = { Icon(Icons.Outlined.VerifiedUser, contentDescription = "verified user") },
+                    icon = { VerifiedUserIcon() },
                     title = { Text(text = "DEBUG: Recognized permissions") },
                     subtitle = { Text(text = user?.allPermissions?.joinToString(separator = ", ") ?: "None") },
                     onClick = { onRefreshUser() }
                 )
                 SettingsMenuLink(
-                    icon = { Icon(Icons.Outlined.Update, contentDescription = "update") },
+                    icon = { UpdateIcon() },
                     title = { Text(text = "DEBUG: Open optional update bottom sheet") },
                     onClick = { onNavigateToOptionalUpdateBottomSheet() }
                 )
                 SettingsMenuLink(
-                    icon = { Icon(Icons.Outlined.Update, contentDescription = "update") },
+                    icon = { UpdateIcon() },
                     title = { Text(text = "DEBUG: Open required update prompt") },
                     onClick = { onNavigateToRequiredUpdatePrompt() }
                 )
                 SettingsMenuLink(
-                    icon = { Icon(Icons.Outlined.Update, contentDescription = "update") },
+                    icon = { UpdateIcon() },
                     title = { Text(text = "DEBUG: Open update in progress screen") },
                     onClick = { onNavigateToUpdateInProgress() }
                 )
             }
             SettingsMenuLink(
-                icon = { Icon(Icons.Outlined.Logout, contentDescription = "logout") },
+                icon = { LogoutIcon() },
                 title = { Text(text = "Logout") },
                 onClick = onLogout
             )
             SettingsHeader("About")
             SettingsMenuLink(
-                icon = { Icon(Icons.Outlined.Home, contentDescription = "home") },
+                icon = { HomeIcon(contentDescription = "server") },
                 title = { Text(text = "Server") },
                 subtitle = {
                     Text(
@@ -110,7 +108,7 @@ private fun Settings(
                 onClick = {}
             )
             SettingsMenuLink(
-                icon = { Icon(Icons.Outlined.Build, contentDescription = "build") },
+                icon = { DeployedCodeIcon(contentDescription = "version") },
                 title = { Text(text = "Version") },
                 subtitle = {
                     Text(
@@ -120,7 +118,7 @@ private fun Settings(
                 onClick = {}
             )
             SettingsMenuLink(
-                icon = { Icon(Icons.Outlined.Update, contentDescription = "update") },
+                icon = { UpdateIcon() },
                 title = { Text("App update status") },
                 subtitle = {
                     UpdateStatus()
@@ -128,17 +126,17 @@ private fun Settings(
                 onClick = {}
             )
             SettingsMenuLink(
-                icon = { Icon(Icons.Outlined.Feedback, contentDescription = "feedback") },
+                icon = { FeedbackIcon() },
                 title = { Text(text = "Make a wish") },
                 onClick = onOpenMakeAWish,
             )
             SettingsMenuLink(
-                icon = { Icon(Icons.Outlined.PrivacyTip, contentDescription = "privacy tip") },
+                icon = { PrivacyTipIcon() },
                 title = { Text(text = "Privacy policy") },
                 onClick = onOpenPrivacyPolicy,
             )
             SettingsMenuLink(
-                icon = { Icon(Icons.Outlined.Info, contentDescription = "info") },
+                icon = { InfoIcon() },
                 title = { Text(text = "Open-source licenses") },
                 onClick = {
                     context.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
