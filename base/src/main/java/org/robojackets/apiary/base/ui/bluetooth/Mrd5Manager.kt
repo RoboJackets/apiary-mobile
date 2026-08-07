@@ -1,10 +1,12 @@
 package org.robojackets.apiary.base.ui.bluetooth
 
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice.TRANSPORT_LE
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.BluetoothGattConnectionSettings
 import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
@@ -29,9 +31,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
 import timber.log.Timber
 import java.util.ArrayDeque
 import java.util.UUID
+import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.milliseconds
@@ -39,23 +43,47 @@ import kotlin.time.Duration.Companion.milliseconds
 enum class ConnectionState {
     Disconnected,
     Connecting,
+    Initializing,
     Connected,
+    Error,
 }
 
-val MLDP_SERVICE_UUID: UUID = UUID.fromString("00035b03-58e6-07dd-021a-08123a000300")
-val MLDP_DATA_UUID: UUID = UUID.fromString("00035b03-58e6-07dd-021a-08123a000301")
-val CCCD_UUID: UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+enum class ScanningState {
+    Unknown,
+    Idle,
+    Active,
+    Error,
+}
+
+private val MLDP_SERVICE_UUID: UUID = UUID.fromString("00035b03-58e6-07dd-021a-08123a000300")
+private val MLDP_DATA_UUID: UUID = UUID.fromString("00035b03-58e6-07dd-021a-08123a000301")
+private val CCCD_UUID: UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
 
 // Based on https://medium.com/@YodgorbekKomilo/designing-a-robust-ble-system-in-android-with-jetpack-compose-a7941bec8c66
+// and https://punchthrough.com/android-ble-guide/
 @Singleton
-class BleManager @Inject constructor(
-    @ApplicationContext private val context: Context
+class Mrd5Manager @Inject constructor(
+    @ApplicationContext private val context: Context,
 ) {
-    private val bluetoothManager = context.getSystemService(BluetoothManager::class.java)
-    private val adapter = bluetoothManager.adapter
+    private val scanner by lazy {
+        adapter.bluetoothLeScanner
+    }
+    private val adapter: BluetoothAdapter by lazy {
+        val bluetoothManager = context.getSystemService(BluetoothManager::class.java)
+        bluetoothManager.adapter
+    }
 
     private val _scanResults = MutableSharedFlow<ScanResult>()
     val scanResults = _scanResults.asSharedFlow()
+
+    private val _batteryLevel = MutableStateFlow<Int?>(null)
+    val batteryLevel = _batteryLevel.asStateFlow()
+
+    private val _buzzCardTaps = MutableSharedFlow<BuzzCardTap>()
+    val buzzCardTaps = _buzzCardTaps.asSharedFlow()
+
+    private val _scanState = MutableStateFlow(ScanningState.Unknown)
+    val scanState = _scanState.asStateFlow()
 
     private val _connectionState = MutableStateFlow(ConnectionState.Disconnected)
     val connectionState = _connectionState.asStateFlow()
@@ -64,28 +92,6 @@ class BleManager @Inject constructor(
     private var opPending = false
 
     private var gatt: BluetoothGatt? = null
-    private var scanCallback: ScanCallback? = null
-
-    fun startScan() {
-        val scanner = adapter?.bluetoothLeScanner ?: return
-        scanCallback = object : ScanCallback() {
-            override fun onScanResult(type: Int, result: ScanResult) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    Timber.tag("BleManager")
-                        .d("Scan result: ${result.device.address}")
-                    _scanResults.emit(result)
-                }
-            }
-        }
-        scanner
-            .startScan(listOf(
-                ScanFilter.Builder().setServiceUuid(ParcelUuid(UUID.fromString("00035b03-58e6-07dd-021a-08123a000300"))).build()
-            ),
-                ScanSettings.Builder()
-                    .setScanMode(SCAN_MODE_LOW_LATENCY)
-                    .setMatchMode(MATCH_MODE_STICKY).build(),
-                scanCallback)
-    }
 
     private fun enqueue(op: () -> Unit) {
         opQueue.add(op)
@@ -93,26 +99,90 @@ class BleManager @Inject constructor(
     }
 
     private fun dispatchNext() {
-        if (opQueue.isEmpty()) { opPending = false; return }
+        if (opQueue.isEmpty()) {
+            opPending = false; return
+        }
         opPending = true
-        opQueue.poll()!!.invoke()
+        opQueue.poll()?.invoke() ?: {
+            Timber.w("opQueue.poll() returned null")
+        }
     }
+
     private fun opComplete() = dispatchNext()
 
+    private val scanCallback = object : ScanCallback() {
+        override fun onScanResult(type: Int, result: ScanResult) {
+            CoroutineScope(Dispatchers.IO).launch {
+                Timber.d("Scan result: ${result.device.address}")
+                _scanResults.emit(result)
+            }
+        }
+
+        override fun onScanFailed(errorCode: Int) {
+            Timber.e("Scan failed: $errorCode")
+            _scanState.value = ScanningState.Error
+        }
+    }
+
+    /**
+     * Start scanning for Bluetooth devices. Optionally specify a list of filters and settings.
+     */
+    fun startScanning() {
+        if (_scanState.value == ScanningState.Active) {
+            throw IllegalStateException("Scan is already active")
+        }
+
+        _scanState.value = ScanningState.Active
+
+        scanner?.startScan(
+            listOf(
+                ScanFilter.Builder()
+                    .setServiceUuid(ParcelUuid(UUID.fromString("00035b03-58e6-07dd-021a-08123a000300")))
+                    .build()
+            ),
+            ScanSettings.Builder()
+                .setScanMode(SCAN_MODE_LOW_LATENCY)
+                .setMatchMode(MATCH_MODE_STICKY).build(), scanCallback
+        ) ?: {
+            throw IllegalStateException("Bluetooth scanner is null")
+        }
+    }
+
+    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
+    fun stopScanning() {
+        scanner?.stopScan(scanCallback)
+        _scanState.value = ScanningState.Idle
+    }
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     fun connect(address: String) {
-        val device = adapter?.getRemoteDevice(address) ?: return
+        val device = adapter.getRemoteDevice(address)
         
         gatt?.close()
         gatt = null
-        
-        Timber.d("Connecting to $address via TRANSPORT_LE")
-        gatt = device.connectGatt(context, false, gattCallback, TRANSPORT_LE)
+
+        Timber.d("Connecting to $device")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            device.connectGatt(BluetoothGattConnectionSettings.Builder()
+                .setTransport(TRANSPORT_LE)
+                .setAutoConnectEnabled(false)
+                .setAutomaticMtuEnabled(true).build(),
+                Executors.newSingleThreadExecutor(),
+                gattCallback
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            device.connectGatt(context, false, gattCallback, TRANSPORT_LE)
+        }
         _connectionState.value = ConnectionState.Connecting
     }
 
-    private fun writeCccd(gatt: BluetoothGatt, descriptor: BluetoothGattDescriptor, value: ByteArray) {
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+    private fun writeCccd(
+        gatt: BluetoothGatt,
+        descriptor: BluetoothGattDescriptor,
+        value: ByteArray
+    ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             gatt.writeDescriptor(descriptor, value)
         } else {
@@ -124,21 +194,17 @@ class BleManager @Inject constructor(
     }
 
     private val gattCallback = object : BluetoothGattCallback() {
-        @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-        override fun onConnectionStateChange(g: BluetoothGatt, status: Int, newState: Int) {
+        @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
+        override fun onConnectionStateChange(_gatt: BluetoothGatt, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Timber.d("Connected to GATT server (status: $status)")
-                _connectionState.value = ConnectionState.Connected
-                
-                g.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)
-                g.discoverServices()
+                _connectionState.value = ConnectionState.Initializing
 
-                val scanner = adapter?.bluetoothLeScanner ?: return
-                scanCallback?.let {
-                    Timber.d("Stopping scan")
-                    scanner.stopScan(it)
-                    scanCallback = null
-                }
+                _gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)
+                _gatt.discoverServices()
+                gatt = _gatt
+
+                stopScanning()
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Timber.d("Disconnected (status: $status)")
                 _connectionState.value = ConnectionState.Disconnected
@@ -148,58 +214,37 @@ class BleManager @Inject constructor(
                 opPending = false
                 rxBuffer.clear()
 
-                g.close()
+                _gatt.close()
 
-                if (g == gatt) {
+                if (_gatt == gatt) {
                     gatt = null
                 }
             }
         }
 
+        @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status != BluetoothGatt.GATT_SUCCESS) {
-                Timber.d("Service discovery failed: $status")
+                _connectionState.value = ConnectionState.Error
+                Timber.e("Service discovery failed: $status")
                 return
             }
+
             val dataChar = gatt.getService(MLDP_SERVICE_UUID)
                 ?.getCharacteristic(MLDP_DATA_UUID)
+
             if (dataChar == null) {
-                Timber.d("MLDP data characteristic not found")
-                return
+                throw IllegalStateException("MLDP data characteristic not found")
             }
-            Timber.d("Services discovered. Writing CCCD immediately (race vs GPIO4)…")
+
             gatt.setCharacteristicNotification(dataChar, true)
             enqueue {
                 val cccd = dataChar.getDescriptor(CCCD_UUID)
                 if (cccd == null) {
-                    Timber.d("CCCD descriptor not found")
+                    Timber.e("CCCD descriptor not found")
                     opComplete(); return@enqueue
                 }
                 writeCccd(gatt, cccd, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
-            }
-        }
-
-        @Deprecated("Deprecated for Android 13+")
-        @Suppress("DEPRECATION")
-        override fun onCharacteristicRead(
-            gatt: BluetoothGatt,
-            characteristic: BluetoothGattCharacteristic,
-            status: Int
-        ) {
-            with(characteristic) {
-                when (status) {
-                    BluetoothGatt.GATT_SUCCESS -> {
-                        Timber.tag("BluetoothGattCallback")
-                            .i("Read characteristic $uuid:n${value.toHexString()}")
-                    }
-                    BluetoothGatt.GATT_READ_NOT_PERMITTED -> {
-                        Timber.tag("BluetoothGattCallback").e("Read not permitted for $uuid!")
-                    }
-                    else -> {
-                        Timber.tag("BluetoothGattCallback")
-                            .e("Characteristic read failed for $uuid, error: $status")
-                    }
-                }
             }
         }
 
@@ -209,9 +254,11 @@ class BleManager @Inject constructor(
             status: Int,
         ) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Timber.d("CCCD write confirmed — ready for card reads")
+                Timber.d("CCCD write confirmed")
+                _connectionState.value = ConnectionState.Connected
             } else {
                 Timber.d("CCCD write failed: status=$status")
+                _connectionState.value = ConnectionState.Error
             }
             opComplete()
         }
@@ -222,9 +269,14 @@ class BleManager @Inject constructor(
             value: ByteArray,
         ) {
             Timber.d("Characteristic changed: ${characteristic.uuid} value: ${value.contentToString()}")
-            if (characteristic.uuid == MLDP_DATA_UUID) handleRx(value)
+            if (characteristic.uuid == MLDP_DATA_UUID) {
+                handleRx(value)
+            } else {
+                Timber.d("Unrecognized characteristic: ${characteristic.uuid} with value ${value.contentToString()}")
+            }
         }
 
+        @Deprecated("Deprecated in Android 13+")
         @Suppress("DEPRECATION")
         override fun onCharacteristicChanged(
             gatt: BluetoothGatt,
@@ -232,43 +284,12 @@ class BleManager @Inject constructor(
         ) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 Timber.d("Characteristic changed: ${characteristic.uuid} value: ${characteristic.value.contentToString()}")
-                if (characteristic.uuid == MLDP_DATA_UUID) handleRx(characteristic.value)
+                if (characteristic.uuid == MLDP_DATA_UUID) {
+                    handleRx(characteristic.value)
+                }
             } else {
-                Timber.d("2-param onCharactericChanged called but device is below Tiramisu")
+                Timber.d("2-param onCharacteristicChanged called but device is at/above Android 13")
             }
-        }
-    }
-
-    private var cccd: BluetoothGattDescriptor? = null
-    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    fun readDataTest() {
-        CoroutineScope(Dispatchers.Main).launch {
-            val serviceUuid = UUID.fromString("00035b03-58e6-07dd-021a-08123a000300")
-            val charUuid = UUID.fromString("00035b03-58e6-07dd-021a-08123a000301")
-            val cccdUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
-
-            val currentGatt = gatt
-            if (currentGatt == null) {
-                Timber.e("readDataTest: gatt is null!")
-                return@launch
-            }
-
-            val char = currentGatt.getService(serviceUuid)?.getCharacteristic(charUuid)
-            cccd = char?.getDescriptor(cccdUuid)
-
-            if (char == null || cccd == null) {
-                Timber.e("Characteristic or CCCD not found! (char: ${char != null}, cccd: ${cccd != null})")
-                return@launch
-            }
-
-            val notifyResult = currentGatt.setCharacteristicNotification(char, true)
-            Timber.d("setCharacteristicNotification result: $notifyResult")
-
-            val writeResult = currentGatt.writeDescriptor(
-                cccd!!,
-                BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-            )
-            Timber.d("writeDescriptor result: $writeResult")
         }
     }
 
@@ -288,7 +309,20 @@ class BleManager @Inject constructor(
                 return@launch
             }
 
-           Timber.d("handleRx - raw is $raw")
+            Timber.d("handleRx - raw is $raw")
+            val transmission = Mrd5Transmission.fromString(raw)
+            when (transmission) {
+                is Mrd5Transmission.BuzzCard -> {
+                    _buzzCardTaps.emit(transmission.tap)
+                }
+                is Mrd5Transmission.BatteryLevel -> {
+                    _batteryLevel.value = transmission.level
+                }
+                else -> {
+                    Timber.w("handleRx - unrecognized transmission: $transmission")
+                }
+            }
+            Timber.d("handleRx - transmission is $transmission")
         }
     }
 }

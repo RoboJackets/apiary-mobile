@@ -54,7 +54,7 @@ import org.robojackets.apiary.auth.oauth2.AuthManager
 import org.robojackets.apiary.auth.ui.AuthenticationScreen
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.model.AttendableType
-import org.robojackets.apiary.base.ui.bluetooth.BleManager
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5Manager
 import org.robojackets.apiary.base.ui.icons.ContactlessIcon
 import org.robojackets.apiary.base.ui.icons.SettingsIcon
 import org.robojackets.apiary.base.ui.icons.StorefrontIcon
@@ -130,7 +130,7 @@ class MainActivity : ComponentActivity() {
     lateinit var nfcLib: NxpNfcLib
 
     @Inject
-    lateinit var bleManager: BleManager
+    lateinit var mrd5Manager: Mrd5Manager
 
     // Based on https://stackoverflow.com/a/66838316
     @Composable

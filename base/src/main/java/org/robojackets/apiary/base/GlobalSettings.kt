@@ -16,11 +16,14 @@ class GlobalSettings @Inject constructor(
     var accessToken by stringPref("AUTH_TOKEN").withDefault("")
     var refreshToken by stringPref("REFRESH_TOKEN").withDefault("")
 
+    var mrd5DeviceMac: String? by stringPref("LAST_MRD5_DEVICE_MAC").withDefault(null)
+
     val appEnv: AppEnvironment
         get() = AppEnvironment.valueOf(appEnvName)
 
     fun clearLoginInfo() {
         accessToken = ""
         refreshToken = ""
+        mrd5DeviceMac = null
     }
 }

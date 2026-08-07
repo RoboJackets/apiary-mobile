@@ -1,6 +1,8 @@
 package org.robojackets.apiary.ui.settings.buzzCardReader
 
+import android.Manifest
 import android.bluetooth.BluetoothDevice
+import androidx.annotation.RequiresPermission
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,8 +12,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import org.robojackets.apiary.base.GlobalSettings
-import org.robojackets.apiary.base.ui.bluetooth.BleManager
 import org.robojackets.apiary.base.ui.bluetooth.ConnectionState
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5Manager
 import org.robojackets.apiary.navigation.NavigationManager
 import javax.inject.Inject
 
@@ -22,18 +24,25 @@ class BuzzCardReaderViewModel @Inject constructor(
     @Suppress("UnusedPrivateMember") private val savedStateHandle: SavedStateHandle,
     val globalSettings: GlobalSettings,
     val navigationManager: NavigationManager,
-    val bleManager: BleManager,
+    val mrd5Manager: Mrd5Manager,
 ) : ViewModel() {
-    val devices = bleManager.scanResults
+    val devices = mrd5Manager.scanResults
         .map { it.device }
         .scan(emptySet<BluetoothDevice>()) { acc, device -> acc + device }
         .map { it.toList() }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    val connection = bleManager.connectionState
+    val connection = mrd5Manager.connectionState
         .stateIn(viewModelScope, SharingStarted.Lazily, ConnectionState.Disconnected)
 
-    fun startScan() = bleManager.startScan()
-    fun connect(address: String) = bleManager.connect(address) // FIXME
-    fun readDataTest() = bleManager.readDataTest()
+    val batteryLevel = mrd5Manager.batteryLevel
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    val buzzCardTaps = mrd5Manager.buzzCardTaps
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    fun startScan() = mrd5Manager.startScanning()
+
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+    fun connect(address: String) = mrd5Manager.connect(address)
 }

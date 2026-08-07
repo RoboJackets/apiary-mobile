@@ -36,9 +36,9 @@
 //import javax.inject.Inject
 //import javax.inject.Singleton
 //
-//val MLDP_SERVICE_UUID: UUID = UUID.fromString("00035b03-58e6-07dd-021a-08123a000300")
-//val MLDP_DATA_UUID: UUID = UUID.fromString("00035b03-58e6-07dd-021a-08123a000301")
-//val CCCD_UUID: UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+//private val MLDP_SERVICE_UUID: UUID = UUID.fromString("00035b03-58e6-07dd-021a-08123a000300")
+//private val MLDP_DATA_UUID: UUID = UUID.fromString("00035b03-58e6-07dd-021a-08123a000301")
+//private val CCCD_UUID: UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
 //
 //private const val DEBOUNCE_MS = 80L
 //private const val STORED_CONNECT_TIMEOUT_MS = 10_000L
@@ -59,7 +59,7 @@
 //}
 //
 //@Singleton
-//class Mrd5Manager @Inject constructor(
+//class Mrd5ManagerRef @Inject constructor(
 //    @ApplicationContext private val context: Context,
 //    private val globalSettings: GlobalSettings,
 //) {

@@ -1,5 +1,6 @@
 package org.robojackets.apiary.ui.settings.buzzCardReader
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,30 +18,36 @@ import org.robojackets.apiary.base.ui.util.ContentPadding
 
 private const val PERMISSION_REQUEST_CODE = 1
 
+@SuppressLint("MissingPermission")
 @Composable
 fun BuzzCardReaderConnectionScreen(
     viewModel: BuzzCardReaderViewModel,
 ) {
     val devices by viewModel.devices.collectAsStateWithLifecycle()
     val state by viewModel.connection.collectAsStateWithLifecycle()
+    val batteryLevel by viewModel.batteryLevel.collectAsStateWithLifecycle()
+    val buzzCardTaps by viewModel.buzzCardTaps.collectAsStateWithLifecycle()
+
     ContentPadding {
         BluetoothPermissionsRequired {
             Column {
-                Button(onClick = {
-                    viewModel.startScan()
-                }) { Text("Start scan") }
-                Text("Connection: $state")
-                LazyColumn {
-                    items(devices) { device ->
-                        Row(Modifier.clickable { viewModel.connect(device.address) }) {
-                            Text(device.name ?: "Unknown")
+                if (state == ConnectionState.Disconnected) {
+                    Button(onClick = {
+                        viewModel.startScan()
+                    }) { Text("Start scan") }
+                    Text("Found devices:")
+                    LazyColumn {
+                        items(devices) { device ->
+                            Row(Modifier.clickable { viewModel.connect(device.address) }) {
+                                Text(device.name ?: "Unknown")
+                            }
                         }
                     }
                 }
+                Text("Connection: $state")
                 if (state == ConnectionState.Connected) {
-                    Button(onClick = { viewModel.readDataTest() }) {
-                        Text("Read data prep 1")
-                    }
+                    Text("Battery level: ${batteryLevel ?: "Unknown"}%")
+                    Text("Last BuzzCard tap: $buzzCardTaps")
                 }
             }
         }
