@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.robojackets.apiary.base.ui.bluetooth.ConnectionState
 import org.robojackets.apiary.base.ui.permissions.BluetoothPermissionsRequired
 import org.robojackets.apiary.base.ui.util.ContentPadding
 
@@ -34,6 +35,11 @@ fun BuzzCardReaderConnectionScreen(
                         Row(Modifier.clickable { viewModel.connect(device.address) }) {
                             Text(device.name ?: "Unknown")
                         }
+                    }
+                }
+                if (state == ConnectionState.Connected) {
+                    Button(onClick = { viewModel.readDataTest() }) {
+                        Text("Read data prep 1")
                     }
                 }
             }

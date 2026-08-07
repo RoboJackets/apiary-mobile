@@ -35,4 +35,5 @@ class BuzzCardReaderViewModel @Inject constructor(
 
     fun startScan() = bleManager.startScan()
     fun connect(address: String) = bleManager.connect(address) // FIXME
+    fun readDataTest() = bleManager.readDataTest()
 }
