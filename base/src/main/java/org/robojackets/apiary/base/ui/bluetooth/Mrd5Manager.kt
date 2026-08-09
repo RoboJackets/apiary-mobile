@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.robojackets.apiary.base.model.Device
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
 import timber.log.Timber
 import java.util.ArrayDeque
@@ -39,6 +40,7 @@ import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 enum class ConnectionState {
     Disconnected,
@@ -58,6 +60,13 @@ enum class ScanningState {
 private val MLDP_SERVICE_UUID: UUID = UUID.fromString("00035b03-58e6-07dd-021a-08123a000300")
 private val MLDP_DATA_UUID: UUID = UUID.fromString("00035b03-58e6-07dd-021a-08123a000301")
 private val CCCD_UUID: UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+private val DEVICE_INFO_SERVICE_UUID = UUID.fromString("0000180a-0000-1000-8000-00805f9b34fb")
+private val MODEL_NUMBER_CHAR_UUID = UUID.fromString("00002a24-0000-1000-8000-00805f9b34fb")
+private val SERIAL_NUMBER_CHAR_UUID = UUID.fromString("00002a25-0000-1000-8000-00805f9b34fb")
+private val FIRMWARE_REVISION_CHAR_UUID = UUID.fromString("00002a26-0000-1000-8000-00805f9b34fb")
+private val HARDWARE_REVISION_CHAR_UUID = UUID.fromString("00002a27-0000-1000-8000-00805f9b34fb")
+private val SOFTWARE_REVISION_CHAR_UUID = UUID.fromString("00002a28-0000-1000-8000-00805f9b34fb")
+private val MANUFACTURER_CHAR_UUID = UUID.fromString("00002a29-0000-1000-8000-00805f9b34fb")
 
 // Based on https://medium.com/@YodgorbekKomilo/designing-a-robust-ble-system-in-android-with-jetpack-compose-a7941bec8c66
 // and https://punchthrough.com/android-ble-guide/
@@ -79,6 +88,27 @@ class Mrd5Manager @Inject constructor(
     private val _batteryLevel = MutableStateFlow<Int?>(null)
     val batteryLevel = _batteryLevel.asStateFlow()
 
+    private val _deviceModel = MutableStateFlow<String?>(null)
+    val deviceModel = _deviceModel.asStateFlow()
+
+    private val _deviceSerialNumber = MutableStateFlow<String?>(null)
+    val deviceSerialNumber = _deviceSerialNumber.asStateFlow()
+
+    private val _deviceFirmwareVersion = MutableStateFlow<String?>(null)
+    val deviceFirmwareVersion = _deviceFirmwareVersion.asStateFlow()
+
+    private val _deviceHardwareVersion = MutableStateFlow<String?>(null)
+    val deviceHardwareVersion = _deviceHardwareVersion.asStateFlow()
+
+    private val _deviceSoftwareVersion = MutableStateFlow<String?>(null)
+    val deviceSoftwareVersion = _deviceSoftwareVersion.asStateFlow()
+
+    private val _deviceManufacturer = MutableStateFlow<String?>(null)
+    val deviceManufacturer = _deviceManufacturer.asStateFlow()
+
+    private val _connectedDevice = MutableSharedFlow<Device?>()
+    val connectedDevice = _connectedDevice.asSharedFlow()
+
     private val _buzzCardTaps = MutableSharedFlow<BuzzCardTap>()
     val buzzCardTaps = _buzzCardTaps.asSharedFlow()
 
@@ -92,6 +122,15 @@ class Mrd5Manager @Inject constructor(
     private var opPending = false
 
     private var gatt: BluetoothGatt? = null
+
+    private val deviceInfoUUIDs = listOf(
+        MODEL_NUMBER_CHAR_UUID,
+        SERIAL_NUMBER_CHAR_UUID,
+        FIRMWARE_REVISION_CHAR_UUID,
+        HARDWARE_REVISION_CHAR_UUID,
+        SOFTWARE_REVISION_CHAR_UUID,
+        MANUFACTURER_CHAR_UUID,
+    )
 
     private fun enqueue(op: () -> Unit) {
         opQueue.add(op)
@@ -145,6 +184,51 @@ class Mrd5Manager @Inject constructor(
                 .setMatchMode(MATCH_MODE_STICKY).build(), scanCallback
         ) ?: {
             throw IllegalStateException("Bluetooth scanner is null")
+        }
+    }
+
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+    fun getDeviceInfo() {
+        if (gatt == null) {
+            Timber.e("Cannot get device info - GATT is null")
+            _connectionState.value = ConnectionState.Error
+            return
+        }
+
+        deviceInfoUUIDs.forEach { charUUID ->
+            enqueue {
+                gatt?.getService(DEVICE_INFO_SERVICE_UUID)?.getCharacteristic(charUUID)?.let {
+                    Timber.d("Reading characteristic $charUUID")
+                    gatt?.readCharacteristic(it)
+                }
+            }
+        }
+
+    }
+
+    fun storeDevice() {
+        if (_deviceModel.value != null &&
+            _deviceSerialNumber.value != null &&
+            _deviceFirmwareVersion.value != null &&
+            _deviceHardwareVersion.value != null &&
+            _deviceSoftwareVersion.value != null &&
+            _batteryLevel.value != null &&
+            _deviceManufacturer.value != null
+            ) {
+            managerScope.launch {
+                _connectedDevice.emit(
+                    Device(
+                        model = _deviceModel.value!!,
+                        serialNumber = _deviceSerialNumber.value!!.toInt(),
+                        firmwareVersion = _deviceFirmwareVersion.value!!,
+                        hardwareVersion = _deviceHardwareVersion.value!!,
+                        softwareVersion = _deviceSoftwareVersion.value!!,
+                        batteryPercentage = _batteryLevel.value!!,
+                        manufacturer = _deviceManufacturer.value!!,
+                    )
+                )
+                _connectionState.value = ConnectionState.Connected
+            }
         }
     }
 
@@ -237,6 +321,15 @@ class Mrd5Manager @Inject constructor(
                 throw IllegalStateException("MLDP data characteristic not found")
             }
 
+            gatt.services.forEach { service ->
+                val characteristicsTable = service.characteristics.joinToString(
+                    separator = "\n|--",
+                    prefix = "|--"
+                ) { it.uuid.toString() }
+                Timber.tag("printGattTable")
+                    .d("\nService ${service.uuid}\nCharacteristics:\n$characteristicsTable")
+            }
+
             gatt.setCharacteristicNotification(dataChar, true)
             enqueue {
                 val cccd = dataChar.getDescriptor(CCCD_UUID)
@@ -248,17 +341,63 @@ class Mrd5Manager @Inject constructor(
             }
         }
 
+        @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
         override fun onDescriptorWrite(
             gatt: BluetoothGatt,
             descriptor: BluetoothGattDescriptor,
             status: Int,
         ) {
+            opComplete()
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Timber.d("CCCD write confirmed")
-                _connectionState.value = ConnectionState.Connected
+                Timber.d("Getting device info")
+                managerScope.launch {
+                    var attempts = 0
+                    val maxAttempts = 10
+                    while (_batteryLevel.value == null && attempts++ < maxAttempts) {
+                        Timber.d("Wait for battery level - attempt $attempts/$maxAttempts")
+                        delay(1.seconds)
+                    }
+                    getDeviceInfo()
+
+                }
+
             } else {
                 Timber.d("CCCD write failed: status=$status")
                 _connectionState.value = ConnectionState.Error
+            }
+
+        }
+
+        // FIXME: Implement the other version of this
+        override fun onCharacteristicRead(
+            gatt: BluetoothGatt,
+            characteristic: BluetoothGattCharacteristic,
+            value: ByteArray,
+            status: Int
+        ) {
+            val uuid = characteristic.uuid
+            when (status) {
+                BluetoothGatt.GATT_SUCCESS -> {
+                    Timber.tag("BluetoothGattCallback")
+                        .i("Read characteristic $uuid:n${value.toHexString()}")
+                    when(uuid) {
+                        MODEL_NUMBER_CHAR_UUID -> _deviceModel.value = String(value, Charsets.US_ASCII)
+                        SERIAL_NUMBER_CHAR_UUID -> _deviceSerialNumber.value = String(value, Charsets.US_ASCII)
+                        FIRMWARE_REVISION_CHAR_UUID -> _deviceFirmwareVersion.value = String(value, Charsets.US_ASCII)
+                        HARDWARE_REVISION_CHAR_UUID -> _deviceHardwareVersion.value = String(value, Charsets.US_ASCII)
+                        SOFTWARE_REVISION_CHAR_UUID -> _deviceSoftwareVersion.value = String(value, Charsets.US_ASCII)
+                        MANUFACTURER_CHAR_UUID -> _deviceManufacturer.value = String(value, Charsets.US_ASCII)
+                    }
+                    storeDevice()
+                }
+                BluetoothGatt.GATT_READ_NOT_PERMITTED -> {
+                    Timber.tag("BluetoothGattCallback").e("Read not permitted for $uuid!")
+                }
+                else -> {
+                    Timber.tag("BluetoothGattCallback")
+                        .e("Characteristic read failed for $uuid, error: $status")
+                }
             }
             opComplete()
         }

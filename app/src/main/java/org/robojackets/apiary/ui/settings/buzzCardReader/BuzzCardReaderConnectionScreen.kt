@@ -16,8 +16,6 @@ import org.robojackets.apiary.base.ui.bluetooth.ConnectionState
 import org.robojackets.apiary.base.ui.permissions.BluetoothPermissionsRequired
 import org.robojackets.apiary.base.ui.util.ContentPadding
 
-private const val PERMISSION_REQUEST_CODE = 1
-
 @SuppressLint("MissingPermission")
 @Composable
 fun BuzzCardReaderConnectionScreen(
@@ -27,6 +25,11 @@ fun BuzzCardReaderConnectionScreen(
     val state by viewModel.connection.collectAsStateWithLifecycle()
     val batteryLevel by viewModel.batteryLevel.collectAsStateWithLifecycle()
     val buzzCardTaps by viewModel.buzzCardTaps.collectAsStateWithLifecycle()
+    val serialNumber by viewModel.mrd5Manager.deviceSerialNumber.collectAsStateWithLifecycle()
+    val firmwareVersion by viewModel.mrd5Manager.deviceFirmwareVersion.collectAsStateWithLifecycle()
+    val hardwareVersion by viewModel.mrd5Manager.deviceHardwareVersion.collectAsStateWithLifecycle()
+    val softwareVersion by viewModel.mrd5Manager.deviceSoftwareVersion.collectAsStateWithLifecycle()
+    val connectedDevice by viewModel.mrd5Manager.connectedDevice.collectAsStateWithLifecycle(initialValue = null)
 
     ContentPadding {
         BluetoothPermissionsRequired {
@@ -48,6 +51,11 @@ fun BuzzCardReaderConnectionScreen(
                 if (state == ConnectionState.Connected) {
                     Text("Battery level: ${batteryLevel ?: "Unknown"}%")
                     Text("Last BuzzCard tap: $buzzCardTaps")
+                    Text("Serial number: $serialNumber")
+                    Text("Firmware version: $firmwareVersion")
+                    Text("Hardware version: $hardwareVersion")
+                    Text("Software version: $softwareVersion")
+                    Text("Connected device: $connectedDevice")
                 }
             }
         }

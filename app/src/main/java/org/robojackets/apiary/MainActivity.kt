@@ -321,6 +321,7 @@ class MainActivity : ComponentActivity() {
                     AttendanceScreen(
                         hiltViewModel(),
                         nfcLib,
+                        mrd5Manager,
                         AttendableType.valueOf(attendableType as String),
                         attendableId as Int
                     )
@@ -346,6 +347,7 @@ class MainActivity : ComponentActivity() {
                     MerchandiseDistributionScreen(
                         hiltViewModel(),
                         nfcLib,
+                        mrd5Manager,
                         merchandiseItemId as Int
                     )
                 }

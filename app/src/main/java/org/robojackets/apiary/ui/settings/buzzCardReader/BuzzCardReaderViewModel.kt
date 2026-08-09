@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.robojackets.apiary.base.GlobalSettings
+import org.robojackets.apiary.base.repository.DeviceRepository
 import org.robojackets.apiary.base.ui.bluetooth.ConnectionState
 import org.robojackets.apiary.base.ui.bluetooth.Mrd5Manager
 import org.robojackets.apiary.navigation.NavigationManager
@@ -25,6 +27,7 @@ class BuzzCardReaderViewModel @Inject constructor(
     val globalSettings: GlobalSettings,
     val navigationManager: NavigationManager,
     val mrd5Manager: Mrd5Manager,
+    val deviceRepository: DeviceRepository,
 ) : ViewModel() {
     val devices = mrd5Manager.scanResults
         .map { it.device }
@@ -40,6 +43,16 @@ class BuzzCardReaderViewModel @Inject constructor(
 
     val buzzCardTaps = mrd5Manager.buzzCardTaps
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    init {
+        viewModelScope.launch {
+            mrd5Manager.connectedDevice.collect {
+                it?.let {
+                    deviceRepository.inventoryDevice(it)
+                }
+            }
+        }
+    }
 
     fun startScan() = mrd5Manager.startScanning()
 

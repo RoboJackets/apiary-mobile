@@ -11,6 +11,34 @@ import androidx.compose.ui.res.painterResource
 import org.robojackets.apiary.base.R
 
 @Composable
+fun AccountCircleIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String = "account",
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_account_circle_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = contentDescription,
+    )
+}
+
+@Composable
+fun ApparelIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String = "apparel",
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_apparel_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = contentDescription,
+    )
+}
+
+@Composable
 fun BluetoothSettingsIcon(
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.onSurface,
@@ -21,35 +49,6 @@ fun BluetoothSettingsIcon(
         contentDescription = contentDescription,
         modifier = modifier,
         tint = tint,
-    )
-}
-
-
-@Composable
-fun ContactlessIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String = "NFC",
-) {
-    Icon(
-        painter = painterResource(id = R.drawable.ic_outline_contactless_24dp),
-        contentDescription = contentDescription,
-        modifier = modifier,
-        tint = tint,
-    )
-}
-
-@Composable
-fun WarningIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String = "warning",
-) {
-    Icon(
-        painter = painterResource(id = R.drawable.ic_baseline_warning_24dp),
-        tint = tint,
-        modifier = modifier,
-        contentDescription = contentDescription,
     )
 }
 
@@ -68,6 +67,35 @@ fun CheckCircleIcon(
 }
 
 @Composable
+fun ContactlessIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String = "NFC",
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_contactless_24dp),
+        contentDescription = contentDescription,
+        modifier = modifier,
+        tint = tint,
+    )
+}
+
+@Composable
+fun DeployedCodeIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String = "deployed code",
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_deployed_code_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = contentDescription,
+    )
+}
+
+
+@Composable
 fun ErrorIcon(
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.onSurface,
@@ -75,48 +103,6 @@ fun ErrorIcon(
 ) {
     Icon(
         painter = painterResource(id = R.drawable.ic_baseline_error_outline_24dp),
-        tint = tint,
-        modifier = modifier,
-        contentDescription = contentDescription,
-    )
-}
-
-@Composable
-fun CreditCardIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String = "credit card",
-) {
-    Icon(
-        painter = painterResource(id = R.drawable.ic_baseline_credit_card_24dp),
-        tint = tint,
-        modifier = modifier,
-        contentDescription = contentDescription,
-    )
-}
-
-@Composable
-fun PendingIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String = "pending",
-) {
-    Icon(
-        painter = painterResource(id = R.drawable.ic_outline_pending_24dp),
-        tint = tint,
-        modifier = modifier,
-        contentDescription = contentDescription,
-    )
-}
-
-@Composable
-fun GroupsIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String = "groups",
-) {
-    Icon(
-        painter = painterResource(id = R.drawable.ic_outline_groups_24dp),
         tint = tint,
         modifier = modifier,
         contentDescription = contentDescription,
@@ -138,13 +124,13 @@ fun EventIcon(
 }
 
 @Composable
-fun UpdateIcon(
+fun FeedbackIcon(
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String = "update",
+    contentDescription: String = "feedback",
 ) {
     Icon(
-        painter = painterResource(id = R.drawable.ic_baseline_update_24dp),
+        painter = painterResource(id = R.drawable.ic_outline_feedback_24dp),
         tint = tint,
         modifier = modifier,
         contentDescription = contentDescription,
@@ -152,13 +138,111 @@ fun UpdateIcon(
 }
 
 @Composable
-fun ApparelIcon(
+fun GroupsIcon(
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String = "apparel",
+    contentDescription: String = "groups",
 ) {
     Icon(
-        painter = painterResource(id = R.drawable.ic_outline_apparel_24dp),
+        painter = painterResource(id = R.drawable.ic_outline_groups_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = contentDescription,
+    )
+}
+
+@Composable
+fun HomeIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String = "home",
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_home_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = contentDescription,
+    )
+}
+
+@Composable
+fun IdCardIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String? = null,
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_id_card_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = contentDescription,
+    )
+}
+
+@Composable
+fun InfoIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String? = null,
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_info_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = contentDescription,
+    )
+}
+
+@Composable
+fun LogoutIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String = "logout",
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_logout_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = contentDescription,
+    )
+}
+
+@Composable
+fun PendingIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String = "pending",
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_pending_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = contentDescription,
+    )
+}
+
+@Composable
+fun PrivacyTipIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String = "privacy tip",
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_privacy_tip_24dp),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = contentDescription,
+    )
+}
+
+@Composable
+fun SettingsIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String? = null,
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_settings_24dp),
         tint = tint,
         modifier = modifier,
         contentDescription = contentDescription,
@@ -194,13 +278,13 @@ fun TaskAltIcon(
 }
 
 @Composable
-fun AccountCircleIcon(
+fun UpdateIcon(
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String = "account",
+    contentDescription: String = "update",
 ) {
     Icon(
-        painter = painterResource(id = R.drawable.ic_outline_account_circle_24dp),
+        painter = painterResource(id = R.drawable.ic_baseline_update_24dp),
         tint = tint,
         modifier = modifier,
         contentDescription = contentDescription,
@@ -222,97 +306,13 @@ fun VerifiedUserIcon(
 }
 
 @Composable
-fun LogoutIcon(
+fun WarningIcon(
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String = "logout",
+    contentDescription: String = "warning",
 ) {
     Icon(
-        painter = painterResource(id = R.drawable.ic_outline_logout_24dp),
-        tint = tint,
-        modifier = modifier,
-        contentDescription = contentDescription,
-    )
-}
-
-@Composable
-fun HomeIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String = "home",
-) {
-    Icon(
-        painter = painterResource(id = R.drawable.ic_outline_home_24dp),
-        tint = tint,
-        modifier = modifier,
-        contentDescription = contentDescription,
-    )
-}
-
-@Composable
-fun DeployedCodeIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String = "deployed code",
-) {
-    Icon(
-        painter = painterResource(id = R.drawable.ic_outline_deployed_code_24dp),
-        tint = tint,
-        modifier = modifier,
-        contentDescription = contentDescription,
-    )
-}
-
-@Composable
-fun FeedbackIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String = "feedback",
-) {
-    Icon(
-        painter = painterResource(id = R.drawable.ic_outline_feedback_24dp),
-        tint = tint,
-        modifier = modifier,
-        contentDescription = contentDescription,
-    )
-}
-
-@Composable
-fun PrivacyTipIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String = "privacy tip",
-) {
-    Icon(
-        painter = painterResource(id = R.drawable.ic_outline_privacy_tip_24dp),
-        tint = tint,
-        modifier = modifier,
-        contentDescription = contentDescription,
-    )
-}
-
-@Composable
-fun InfoIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String? = null,
-) {
-    Icon(
-        painter = painterResource(id = R.drawable.ic_outline_info_24dp),
-        tint = tint,
-        modifier = modifier,
-        contentDescription = contentDescription,
-    )
-}
-
-@Composable
-fun SettingsIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface,
-    contentDescription: String? = null,
-) {
-    Icon(
-        painter = painterResource(id = R.drawable.ic_outline_settings_24dp),
+        painter = painterResource(id = R.drawable.ic_baseline_warning_24dp),
         tint = tint,
         modifier = modifier,
         contentDescription = contentDescription,
