@@ -30,6 +30,8 @@ dependencies {
 
     implementation(MaterialDependencies.material_android)
 
+    implementation(AndroidToolDependencies.kable)
+    implementation(AndroidToolDependencies.kotlinx_datetime) // the in-app update library we use doesn't support kotlinx.datetime post-deprecation of kotlinx.datetime.Instance in favor of kotlin.time.Instant, so explicitly adding the kotlinx-datetime compatibility release here
     implementation(NetworkDependencies.kotlinx_serialization_json)
     implementation(NetworkDependencies.moshi)
     ksp(NetworkDependencies.moshi_kotlin_codegen)

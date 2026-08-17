@@ -1,15 +1,13 @@
 package org.robojackets.apiary.ui.settings.buzzCardReader
 
 import android.Manifest
-import android.bluetooth.BluetoothDevice
 import androidx.annotation.RequiresPermission
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juul.kable.Advertisement
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.robojackets.apiary.base.GlobalSettings
@@ -20,7 +18,6 @@ import org.robojackets.apiary.navigation.NavigationManager
 import javax.inject.Inject
 
 
-// BLE logic based on https://medium.com/@YodgorbekKomilo/designing-a-robust-ble-system-in-android-with-jetpack-compose-a7941bec8c66
 @HiltViewModel
 class BuzzCardReaderViewModel @Inject constructor(
     @Suppress("UnusedPrivateMember") private val savedStateHandle: SavedStateHandle,
@@ -30,9 +27,6 @@ class BuzzCardReaderViewModel @Inject constructor(
     val deviceRepository: DeviceRepository,
 ) : ViewModel() {
     val devices = mrd5Manager.scanResults
-        .map { it.device }
-        .scan(emptySet<BluetoothDevice>()) { acc, device -> acc + device }
-        .map { it.toList() }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     val connection = mrd5Manager.connectionState
@@ -54,8 +48,12 @@ class BuzzCardReaderViewModel @Inject constructor(
         }
     }
 
-    fun startScan() = mrd5Manager.startScanning()
+    fun startScan() = mrd5Manager.startScanning(viewModelScope)
 
-    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    fun connect(address: String) = mrd5Manager.connect(address)
+    fun resetMrd5Error() = mrd5Manager.resetError()
+
+    @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
+    fun connect(advertisement: Advertisement?) = viewModelScope.launch {
+        mrd5Manager.connect(advertisement)
+    }
 }
