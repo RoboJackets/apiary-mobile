@@ -33,30 +33,89 @@ private fun parseBuzzCardTap(str: String): BuzzCardTap? {
     return null
 }
 
+private fun parseDeviceInfo(str: String): Mrd5Transmission.DeviceInfo? {
+    val regex = Regex("""Blackboard MRD5\r\n\s*SN: (\d+)\r\n\s*Boot: (.+)\r\n\s*Application: (.+)""")
+    regex.matchEntire(str)?.let { matchResult ->
+        if (matchResult.groups.size == 4) {
+            val serialNumber = matchResult.groups[1]?.value
+            val bootloaderVersion = matchResult.groups[2]?.value
+            val applicationVersion = matchResult.groups[3]?.value
+
+            if (serialNumber != null && bootloaderVersion != null && applicationVersion != null) {
+                return Mrd5Transmission.DeviceInfo(
+                    serialNumber = serialNumber,
+                    bootloaderVersion = bootloaderVersion,
+                    applicationVersion = applicationVersion,
+                )
+            }
+        }
+    }
+    return null
+}
+
+private fun parseGenericResponse(str: String): Mrd5Transmission.GenericResponse? {
+    if (str == "LED on") {
+        return Mrd5Transmission.GenericResponse(str)
+    }
+
+    val regex = Regex("Tone = .")
+    regex.matchEntire(str)?.let { matchResult ->
+        return Mrd5Transmission.GenericResponse(str)
+    }
+    return null
+}
+
 sealed interface Mrd5Transmission {
     data class BuzzCard(val tap: BuzzCardTap) : Mrd5Transmission
     data class BatteryLevel(val level: Int): Mrd5Transmission
 
-    companion object {
-        fun fromString(str: String): Mrd5Transmission? {
-            try {
-                val buzzCardTap = parseBuzzCardTap(str)
-                if (buzzCardTap != null) {
-                    return BuzzCard(buzzCardTap)
-                }
+    data class GenericResponse(val str: String) : Mrd5Transmission
+    data class DeviceInfo(
+        val serialNumber: String,
+        val bootloaderVersion: String,
+        val applicationVersion: String,
+    ) : Mrd5Transmission
 
-                val batteryLevel = parseBatteryLevel(str)
-                if (batteryLevel != null) {
-                    return BatteryLevel(batteryLevel)
-                }
-            } catch (e: NumberFormatException) {
-                Timber.e(e, "Error processing MRD5 transmission")
-            } catch (e: IndexOutOfBoundsException) {
-                Timber.e(e, "Error processing MRD5 transmission")
+    data class Unknown(val str: String) : Mrd5Transmission
+
+    companion object {
+        fun fromString(str: String): List<Mrd5Transmission> {
+            val deviceInfo = parseDeviceInfo(str)
+            if (deviceInfo != null) {
+                return listOf(deviceInfo)
             }
 
-            Timber.w("Unrecognized MRD5 transmission: $str")
-            return null
+            val chunks = str.split("\r\n")
+            val result = mutableListOf<Mrd5Transmission>()
+            for (chunk in chunks) {
+                try {
+                    val buzzCardTap = parseBuzzCardTap(chunk)
+                    if (buzzCardTap != null) {
+                        result.add(BuzzCard(buzzCardTap))
+                        continue
+                    }
+
+                    val batteryLevel = parseBatteryLevel(chunk)
+                    if (batteryLevel != null) {
+                        result.add(BatteryLevel(batteryLevel))
+                        continue
+                    }
+
+                    val genericResponse = parseGenericResponse(chunk)
+                    if (genericResponse != null) {
+                        result.add(genericResponse)
+                        continue
+                    }
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Error processing MRD5 transmission")
+                } catch (e: IndexOutOfBoundsException) {
+                    Timber.e(e, "Error processing MRD5 transmission")
+                }
+
+                Timber.w("Unrecognized MRD5 transmission: $str")
+                result.add(Unknown(str))
+            }
+            return result
         }
     }
 }

@@ -22,7 +22,9 @@ import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.model.Event
 import org.robojackets.apiary.base.model.Team
 import org.robojackets.apiary.base.repository.MeetingsRepository
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5Manager
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
+import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource
 import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationManager
 import timber.log.Timber
@@ -34,7 +36,8 @@ class AttendanceViewModel @Inject constructor(
     @Suppress("UnusedPrivateMember") private val savedStateHandle: SavedStateHandle,
     val meetingsRepository: MeetingsRepository,
     val attendanceRepository: AttendanceRepository,
-    val navManager: NavigationManager
+    val navManager: NavigationManager,
+    val mrd5Manager: Mrd5Manager,
 ) : ViewModel() {
     private val _state = MutableStateFlow(AttendanceState())
 
@@ -110,6 +113,9 @@ class AttendanceViewModel @Inject constructor(
                     tap = tap,
                     name = this.data.attendance.attendee?.name ?: "Non-member"
                 )
+                if (tap.source is BuzzCardTapSource.Mrd5) {
+                    mrd5Manager.doSuccessChirp()
+                }
                 screenState.value = ReadyForTap
             }
             .onError {

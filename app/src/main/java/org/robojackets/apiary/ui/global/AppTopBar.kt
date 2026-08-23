@@ -26,7 +26,7 @@ fun AppTopBar(isProdEnv: Boolean) {
                 containerColor = MaterialTheme.colorScheme.primary,
                 scrolledContainerColor = Color.Unspecified,
                 navigationIconContentColor = Color.Unspecified,
-                titleContentColor = Color.Unspecified,
+                titleContentColor = MaterialTheme.colorScheme.onPrimary,
                 actionIconContentColor = Color.Unspecified,
                 subtitleContentColor = Color.Unspecified
             ),

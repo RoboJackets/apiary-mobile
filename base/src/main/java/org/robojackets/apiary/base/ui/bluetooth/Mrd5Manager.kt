@@ -1,7 +1,6 @@
 package org.robojackets.apiary.base.ui.bluetooth
 
 import android.Manifest
-import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.le.ScanSettings
 import android.bluetooth.le.ScanSettings.MATCH_MODE_STICKY
 import android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY
@@ -29,6 +28,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.model.Device
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
 import timber.log.Timber
@@ -42,6 +42,7 @@ enum class ConnectionState {
     Disconnected,
     Connecting,
     Initializing,
+    WaitingForPairing,
     Connected,
 }
 
@@ -52,7 +53,6 @@ enum class ScanningState {
 
 private val MLDP_SERVICE_UUID: Uuid = Uuid.parse("00035b03-58e6-07dd-021a-08123a000300")
 private val MLDP_DATA_UUID: Uuid = Uuid.parse("00035b03-58e6-07dd-021a-08123a000301")
-private val MLDP_WRITE_UUID: Uuid = Uuid.parse("00035b03-58e6-07dd-021a-08123a0003ff")
 private val DEVICE_INFO_SERVICE_UUID = Uuid.parse("0000180a-0000-1000-8000-00805f9b34fb")
 private val MODEL_NUMBER_CHAR_UUID = Uuid.parse("00002a24-0000-1000-8000-00805f9b34fb")
 private val SERIAL_NUMBER_CHAR_UUID = Uuid.parse("00002a25-0000-1000-8000-00805f9b34fb")
@@ -66,7 +66,12 @@ private val MANUFACTURER_CHAR_UUID = Uuid.parse("00002a29-0000-1000-8000-00805f9
 @Singleton
 class Mrd5Manager @Inject constructor(
     @ApplicationContext private val context: Context,
+    val globalSettings: GlobalSettings,
 ) {
+    init {
+        Timber.d("Mrd5Manager was initialized!")
+    }
+
     private var scanner : Job? = null
 
     private val _scanResults = MutableStateFlow<List<PlatformAdvertisement>>(emptyList())
@@ -99,6 +104,12 @@ class Mrd5Manager @Inject constructor(
     private val _connectedDevice = MutableSharedFlow<Device?>()
     val connectedDevice = _connectedDevice.asSharedFlow()
 
+    private val _bootloaderVersion = MutableStateFlow<String?>(null)
+    val bootloaderVersion = _bootloaderVersion.asStateFlow()
+
+    private val _applicationVersion = MutableStateFlow<String?>(null)
+    val applicationVersion = _applicationVersion.asStateFlow()
+
     private val _buzzCardTaps = MutableSharedFlow<BuzzCardTap>()
     val buzzCardTaps = _buzzCardTaps.asSharedFlow()
 
@@ -110,6 +121,7 @@ class Mrd5Manager @Inject constructor(
 
     private lateinit var peripheral: Peripheral
     private var connectionScope : CoroutineScope? = null
+    private val managerScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private val deviceInfoUUIDs = listOf(
         MODEL_NUMBER_CHAR_UUID,
@@ -123,6 +135,34 @@ class Mrd5Manager @Inject constructor(
     fun resetError() {
         _error.value = null
     }
+
+//    private val reattemptConnectionMutex = Mutex()
+//
+//    @OptIn(FlowPreview::class)
+//    @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
+//    fun attemptConnectionToSavedDevice() {
+//        managerScope.launch {
+//            reattemptConnectionMutex.withLock {
+//                if (globalSettings.mrd5DeviceMac == null) {
+//                    Timber.d("No saved device to connect to")
+//                    return@launch
+//                }
+//
+//                if (_connectionState.value != ConnectionState.Disconnected) {
+//                    Timber.d("Connection state is not disconnected, ignoring")
+//                    return@launch
+//                }
+//                stopScanning()
+//                startScanning(managerScope)
+//                scanResults.collect { result ->
+//                    result.find { it.address == globalSettings.mrd5DeviceMac }?.let {
+//                        Timber.d("Saved device MAC located")
+//                        connect(it)
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     @OptIn(ObsoleteKableApi::class)
     fun startScanning(scope: CoroutineScope) {
@@ -149,6 +189,7 @@ class Mrd5Manager @Inject constructor(
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     fun stopScanning() {
+        Timber.d("Stop scanning called")
         scanner?.cancel("stopScanning called")
         _scanState.value = ScanningState.Idle
         _scanResults.value = emptyList()
@@ -156,7 +197,6 @@ class Mrd5Manager @Inject constructor(
 
     private suspend fun initialize() {
         _connectionState.value = ConnectionState.Initializing
-
         deviceInfoUUIDs.forEach {
             val value = peripheral.read(characteristic = characteristicOf(
                 service = DEVICE_INFO_SERVICE_UUID,
@@ -181,7 +221,9 @@ class Mrd5Manager @Inject constructor(
             _deviceHardwareVersion.value != null &&
             _deviceSoftwareVersion.value != null &&
             _batteryLevel.value != null &&
-            _deviceManufacturer.value != null
+            _deviceManufacturer.value != null &&
+            _bootloaderVersion.value != null &&
+            _applicationVersion.value != null
         ) {
             _connectedDevice.emit(
                 Device(
@@ -190,6 +232,8 @@ class Mrd5Manager @Inject constructor(
                     firmwareVersion = _deviceFirmwareVersion.value!!,
                     hardwareVersion = _deviceHardwareVersion.value!!,
                     softwareVersion = _deviceSoftwareVersion.value!!,
+                    bootloaderVersion = _bootloaderVersion.value!!,
+                    applicationVersion = _applicationVersion.value!!,
                     batteryPercentage = _batteryLevel.value!!,
                     manufacturer = _deviceManufacturer.value!!,
                 )
@@ -209,6 +253,7 @@ class Mrd5Manager @Inject constructor(
         stopScanning()
 
         advertisement?.let {
+            globalSettings.mrd5DeviceMac = it.identifier // FIXME: this is in the wrong spot probably
             peripheral = Peripheral(it) {
                 logging {
                     level = Logging.Level.Data
@@ -222,12 +267,30 @@ class Mrd5Manager @Inject constructor(
             }
             connectionScope = peripheral.connect()
             connectionScope?.launch {
+
                 var attempts = 0
                 val maxAttempts = 15
                 while (_batteryLevel.value == null && ++attempts <= maxAttempts) {
                     Timber.d("Wait for battery level - attempt $attempts/$maxAttempts")
                     delay(1.seconds)
                 }
+                if (attempts <= maxAttempts) {
+                    Timber.d("Got battery level")
+
+                } else {
+                    Timber.w("Timed out getting battery status")
+                    _error.value = "Reader connection failed"
+                    peripheral.disconnect()
+                }
+                _connectionState.value = ConnectionState.WaitingForPairing
+
+                attempts = 0
+                while ((_applicationVersion.value == null || _bootloaderVersion.value == null) && ++attempts <= maxAttempts) {
+                    sendCommands(listOf(Mrd5Command.Version))
+                    Timber.d("Wait for version - attempt $attempts/$maxAttempts")
+                    delay(1.seconds)
+                }
+
                 if (attempts <= maxAttempts) {
                     _connectionState.value = ConnectionState.Connected
                     storeDevice()
@@ -261,68 +324,76 @@ class Mrd5Manager @Inject constructor(
         }
     }
 
-    fun getVersion() {
-        connectionScope!!.launch {
-            val ver_response = peripheral.write(characteristicOf(
+    fun sendCommands(commands: List<Mrd5Command>) {
+        connectionScope?.launch {
+            val cmd_response = peripheral.write(characteristicOf(
                 service = MLDP_SERVICE_UUID,
-                characteristic = MLDP_WRITE_UUID,
-            ), data = "VER:\n".toByteArray(), WriteType.WithoutResponse)
+                characteristic = MLDP_DATA_UUID,
+            ), data = Mrd5Command.combined(commands).toByteArray(), WriteType.WithResponse)
+            Timber.d("Command response: $cmd_response")
         }
     }
 
+    fun doSuccessChirp() {
+        sendCommands(
+            listOf(
+                Mrd5Command.Tone(Mrd5Tone.Ascending),
+                Mrd5Command.LED("007", 200.milliseconds)
+            )
+        )
+    }
+
+    fun doErrorChirp() = sendCommands(
+        listOf(
+            Mrd5Command.Tone(Mrd5Tone.Descending),
+            Mrd5Command.LED("700", 200.milliseconds)
+        )
+    )
+
+
     private val rxBuffer = StringBuilder()
     private var debounceJob: Job? = null
-    private val managerScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
     private fun handleRx(bytes: ByteArray) {
         rxBuffer.append(String(bytes, Charsets.US_ASCII))
         Timber.d("MRD5 RX chunk (buffer: '${rxBuffer.toString().trim()}')")
+
         debounceJob?.cancel()
         debounceJob = managerScope.launch {
             delay(80L.milliseconds)
             val raw = rxBuffer.toString().trim()
             rxBuffer.clear()
             if (raw.isEmpty()) {
-                Timber.d("handleRx - raw is empty")
                 return@launch
             }
 
-            Timber.d("handleRx - raw is $raw")
-            val transmission = Mrd5Transmission.fromString(raw)
-            when (transmission) {
-                is Mrd5Transmission.BuzzCard -> {
-                    _buzzCardTaps.emit(transmission.tap)
+//            Timber.d("handleRx - raw is $raw")
+            val transmissions = Mrd5Transmission.fromString(raw)
+            transmissions.forEach { transmission ->
+                when (transmission) {
+                    is Mrd5Transmission.BuzzCard -> {
+                        _buzzCardTaps.emit(transmission.tap)
+                    }
+                    is Mrd5Transmission.BatteryLevel -> {
+                        _batteryLevel.value = transmission.level
+                    }
+                    is Mrd5Transmission.DeviceInfo -> {
+                        _bootloaderVersion.value = transmission.bootloaderVersion
+                        _applicationVersion.value = transmission.applicationVersion
+                    }
+                    is Mrd5Transmission.GenericResponse -> {
+                        Timber.d("handleRx - generic response: $transmission")
+                    }
+                    is Mrd5Transmission.Unknown -> {
+                        // FIXME This is a hacky way to identify situations where the battery transmission overlaps with a  battery transmission, causing an error
+                        if (transmission.str.contains("DESFire")) {
+                            doErrorChirp()
+                        }
+                        Timber.w("handleRx - unrecognized transmission: $transmission")
+                    }
                 }
-                is Mrd5Transmission.BatteryLevel -> {
-                    _batteryLevel.value = transmission.level
-                }
-                else -> {
-                    Timber.w("handleRx - unrecognized transmission: $transmission")
-                }
+                Timber.d("handleRx - transmission is $transmission")
             }
-            Timber.d("handleRx - transmission is $transmission")
         }
     }
 }
-
-fun BluetoothGattCharacteristic.isReadable(): Boolean =
-    containsProperty(BluetoothGattCharacteristic.PROPERTY_READ)
-
-fun BluetoothGattCharacteristic.isWritable(): Boolean =
-    containsProperty(BluetoothGattCharacteristic.PROPERTY_WRITE)
-
-fun BluetoothGattCharacteristic.isWritableWithoutResponse(): Boolean =
-    containsProperty(BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)
-
-fun BluetoothGattCharacteristic.containsProperty(property: Int): Boolean {
-    return properties and property != 0
-}
-
-fun BluetoothGattCharacteristic.isIndicatable(): Boolean =
-    containsProperty(BluetoothGattCharacteristic.PROPERTY_INDICATE)
-
-fun BluetoothGattCharacteristic.isNotifiable(): Boolean =
-    containsProperty(BluetoothGattCharacteristic.PROPERTY_NOTIFY)
-
-fun ByteArray.toHexString(): String =
-    joinToString(separator = " ", prefix = "0x") { String.format("%02X", it) }
-

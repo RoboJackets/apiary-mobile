@@ -1,21 +1,36 @@
 package org.robojackets.apiary.ui.settings.buzzCardReader
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.robojackets.apiary.base.ui.bluetooth.ConnectionState
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5Command
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5Tone
 import org.robojackets.apiary.base.ui.bluetooth.ScanningState
 import org.robojackets.apiary.base.ui.error.ErrorMessageWithRetry
 import org.robojackets.apiary.base.ui.form.ItemList
-import org.robojackets.apiary.base.ui.permissions.BluetoothPermissionsRequired
+import org.robojackets.apiary.base.ui.icons.Mrd5Icon
+import org.robojackets.apiary.base.ui.permissions.BluetoothAvailableGate
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.LoadingSpinner
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @Composable
 fun ConnectingToReader() {
@@ -36,11 +51,13 @@ fun BuzzCardReaderConnectionScreen(
     val firmwareVersion by viewModel.mrd5Manager.deviceFirmwareVersion.collectAsStateWithLifecycle()
     val hardwareVersion by viewModel.mrd5Manager.deviceHardwareVersion.collectAsStateWithLifecycle()
     val softwareVersion by viewModel.mrd5Manager.deviceSoftwareVersion.collectAsStateWithLifecycle()
+    val bootloaderVersion by viewModel.mrd5Manager.bootloaderVersion.collectAsStateWithLifecycle()
+    val applicationVersion by viewModel.mrd5Manager.applicationVersion.collectAsStateWithLifecycle()
     val connectedDevice by viewModel.mrd5Manager.connectedDevice.collectAsStateWithLifecycle(initialValue = null)
     val mrd5Error by viewModel.mrd5Manager.error.collectAsStateWithLifecycle()
 
     ContentPadding {
-        BluetoothPermissionsRequired {
+        BluetoothAvailableGate {
             Column {
                 if (mrd5Error != null) {
                     ErrorMessageWithRetry(
@@ -48,7 +65,7 @@ fun BuzzCardReaderConnectionScreen(
                         onRetry = { viewModel.resetMrd5Error() },
                         prioritizeRetryButton = true
                     )
-                    return@BluetoothPermissionsRequired
+                    return@BluetoothAvailableGate
                 }
 
                 when (state) {
@@ -56,6 +73,7 @@ fun BuzzCardReaderConnectionScreen(
                         when (scanState) {
                             ScanningState.Idle -> {
                                 Button(onClick = { viewModel.startScan() }) { Text("Start scan") }
+                                Mrd5Icon(modifier = Modifier.size(342.dp))
                             }
                             ScanningState.Active -> {
                                 ItemList(
@@ -86,6 +104,10 @@ fun BuzzCardReaderConnectionScreen(
                         ConnectingToReader()
                         LoadingSpinner()
                     }
+                    ConnectionState.WaitingForPairing -> {
+                        ConnectingToReader()
+                        LoadingSpinner { Text("Press Pair & Connect in the system notification if prompted") }
+                    }
                     ConnectionState.Connected -> {
                         Text("Connection: $state")
                         Text("Battery level: ${batteryLevel ?: "Unknown"}%")
@@ -94,9 +116,47 @@ fun BuzzCardReaderConnectionScreen(
                         Text("Firmware version: $firmwareVersion")
                         Text("Hardware version: $hardwareVersion")
                         Text("Software version: $softwareVersion")
+                        Text("Bootloader version: $bootloaderVersion")
+                        Text("Application version: $applicationVersion")
                         Text("Connected device: $connectedDevice")
-                        Button(onClick = { viewModel.mrd5Manager.getVersion() }) {
+                        Button(onClick = { viewModel.mrd5Manager.sendCommands(listOf(Mrd5Command.Version)) }) {
                             Text("Get version")
+                        }
+
+                        Row(
+                            Modifier.horizontalScroll(rememberScrollState())
+                        ) {
+                            for (type in Mrd5Tone.entries) {
+                                Button(onClick = {
+                                    viewModel.mrd5Manager.sendCommands(
+                                        listOf(
+                                            Mrd5Command.Tone(type)
+                                        )
+                                    )
+                                }) {
+                                    Text("Beep ${type.name} (${type.key})")
+                                }
+                            }
+                        }
+                        var ledColor by remember { mutableStateOf("") }
+                        TextField(
+                            value = ledColor,
+                            onValueChange = { ledColor = it },
+                            label = { Text("LED color") }
+                        )
+                        var ledDuration by remember { mutableStateOf("") }
+                        TextField(
+                            value = ledDuration,
+                            onValueChange = { ledDuration = it },
+                            label = { Text("LED duration") }
+                        )
+                        Button(onClick = {
+                            viewModel.mrd5Manager.sendCommands(
+                                listOf(Mrd5Command.LED(ledColor, ledDuration.toInt().toDuration(DurationUnit.MILLISECONDS))
+                                )
+                            )
+                        } ) {
+                            Text("Set LED")
                         }
                     }
                 }

@@ -24,6 +24,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nxp.nfclib.CardType
 import com.nxp.nfclib.NxpNfcLib
 import com.nxp.nfclib.desfire.DESFireFactory
@@ -31,6 +32,9 @@ import com.nxp.nfclib.exceptions.NxpNfcLibException
 import kotlinx.coroutines.android.awaitFrame
 import org.robojackets.apiary.base.ui.ActionPrompt
 import org.robojackets.apiary.base.ui.IconWithText
+import org.robojackets.apiary.base.ui.bluetooth.ConnectionState
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5ConnectedChip
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5ConnectingChip
 import org.robojackets.apiary.base.ui.bluetooth.Mrd5Manager
 import org.robojackets.apiary.base.ui.icons.ContactlessIcon
 import org.robojackets.apiary.base.ui.icons.ErrorIcon
@@ -78,6 +82,8 @@ fun BuzzCardPrompt(
     val nfcPresenceDelayCheckMs = 50 // the minimum number of ms allowed between successive NFC
     // tag reads. Lower is better, but too low seems to cause an increase in NFC read errors when
     // tapping many BuzzCards as quickly as possible
+
+    val mrd5ConnectionState by mrd5Manager.connectionState.collectAsStateWithLifecycle()
 
     acceptMrd5Taps = true
     nfcLib.enableReaderMode(
@@ -153,7 +159,12 @@ fun BuzzCardPrompt(
         NfcAdapter.FLAG_READER_NFC_A // NFC adapter flags, BuzzCards are Type A according to TagInfo
     )
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(acceptMrd5Taps) {
+        try {
+//            mrd5Manager.attemptConnectionToSavedDevice() // FIXME
+        } catch (e: IllegalStateException) {
+            Timber.d("MRD5 attempt connection - mutex taken")
+        }
         if (acceptMrd5Taps) {
             mrd5Manager.buzzCardTaps.collect { buzzCardTap -> onBuzzCardTap(buzzCardTap) }
         }
@@ -170,7 +181,9 @@ fun BuzzCardPrompt(
 
     var showGtidPrompt by remember { mutableStateOf(false) }
     if (!hidePrompt) {
-        Column {
+        Column(
+            horizontalAlignment = CenterHorizontally,
+        ) {
             if (externalError != null) {
                 ExternalError(externalError)
             } else {
@@ -187,6 +200,15 @@ fun BuzzCardPrompt(
                 Modifier.align(CenterHorizontally)
             ) {
                 Text("Enter GTID manually")
+            }
+            when (mrd5ConnectionState) {
+                ConnectionState.Connected -> {
+                    Mrd5ConnectedChip()
+                }
+                ConnectionState.Connecting, ConnectionState.Initializing -> {
+                    Mrd5ConnectingChip()
+                }
+                else -> {}
             }
         }
     }

@@ -16,5 +16,7 @@ data class Device(
     val hardwareVersion: String,
     val firmwareVersion: String,
     val softwareVersion: String,
+    val bootloaderVersion: String,
+    val applicationVersion: String,
     val batteryPercentage: Int,
 )

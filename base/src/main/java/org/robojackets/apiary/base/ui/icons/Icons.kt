@@ -39,6 +39,48 @@ fun ApparelIcon(
 }
 
 @Composable
+fun BluetoothIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String? = null,
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_bluetooth_24dp),
+        contentDescription = contentDescription,
+        modifier = modifier,
+        tint = tint,
+    )
+}
+
+@Composable
+fun BluetoothDisabledIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String? = null,
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_bluetooth_disabled_24dp),
+        contentDescription = contentDescription,
+        modifier = modifier,
+        tint = tint,
+    )
+}
+
+@Composable
+fun BluetoothConnectedIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String? = null,
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_outline_bluetooth_connected_24dp),
+        contentDescription = contentDescription,
+        modifier = modifier,
+        tint = tint,
+    )
+}
+
+@Composable
 fun BluetoothSettingsIcon(
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.onSurface,
@@ -206,6 +248,21 @@ fun LogoutIcon(
         contentDescription = contentDescription,
     )
 }
+
+@Composable
+fun Mrd5Icon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String? = null,
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.mrd5),
+        tint = tint,
+        modifier = modifier,
+        contentDescription = contentDescription,
+    )
+}
+
 
 @Composable
 fun PendingIcon(
