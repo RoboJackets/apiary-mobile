@@ -65,9 +65,6 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    - name: Run detekt
-      run: bundle exec fastlane detekt
-
     - name: Run tests
       run: bundle exec fastlane test
 
@@ -85,6 +82,9 @@ jobs:
         GITHUB_API_BEARER_TOKEN: ${{ github.token }}
         GOOGLE_PLAY_PRIVATE_KEY: ${{ secrets.GOOGLE_PLAY_PRIVATE_KEY }}
         IS_CI: true
+
+    - name: Run detekt
+      run: bundle exec fastlane detekt
 
     - name: Perform CodeQL Analysis for Java/Kotlin
       uses: github/codeql-action/analyze@v4

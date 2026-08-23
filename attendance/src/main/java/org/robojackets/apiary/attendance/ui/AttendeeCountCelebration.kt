@@ -1,3 +1,4 @@
+@file:Suppress("MagicNumber")
 package org.robojackets.apiary.attendance.ui
 
 import androidx.compose.runtime.Composable

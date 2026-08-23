@@ -1,3 +1,4 @@
+@file:Suppress("MaxLineLength")
 object ComposeDependencies {
     object Versions {
         const val compose_settings_version = "3.1.0"

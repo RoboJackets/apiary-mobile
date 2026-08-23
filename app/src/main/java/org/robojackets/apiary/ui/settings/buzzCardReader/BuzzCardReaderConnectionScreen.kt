@@ -37,7 +37,7 @@ fun ConnectingToReader() {
     Text(text = "Connecting to reader", style = MaterialTheme.typography.headlineSmall)
 }
 
-@SuppressLint("MissingPermission")
+@SuppressLint("MissingPermission", "LongMethod")
 @Composable
 fun BuzzCardReaderConnectionScreen(
     viewModel: BuzzCardReaderViewModel,
@@ -152,10 +152,11 @@ fun BuzzCardReaderConnectionScreen(
                         )
                         Button(onClick = {
                             viewModel.mrd5Manager.sendCommands(
-                                listOf(Mrd5Command.LED(ledColor, ledDuration.toInt().toDuration(DurationUnit.MILLISECONDS))
+                                listOf(
+                                    Mrd5Command.LED(ledColor, ledDuration.toInt().toDuration(DurationUnit.MILLISECONDS))
                                 )
                             )
-                        } ) {
+                        }) {
                             Text("Set LED")
                         }
                     }

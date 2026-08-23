@@ -8,7 +8,6 @@ import org.robojackets.apiary.base.ui.icons.StorefrontIcon
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.IconRow
 
-
 @Composable
 fun CurrentlySelectedItem(
     name: String,
@@ -26,7 +25,9 @@ fun CurrentlySelectedItem(
 @Composable
 fun PreviewCurrentlySelectedItem() {
     ContentPadding {
-        CurrentlySelectedItem("Test item with a super duper long name so it will get cut off",
-            { StorefrontIcon() }) {}
+        CurrentlySelectedItem(
+            "Test item with a super duper long name so it will get cut off",
+            { StorefrontIcon() }
+        ) {}
     }
 }

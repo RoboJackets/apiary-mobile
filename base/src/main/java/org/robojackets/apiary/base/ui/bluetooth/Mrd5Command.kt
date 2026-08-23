@@ -32,7 +32,7 @@ sealed interface Mrd5Command {
         }
     }
 
-    data class LED(val color: String, val duration: Duration): Mrd5Command {
+    data class LED(val color: String, val duration: Duration) : Mrd5Command {
         override fun toString(): String {
             return "LED:$color,${duration.inWholeMilliseconds}"
         }

@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun rememberBluetoothEnabled():  State<Boolean> {
+fun rememberBluetoothEnabled(): State<Boolean> {
     val context = LocalContext.current
 
     val bluetoothManager = context.getSystemService(BluetoothManager::class.java)

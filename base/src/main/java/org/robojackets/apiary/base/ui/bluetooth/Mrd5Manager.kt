@@ -1,6 +1,7 @@
 package org.robojackets.apiary.base.ui.bluetooth
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.le.ScanSettings
 import android.bluetooth.le.ScanSettings.MATCH_MODE_STICKY
 import android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY
@@ -72,7 +73,7 @@ class Mrd5Manager @Inject constructor(
         Timber.d("Mrd5Manager was initialized!")
     }
 
-    private var scanner : Job? = null
+    private var scanner: Job? = null
 
     private val _scanResults = MutableStateFlow<List<PlatformAdvertisement>>(emptyList())
     val scanResults = _scanResults.asStateFlow()
@@ -120,7 +121,7 @@ class Mrd5Manager @Inject constructor(
     val connectionState = _connectionState.asStateFlow()
 
     private lateinit var peripheral: Peripheral
-    private var connectionScope : CoroutineScope? = null
+    private var connectionScope: CoroutineScope? = null
     private val managerScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private val deviceInfoUUIDs = listOf(
@@ -198,11 +199,13 @@ class Mrd5Manager @Inject constructor(
     private suspend fun initialize() {
         _connectionState.value = ConnectionState.Initializing
         deviceInfoUUIDs.forEach {
-            val value = peripheral.read(characteristic = characteristicOf(
+            val value = peripheral.read(
+                characteristic = characteristicOf(
                 service = DEVICE_INFO_SERVICE_UUID,
                 characteristic = it,
-            ))
-            when(it) {
+            )
+            )
+            when (it) {
                 MODEL_NUMBER_CHAR_UUID -> _deviceModel.value = String(value, Charsets.US_ASCII)
                 SERIAL_NUMBER_CHAR_UUID -> _deviceSerialNumber.value = String(value, Charsets.US_ASCII)
                 FIRMWARE_REVISION_CHAR_UUID -> _deviceFirmwareVersion.value = String(value, Charsets.US_ASCII)
@@ -211,7 +214,6 @@ class Mrd5Manager @Inject constructor(
                 MANUFACTURER_CHAR_UUID -> _deviceManufacturer.value = String(value, Charsets.US_ASCII)
             }
         }
-
     }
 
     suspend fun storeDevice() {
@@ -241,6 +243,7 @@ class Mrd5Manager @Inject constructor(
         }
     }
 
+    @SuppressLint("LongMethod")
     @OptIn(ObsoleteKableApi::class)
     @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
     suspend fun connect(advertisement: Advertisement?) {
@@ -276,7 +279,6 @@ class Mrd5Manager @Inject constructor(
                 }
                 if (attempts <= maxAttempts) {
                     Timber.d("Got battery level")
-
                 } else {
                     Timber.w("Timed out getting battery status")
                     _error.value = "Reader connection failed"
@@ -326,10 +328,13 @@ class Mrd5Manager @Inject constructor(
 
     fun sendCommands(commands: List<Mrd5Command>) {
         connectionScope?.launch {
-            val cmd_response = peripheral.write(characteristicOf(
+            val cmd_response = peripheral.write(
+                characteristicOf(
                 service = MLDP_SERVICE_UUID,
                 characteristic = MLDP_DATA_UUID,
-            ), data = Mrd5Command.combined(commands).toByteArray(), WriteType.WithResponse)
+            ),
+                data = Mrd5Command.combined(commands).toByteArray(), WriteType.WithResponse
+            )
             Timber.d("Command response: $cmd_response")
         }
     }
@@ -349,7 +354,6 @@ class Mrd5Manager @Inject constructor(
             Mrd5Command.LED("700", 200.milliseconds)
         )
     )
-
 
     private val rxBuffer = StringBuilder()
     private var debounceJob: Job? = null

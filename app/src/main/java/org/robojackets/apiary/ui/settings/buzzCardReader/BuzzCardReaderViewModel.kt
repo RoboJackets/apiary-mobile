@@ -17,7 +17,6 @@ import org.robojackets.apiary.base.ui.bluetooth.Mrd5Manager
 import org.robojackets.apiary.navigation.NavigationManager
 import javax.inject.Inject
 
-
 @HiltViewModel
 class BuzzCardReaderViewModel @Inject constructor(
     @Suppress("UnusedPrivateMember") private val savedStateHandle: SavedStateHandle,

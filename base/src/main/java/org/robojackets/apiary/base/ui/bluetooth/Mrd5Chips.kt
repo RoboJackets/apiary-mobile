@@ -13,7 +13,7 @@ fun Mrd5DetectedChip(
 ) {
     AssistChip(
         onClick = { onNavigateToBuzzCardReaderSettings() },
-        label = { Text("Bluetooth reader available")},
+        label = { Text("Bluetooth reader available") },
         leadingIcon = { BluetoothIcon() },
     )
 }
@@ -22,7 +22,7 @@ fun Mrd5DetectedChip(
 fun Mrd5ConnectingChip() {
     AssistChip(
         onClick = {},
-        label = { Text("Connecting to reader...")},
+        label = { Text("Connecting to reader...") },
         leadingIcon = { BluetoothIcon() },
     )
 }
@@ -31,7 +31,7 @@ fun Mrd5ConnectingChip() {
 fun Mrd5ConnectedChip() {
     AssistChip(
         onClick = {},
-        label = { Text("Reader connected")},
+        label = { Text("Reader connected") },
         leadingIcon = { BluetoothConnectedIcon() },
     )
 }

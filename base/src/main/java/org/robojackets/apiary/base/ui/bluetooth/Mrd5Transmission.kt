@@ -33,6 +33,7 @@ private fun parseBuzzCardTap(str: String): BuzzCardTap? {
     return null
 }
 
+@Suppress("MagicNumber")
 private fun parseDeviceInfo(str: String): Mrd5Transmission.DeviceInfo? {
     val regex = Regex("""Blackboard MRD5\r\n\s*SN: (\d+)\r\n\s*Boot: (.+)\r\n\s*Application: (.+)""")
     regex.matchEntire(str)?.let { matchResult ->
@@ -67,7 +68,7 @@ private fun parseGenericResponse(str: String): Mrd5Transmission.GenericResponse?
 
 sealed interface Mrd5Transmission {
     data class BuzzCard(val tap: BuzzCardTap) : Mrd5Transmission
-    data class BatteryLevel(val level: Int): Mrd5Transmission
+    data class BatteryLevel(val level: Int) : Mrd5Transmission
 
     data class GenericResponse(val str: String) : Mrd5Transmission
     data class DeviceInfo(

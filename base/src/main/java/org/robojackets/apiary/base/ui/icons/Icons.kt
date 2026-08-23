@@ -136,7 +136,6 @@ fun DeployedCodeIcon(
     )
 }
 
-
 @Composable
 fun ErrorIcon(
     modifier: Modifier = Modifier,
@@ -262,7 +261,6 @@ fun Mrd5Icon(
         contentDescription = contentDescription,
     )
 }
-
 
 @Composable
 fun PendingIcon(

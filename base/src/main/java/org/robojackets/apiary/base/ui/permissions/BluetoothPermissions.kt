@@ -30,7 +30,6 @@ import org.robojackets.apiary.base.ui.icons.ErrorIcon
 import org.robojackets.apiary.base.ui.theme.danger
 import timber.log.Timber
 
-
 @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -46,8 +45,15 @@ fun BluetoothAvailableGate(content: @Composable () -> Unit) {
     var error by remember { mutableStateOf<String?>(null) }
 
     when {
-        !bluetoothPermissionsState.allPermissionsGranted || bluetoothPermissionsState.revokedPermissions.isNotEmpty() || bluetoothPermissionsState.shouldShowRationale -> {
-            Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxHeight()) {
+        !bluetoothPermissionsState.allPermissionsGranted ||
+                bluetoothPermissionsState.revokedPermissions.isNotEmpty() ||
+                bluetoothPermissionsState.shouldShowRationale -> {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment =
+                Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxHeight()
+            ) {
                 ActionPrompt(
                     icon = { ErrorIcon(Modifier.size(114.dp), tint = danger) },
                     title = "Bluetooth access required",
@@ -60,11 +66,11 @@ fun BluetoothAvailableGate(content: @Composable () -> Unit) {
                     ListItem {
                         Text("Bluetooth is used to connect to external BuzzCard readers")
                     }
-
                 }
                 if (bluetoothPermissionsState.revokedPermissions.isNotEmpty()) {
                     ListItem {
-                        Text("If nothing happens when you press Continue, open the Android settings for this app and grant the Nearby Devices permission.")
+                        Text("If nothing happens when you press Continue, open the Android " +
+                                "settings for this app and grant the Nearby Devices permission.")
                     }
                 }
             }
@@ -83,7 +89,6 @@ fun BluetoothAvailableGate(content: @Composable () -> Unit) {
                             Timber.e(e)
                             error = "Unable to enable Bluetooth"
                         }
-
                     }) {
                         Text("Enable Bluetooth")
                     }
