@@ -7,7 +7,7 @@ import javax.inject.Inject
 class AttendanceRepository @Inject constructor(
     val attendanceApiService: AttendanceApiService,
 ) {
-    suspend fun recordAttendance(
+    suspend fun recordAttendance( // FIXME also include MRD5 device info when available
         attendableType: String,
         attendableId: Int,
         gtid: Int,

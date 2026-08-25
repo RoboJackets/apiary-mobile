@@ -9,8 +9,8 @@ fun AttendeeCountCelebration(
     count: Int
 ) {
     val text = when (count) {
-        1 -> "🔥 5 attendees recorded. You're on a roll!" // FIXME
-        2 -> "👑 10 attendees. You're awesome!" // FIXME
+        5 -> "🔥 5 attendees recorded. You're on a roll!"
+        10 -> "👑 10 attendees. You're awesome!"
         25 -> "🎸 25 attendees! You're a rockstar!"
         42 -> "4️⃣2️⃣ The meaning of life."
         50 -> "🎉 50 attendees! Is this GI?"
