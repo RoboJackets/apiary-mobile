@@ -8,17 +8,6 @@ import org.robojackets.apiary.base.ui.icons.BluetoothConnectedIcon
 import org.robojackets.apiary.base.ui.icons.BluetoothIcon
 
 @Composable
-fun Mrd5DetectedChip(
-    onNavigateToBuzzCardReaderSettings: () -> Unit
-) {
-    AssistChip(
-        onClick = { onNavigateToBuzzCardReaderSettings() },
-        label = { Text("Bluetooth reader available") },
-        leadingIcon = { BluetoothIcon() },
-    )
-}
-
-@Composable
 fun Mrd5ConnectingChip() {
     AssistChip(
         onClick = {},

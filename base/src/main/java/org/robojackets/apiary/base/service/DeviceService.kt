@@ -15,6 +15,8 @@ interface DeviceService {
         @Field("hardware_version") hardwareVersion: String,
         @Field("firmware_version") firmwareVersion: String,
         @Field("software_version") softwareVersion: String,
+        @Field("bootloader_version") bootloaderVersion: String,
+        @Field("application_version") applicationVersion: String,
         @Field("battery_percentage") batteryPercentage: Int,
         @Field("manufacturer") manufacturer: String,
     ): ApiResponse<DeviceHolder>

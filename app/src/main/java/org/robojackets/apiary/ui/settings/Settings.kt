@@ -26,7 +26,7 @@ import org.robojackets.apiary.BuildConfig
 import org.robojackets.apiary.auth.model.UserInfo
 import org.robojackets.apiary.base.AppEnvironment
 import org.robojackets.apiary.base.ui.icons.AccountCircleIcon
-import org.robojackets.apiary.base.ui.icons.BluetoothSettingsIcon
+import org.robojackets.apiary.base.ui.icons.BluetoothIcon
 import org.robojackets.apiary.base.ui.icons.DeployedCodeIcon
 import org.robojackets.apiary.base.ui.icons.FeedbackIcon
 import org.robojackets.apiary.base.ui.icons.HomeIcon
@@ -77,7 +77,7 @@ private fun Settings(
             )
             SettingsHeader("Devices")
             SettingsMenuLink(
-                icon = { BluetoothSettingsIcon() },
+                icon = { BluetoothIcon() },
                 title = { Text(text = "Connect BuzzCard reader") },
                 onClick = { onNavigateToBuzzCardReaderConnection() }
             )

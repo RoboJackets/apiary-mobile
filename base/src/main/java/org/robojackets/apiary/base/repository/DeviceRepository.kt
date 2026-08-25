@@ -19,6 +19,8 @@ class DeviceRepository @Inject constructor(
             firmwareVersion = device.firmwareVersion,
             softwareVersion = device.softwareVersion,
             batteryPercentage = device.batteryPercentage,
+            bootloaderVersion = device.bootloaderVersion,
+            applicationVersion = device.applicationVersion,
             manufacturer = device.manufacturer,
         )
     }

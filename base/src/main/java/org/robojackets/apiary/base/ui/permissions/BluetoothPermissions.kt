@@ -69,8 +69,10 @@ fun BluetoothAvailableGate(content: @Composable () -> Unit) {
                 }
                 if (bluetoothPermissionsState.revokedPermissions.isNotEmpty()) {
                     ListItem {
-                        Text("If nothing happens when you press Continue, open the Android " +
-                                "settings for this app and grant the Nearby Devices permission.")
+                        Text(
+                            "If nothing happens when you press Continue, open the Android " +
+                                "settings for this app and grant the Nearby Devices permission."
+                        )
                     }
                 }
             }

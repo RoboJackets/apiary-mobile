@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.bluetooth.le.ScanSettings
 import android.bluetooth.le.ScanSettings.MATCH_MODE_STICKY
 import android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY
-import android.content.Context
 import androidx.annotation.RequiresPermission
 import com.juul.kable.Advertisement
 import com.juul.kable.ObsoleteKableApi
@@ -16,7 +15,6 @@ import com.juul.kable.State
 import com.juul.kable.WriteType
 import com.juul.kable.characteristicOf
 import com.juul.kable.logs.Logging
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -66,7 +64,6 @@ private val MANUFACTURER_CHAR_UUID = Uuid.parse("00002a29-0000-1000-8000-00805f9
 // and https://punchthrough.com/android-ble-guide/
 @Singleton
 class Mrd5Manager @Inject constructor(
-    @ApplicationContext private val context: Context,
     val globalSettings: GlobalSettings,
 ) {
     init {
@@ -176,7 +173,7 @@ class Mrd5Manager @Inject constructor(
                     .setMatchMode(MATCH_MODE_STICKY).build()
                 filters {
                     match {
-                        services = listOf(Uuid.parse("00035b03-58e6-07dd-021a-08123a000300"))
+                        services = listOf(MLDP_SERVICE_UUID)
                     }
                 }
             }.advertisements.collect { advertisement ->
@@ -328,22 +325,22 @@ class Mrd5Manager @Inject constructor(
 
     fun sendCommands(commands: List<Mrd5Command>) {
         connectionScope?.launch {
-            val cmd_response = peripheral.write(
+            val response = peripheral.write(
                 characteristicOf(
                 service = MLDP_SERVICE_UUID,
                 characteristic = MLDP_DATA_UUID,
             ),
                 data = Mrd5Command.combined(commands).toByteArray(), WriteType.WithResponse
             )
-            Timber.d("Command response: $cmd_response")
+            Timber.d("Command response: $response")
         }
     }
 
     fun doSuccessChirp() {
         sendCommands(
             listOf(
-                Mrd5Command.Tone(Mrd5Tone.Ascending),
-                Mrd5Command.LED("007", 200.milliseconds)
+                Mrd5Command.Tone(Mrd5Tone.Single),
+                Mrd5Command.LED("070", 400.milliseconds)
             )
         )
     }

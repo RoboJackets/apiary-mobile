@@ -79,6 +79,7 @@ sealed interface Mrd5Transmission {
 
     data class Unknown(val str: String) : Mrd5Transmission
 
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     companion object {
         fun fromString(str: String): List<Mrd5Transmission> {
             val deviceInfo = parseDeviceInfo(str)

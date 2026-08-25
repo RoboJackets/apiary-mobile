@@ -205,7 +205,7 @@ fun BuzzCardPrompt(
                 ConnectionState.Connected -> {
                     Mrd5ConnectedChip()
                 }
-                ConnectionState.Connecting, ConnectionState.Initializing -> {
+                ConnectionState.Connecting, ConnectionState.Initializing, ConnectionState.WaitingForPairing -> {
                     Mrd5ConnectingChip()
                 }
                 else -> {}

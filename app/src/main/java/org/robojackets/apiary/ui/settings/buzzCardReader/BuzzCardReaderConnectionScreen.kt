@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
@@ -17,8 +18,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.robojackets.apiary.BuildConfig
 import org.robojackets.apiary.base.ui.bluetooth.ConnectionState
 import org.robojackets.apiary.base.ui.bluetooth.Mrd5Command
 import org.robojackets.apiary.base.ui.bluetooth.Mrd5Tone
@@ -100,64 +103,64 @@ fun BuzzCardReaderConnectionScreen(
                         ConnectingToReader()
                         LoadingSpinner()
                     }
-                    ConnectionState.Initializing -> {
+                    ConnectionState.Initializing, ConnectionState.WaitingForPairing -> {
                         ConnectingToReader()
-                        LoadingSpinner()
-                    }
-                    ConnectionState.WaitingForPairing -> {
-                        ConnectingToReader()
-                        LoadingSpinner { Text("Press Pair & Connect in the system notification if prompted") }
+                        LoadingSpinner { Text("Press Pair & Connect in the system notification if prompted", textAlign = TextAlign.Center) }
                     }
                     ConnectionState.Connected -> {
-                        Text("Connection: $state")
+                        Text(text = "Reader connected", style = MaterialTheme.typography.headlineSmall)
                         Text("Battery level: ${batteryLevel ?: "Unknown"}%")
-                        Text("Last BuzzCard tap: $buzzCardTaps")
                         Text("Serial number: $serialNumber")
-                        Text("Firmware version: $firmwareVersion")
-                        Text("Hardware version: $hardwareVersion")
-                        Text("Software version: $softwareVersion")
-                        Text("Bootloader version: $bootloaderVersion")
-                        Text("Application version: $applicationVersion")
-                        Text("Connected device: $connectedDevice")
-                        Button(onClick = { viewModel.mrd5Manager.sendCommands(listOf(Mrd5Command.Version)) }) {
-                            Text("Get version")
-                        }
 
-                        Row(
-                            Modifier.horizontalScroll(rememberScrollState())
-                        ) {
-                            for (type in Mrd5Tone.entries) {
-                                Button(onClick = {
-                                    viewModel.mrd5Manager.sendCommands(
-                                        listOf(
-                                            Mrd5Command.Tone(type)
-                                        )
-                                    )
-                                }) {
-                                    Text("Beep ${type.name} (${type.key})")
+                        // FIXME - Disconnect button
+
+                        if (BuildConfig.DEBUG) {
+                            HorizontalDivider()
+                            Text("Connection: $state")
+                            Text("Last BuzzCard tap: $buzzCardTaps")
+                            Text("Firmware version: $firmwareVersion")
+                            Text("Hardware version: $hardwareVersion")
+                            Text("Software version: $softwareVersion")
+                            Text("Bootloader version: $bootloaderVersion")
+                            Text("Application version: $applicationVersion")
+                            HorizontalDivider()
+
+                            Button(onClick = { viewModel.mrd5Manager.sendCommands(listOf(Mrd5Command.Version)) }) {
+                                Text("Get version")
+                            }
+
+                            Row(
+                                Modifier.horizontalScroll(rememberScrollState())
+                            ) {
+                                for (type in Mrd5Tone.entries) {
+                                    Button(onClick = {
+                                        viewModel.mrd5Manager.sendCommands(listOf(Mrd5Command.Tone(type)))
+                                    }, modifier = Modifier.padding(end = 4.dp)) {
+                                        Text("Beep ${type.name}")
+                                    }
                                 }
                             }
-                        }
-                        var ledColor by remember { mutableStateOf("") }
-                        TextField(
-                            value = ledColor,
-                            onValueChange = { ledColor = it },
-                            label = { Text("LED color") }
-                        )
-                        var ledDuration by remember { mutableStateOf("") }
-                        TextField(
-                            value = ledDuration,
-                            onValueChange = { ledDuration = it },
-                            label = { Text("LED duration") }
-                        )
-                        Button(onClick = {
-                            viewModel.mrd5Manager.sendCommands(
-                                listOf(
-                                    Mrd5Command.LED(ledColor, ledDuration.toInt().toDuration(DurationUnit.MILLISECONDS))
-                                )
+                            var ledColor by remember { mutableStateOf("") }
+                            TextField(
+                                value = ledColor,
+                                onValueChange = { ledColor = it },
+                                label = { Text("LED color") }
                             )
-                        }) {
-                            Text("Set LED")
+                            var ledDuration by remember { mutableStateOf("") }
+                            TextField(
+                                value = ledDuration,
+                                onValueChange = { ledDuration = it },
+                                label = { Text("LED duration") }
+                            )
+                            Button(onClick = {
+                                viewModel.mrd5Manager.sendCommands(
+                                    listOf(
+                                        Mrd5Command.LED(ledColor, ledDuration.toInt().toDuration(DurationUnit.MILLISECONDS))
+                                    )
+                                )
+                            }) {
+                                Text("Set LED")
+                            }
                         }
                     }
                 }
