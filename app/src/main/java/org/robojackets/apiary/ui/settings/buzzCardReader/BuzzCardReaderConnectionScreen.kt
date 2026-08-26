@@ -112,7 +112,11 @@ fun BuzzCardReaderConnectionScreen(
                         Text("Battery level: ${batteryLevel ?: "Unknown"}%")
                         Text("Serial number: $serialNumber")
 
-                        // FIXME - Disconnect button
+                        Button(
+                            onClick = { viewModel.disconnect() },
+                        ) {
+                            Text("Disconnect")
+                        }
 
                         if (BuildConfig.DEBUG) {
                             HorizontalDivider()

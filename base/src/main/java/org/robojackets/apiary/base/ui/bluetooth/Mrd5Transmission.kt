@@ -5,9 +5,9 @@ import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource
 import timber.log.Timber
 
 private fun parseBatteryLevel(str: String): Int? {
-    val regex = Regex("BATT:(\\d{1,3})/\\d+")
+    val regex = Regex("""BATT:(?<batteryLevel>\d{1,3})/\d+""")
     regex.matchEntire(str)?.let { matchResult ->
-        matchResult.groups.lastOrNull()?.let {
+        matchResult.groups["batteryLevel"]?.let {
             return it.value.toInt()
         }
     }
@@ -15,11 +15,11 @@ private fun parseBatteryLevel(str: String): Int? {
 }
 
 private fun parseBuzzCardTap(str: String): BuzzCardTap? {
-    val regex = Regex("""(90[0-9]{7})\|\d.\|(\w+)""")
+    val regex = Regex("""(?<gtid>90[0-9]{7})\|\d*\|(?<source>\w+)""")
     regex.matchEntire(str)?.let { matchResult ->
         // FIXME: Check groups length
-        val gtid = matchResult.groups[1]?.value?.toInt()
-        val source = matchResult.groups.lastOrNull()?.value
+        val gtid = matchResult.groups["gtid"]?.value?.toInt()
+        val source = matchResult.groups["source"]?.value
 
         if (gtid == null || source == null) {
             return null
@@ -35,12 +35,12 @@ private fun parseBuzzCardTap(str: String): BuzzCardTap? {
 
 @Suppress("MagicNumber")
 private fun parseDeviceInfo(str: String): Mrd5Transmission.DeviceInfo? {
-    val regex = Regex("""Blackboard MRD5\r\n\s*SN: (\d+)\r\n\s*Boot: (.+)\r\n\s*Application: (.+)""")
+    val regex = Regex("""Blackboard MRD5\r\n\s*SN: (?<sn>\d+)\r\n\s*Boot: (?<boot>.+)\r\n\s*Application: (?<application>.+)""")
     regex.matchEntire(str)?.let { matchResult ->
         if (matchResult.groups.size == 4) {
-            val serialNumber = matchResult.groups[1]?.value
-            val bootloaderVersion = matchResult.groups[2]?.value
-            val applicationVersion = matchResult.groups[3]?.value
+            val serialNumber = matchResult.groups["sn"]?.value
+            val bootloaderVersion = matchResult.groups["boot"]?.value
+            val applicationVersion = matchResult.groups["application"]?.value
 
             if (serialNumber != null && bootloaderVersion != null && applicationVersion != null) {
                 return Mrd5Transmission.DeviceInfo(

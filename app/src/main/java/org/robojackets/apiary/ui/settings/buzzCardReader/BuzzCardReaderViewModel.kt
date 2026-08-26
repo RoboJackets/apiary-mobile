@@ -55,4 +55,6 @@ class BuzzCardReaderViewModel @Inject constructor(
     fun connect(advertisement: Advertisement?) = viewModelScope.launch {
         mrd5Manager.connect(advertisement)
     }
+
+    fun disconnect() = mrd5Manager.disconnect()
 }

@@ -323,6 +323,12 @@ class Mrd5Manager @Inject constructor(
         }
     }
 
+    fun disconnect() {
+        managerScope.launch {
+            peripheral.disconnect()
+        }
+    }
+
     fun sendCommands(commands: List<Mrd5Command>) {
         connectionScope?.launch {
             val response = peripheral.write(
@@ -347,8 +353,8 @@ class Mrd5Manager @Inject constructor(
 
     fun doErrorChirp() = sendCommands(
         listOf(
-            Mrd5Command.Tone(Mrd5Tone.Descending),
-            Mrd5Command.LED("700", 200.milliseconds)
+            Mrd5Command.Tone(Mrd5Tone.Warble),
+            Mrd5Command.LED("700", 400.milliseconds)
         )
     )
 
@@ -386,10 +392,7 @@ class Mrd5Manager @Inject constructor(
                         Timber.d("handleRx - generic response: $transmission")
                     }
                     is Mrd5Transmission.Unknown -> {
-                        // FIXME This is a hacky way to identify situations where the battery transmission overlaps with a  battery transmission, causing an error
-                        if (transmission.str.contains("DESFire")) {
-                            doErrorChirp()
-                        }
+                        doErrorChirp()
                         Timber.w("handleRx - unrecognized transmission: $transmission")
                     }
                 }
