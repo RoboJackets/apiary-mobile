@@ -5,7 +5,7 @@ import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource
 import timber.log.Timber
 
 private fun parseBatteryLevel(str: String): Int? {
-    val regex = Regex("""BATT:(?<batteryLevel>\d{1,3})/\d+""")
+    val regex = Regex("""BATT:(?<batteryLevel>\d{1,3})/-?\d+""")
     regex.matchEntire(str)?.let { matchResult ->
         matchResult.groups["batteryLevel"]?.let {
             return it.value.toInt()
