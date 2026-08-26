@@ -17,7 +17,6 @@ private fun parseBatteryLevel(str: String): Int? {
 private fun parseBuzzCardTap(str: String): BuzzCardTap? {
     val regex = Regex("""(?<gtid>90[0-9]{7})\|\d*\|(?<source>\w+)""")
     regex.matchEntire(str)?.let { matchResult ->
-        // FIXME: Check groups length
         val gtid = matchResult.groups["gtid"]?.value?.toInt()
         val source = matchResult.groups["source"]?.value
 

@@ -7,6 +7,7 @@ import android.bluetooth.le.ScanSettings.MATCH_MODE_STICKY
 import android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY
 import androidx.annotation.RequiresPermission
 import com.juul.kable.Advertisement
+import com.juul.kable.GattStatusException
 import com.juul.kable.ObsoleteKableApi
 import com.juul.kable.Peripheral
 import com.juul.kable.PlatformAdvertisement
@@ -80,6 +81,9 @@ class Mrd5Manager @Inject constructor(
 
     private val _batteryLevel = MutableStateFlow<Int?>(null)
     val batteryLevel = _batteryLevel.asStateFlow()
+
+    private val _deviceName = MutableStateFlow<String?>(null)
+    val deviceName = _deviceName.asStateFlow()
 
     private val _deviceModel = MutableStateFlow<String?>(null)
     val deviceModel = _deviceModel.asStateFlow()
@@ -196,19 +200,25 @@ class Mrd5Manager @Inject constructor(
     private suspend fun initialize() {
         _connectionState.value = ConnectionState.Initializing
         deviceInfoUUIDs.forEach {
-            val value = peripheral.read(
-                characteristic = characteristicOf(
-                service = DEVICE_INFO_SERVICE_UUID,
-                characteristic = it,
-            )
-            )
-            when (it) {
-                MODEL_NUMBER_CHAR_UUID -> _deviceModel.value = String(value, Charsets.US_ASCII)
-                SERIAL_NUMBER_CHAR_UUID -> _deviceSerialNumber.value = String(value, Charsets.US_ASCII)
-                FIRMWARE_REVISION_CHAR_UUID -> _deviceFirmwareVersion.value = String(value, Charsets.US_ASCII)
-                HARDWARE_REVISION_CHAR_UUID -> _deviceHardwareVersion.value = String(value, Charsets.US_ASCII)
-                SOFTWARE_REVISION_CHAR_UUID -> _deviceSoftwareVersion.value = String(value, Charsets.US_ASCII)
-                MANUFACTURER_CHAR_UUID -> _deviceManufacturer.value = String(value, Charsets.US_ASCII)
+            try {
+                val value = peripheral.read(
+                    characteristic = characteristicOf(
+                        service = DEVICE_INFO_SERVICE_UUID,
+                        characteristic = it,
+                    )
+                )
+                when (it) {
+                    MODEL_NUMBER_CHAR_UUID -> _deviceModel.value = String(value, Charsets.US_ASCII)
+                    SERIAL_NUMBER_CHAR_UUID -> _deviceSerialNumber.value = String(value, Charsets.US_ASCII)
+                    FIRMWARE_REVISION_CHAR_UUID -> _deviceFirmwareVersion.value = String(value, Charsets.US_ASCII)
+                    HARDWARE_REVISION_CHAR_UUID -> _deviceHardwareVersion.value = String(value, Charsets.US_ASCII)
+                    SOFTWARE_REVISION_CHAR_UUID -> _deviceSoftwareVersion.value = String(value, Charsets.US_ASCII)
+                    MANUFACTURER_CHAR_UUID -> _deviceManufacturer.value = String(value, Charsets.US_ASCII)
+                }
+            } catch (e: GattStatusException) {
+                peripheral.disconnect()
+                _error.value = "Reader connection failed"
+                Timber.e(e, "Failed reading device info")
             }
         }
     }
@@ -253,8 +263,10 @@ class Mrd5Manager @Inject constructor(
         stopScanning()
 
         advertisement?.let {
+            _deviceName.value = it.name
             globalSettings.mrd5DeviceMac = it.identifier // FIXME: this is in the wrong spot probably
             peripheral = Peripheral(it) {
+
                 logging {
                     level = Logging.Level.Data
                     data = Logging.DataProcessor { bytes, _, _, _, _ ->
@@ -267,7 +279,6 @@ class Mrd5Manager @Inject constructor(
             }
             connectionScope = peripheral.connect()
             connectionScope?.launch {
-
                 var attempts = 0
                 val maxAttempts = 15
                 while (_batteryLevel.value == null && ++attempts <= maxAttempts) {
@@ -345,7 +356,7 @@ class Mrd5Manager @Inject constructor(
     fun doSuccessChirp() {
         sendCommands(
             listOf(
-                Mrd5Command.Tone(Mrd5Tone.Single),
+                Mrd5Command.Tone(Mrd5Tone.Ascending),
                 Mrd5Command.LED("070", 400.milliseconds)
             )
         )
@@ -392,8 +403,12 @@ class Mrd5Manager @Inject constructor(
                         Timber.d("handleRx - generic response: $transmission")
                     }
                     is Mrd5Transmission.Unknown -> {
-                        doErrorChirp()
-                        Timber.w("handleRx - unrecognized transmission: $transmission")
+                        // This is a slightly hacky way to only play the error chirp for transmissions related to a
+                        // clobbered BuzzCard read, since there can be other unknown transmissions
+                        // shortly after the device connects
+                        if (transmission.str.contains("DESFire") || transmission.str.contains("Mobile")) {
+                            doErrorChirp()
+                        }
                     }
                 }
                 Timber.d("handleRx - transmission is $transmission")

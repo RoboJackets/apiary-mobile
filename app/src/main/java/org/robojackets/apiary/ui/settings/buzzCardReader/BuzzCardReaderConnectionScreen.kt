@@ -48,6 +48,7 @@ fun BuzzCardReaderConnectionScreen(
     val devices by viewModel.devices.collectAsStateWithLifecycle()
     val state by viewModel.connection.collectAsStateWithLifecycle()
     val scanState by viewModel.mrd5Manager.scanState.collectAsStateWithLifecycle()
+    val deviceName by viewModel.mrd5Manager.deviceName.collectAsStateWithLifecycle()
     val batteryLevel by viewModel.batteryLevel.collectAsStateWithLifecycle()
     val buzzCardTaps by viewModel.buzzCardTaps.collectAsStateWithLifecycle()
     val serialNumber by viewModel.mrd5Manager.deviceSerialNumber.collectAsStateWithLifecycle()
@@ -56,8 +57,8 @@ fun BuzzCardReaderConnectionScreen(
     val softwareVersion by viewModel.mrd5Manager.deviceSoftwareVersion.collectAsStateWithLifecycle()
     val bootloaderVersion by viewModel.mrd5Manager.bootloaderVersion.collectAsStateWithLifecycle()
     val applicationVersion by viewModel.mrd5Manager.applicationVersion.collectAsStateWithLifecycle()
-    val connectedDevice by viewModel.mrd5Manager.connectedDevice.collectAsStateWithLifecycle(initialValue = null)
     val mrd5Error by viewModel.mrd5Manager.error.collectAsStateWithLifecycle()
+    var showAdvancedControls by remember { mutableStateOf(BuildConfig.DEBUG) }
 
     ContentPadding {
         BluetoothAvailableGate {
@@ -65,6 +66,7 @@ fun BuzzCardReaderConnectionScreen(
                 if (mrd5Error != null) {
                     ErrorMessageWithRetry(
                         title = mrd5Error,
+                        message = "If you have paired with a reader before, go to your Bluetooth settings and forget all devices named MRD5-XXX",
                         onRetry = { viewModel.resetMrd5Error() },
                         prioritizeRetryButton = true
                     )
@@ -109,8 +111,8 @@ fun BuzzCardReaderConnectionScreen(
                     }
                     ConnectionState.Connected -> {
                         Text(text = "Reader connected", style = MaterialTheme.typography.headlineSmall)
+                        Text("Device: $deviceName ($serialNumber)")
                         Text("Battery level: ${batteryLevel ?: "Unknown"}%")
-                        Text("Serial number: $serialNumber")
 
                         Button(
                             onClick = { viewModel.disconnect() },
@@ -118,10 +120,18 @@ fun BuzzCardReaderConnectionScreen(
                             Text("Disconnect")
                         }
 
-                        if (BuildConfig.DEBUG) {
+                        if (!showAdvancedControls)
+                        Button(
+                            onClick = { showAdvancedControls = true },
+                        ) {
+                            Text("Show advanced controls")
+                        }
+
+                        if (showAdvancedControls) {
                             HorizontalDivider()
-                            Text("Connection: $state")
+                            Text("Connection status: $state")
                             Text("Last BuzzCard tap: $buzzCardTaps")
+                            HorizontalDivider()
                             Text("Firmware version: $firmwareVersion")
                             Text("Hardware version: $hardwareVersion")
                             Text("Software version: $softwareVersion")
@@ -132,6 +142,8 @@ fun BuzzCardReaderConnectionScreen(
                             Button(onClick = { viewModel.mrd5Manager.sendCommands(listOf(Mrd5Command.Version)) }) {
                                 Text("Get version")
                             }
+
+                            HorizontalDivider()
 
                             Row(
                                 Modifier.horizontalScroll(rememberScrollState())
