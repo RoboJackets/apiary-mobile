@@ -5,10 +5,10 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -28,16 +28,37 @@ import org.robojackets.apiary.base.ui.bluetooth.Mrd5Tone
 import org.robojackets.apiary.base.ui.bluetooth.ScanningState
 import org.robojackets.apiary.base.ui.error.ErrorMessageWithRetry
 import org.robojackets.apiary.base.ui.form.ItemList
-import org.robojackets.apiary.base.ui.icons.Mrd5Icon
+import org.robojackets.apiary.base.ui.icons.InfoIcon
 import org.robojackets.apiary.base.ui.permissions.BluetoothAvailableGate
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.LoadingSpinner
+import timber.log.Timber
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 @Composable
 fun ConnectingToReader() {
     Text(text = "Connecting to reader", style = MaterialTheme.typography.headlineSmall)
+}
+
+@Composable
+fun ConnectReaderInfo(modifier: Modifier = Modifier) {
+    ListItem(modifier) {
+        Row {
+            InfoIcon(modifier = Modifier.padding(end = 8.dp))
+            Text("MyRJ can read plastic and digital BuzzCards using an external reader")
+        }
+    }
+}
+
+@Composable
+fun TurnOnReaderInstructions(modifier: Modifier = Modifier) {
+    ListItem(modifier) {
+        Row {
+            InfoIcon(modifier = Modifier.padding(end = 8.dp))
+            Text("Turn on the reader by pressing and holding the power button until the light is green and a sound plays")
+        }
+    }
 }
 
 @SuppressLint("MissingPermission", "LongMethod")
@@ -77,15 +98,22 @@ fun BuzzCardReaderConnectionScreen(
                     ConnectionState.Disconnected -> {
                         when (scanState) {
                             ScanningState.Idle -> {
-                                Button(onClick = { viewModel.startScan() }) { Text("Start scan") }
-                                Mrd5Icon(modifier = Modifier.size(342.dp))
+                                Text(text = "Connect BuzzCard reader", style = MaterialTheme.typography.headlineSmall)
+                                ConnectReaderInfo(modifier = Modifier.padding(top = 8.dp))
+                                TurnOnReaderInstructions(modifier = Modifier.padding(top = 8.dp))
+                                Button(
+                                    onClick = { viewModel.startScan() },
+                                    modifier = Modifier.padding(top = 8.dp)
+                                ) { Text("Search for readers") }
                             }
                             ScanningState.Active -> {
+                                Text(text = "Searching for readers", style = MaterialTheme.typography.headlineSmall)
+                                TurnOnReaderInstructions(modifier = Modifier.padding(top = 8.dp))
                                 ItemList(
                                     items = devices,
                                     onItemSelected = { viewModel.connect(it) },
                                     empty = { LoadingSpinner() },
-                                    title = { Text(text = "Found devices", style = MaterialTheme.typography.headlineSmall) },
+                                    title = { },
                                     postItem = { HorizontalDivider() },
                                     itemKey = {
                                         // Prevent IndexOutOfBoundsException when devices is reset to an empty list
@@ -114,10 +142,19 @@ fun BuzzCardReaderConnectionScreen(
                         Text("Device: $deviceName ($serialNumber)")
                         Text("Battery level: ${batteryLevel ?: "Unknown"}%")
 
-                        Button(
-                            onClick = { viewModel.disconnect() },
-                        ) {
-                            Text("Disconnect")
+                        Row {
+                            Button(
+                                onClick = { viewModel.disconnect() },
+                                modifier = Modifier.padding(end = 4.dp),
+                            ) {
+                                Text("Disconnect")
+                            }
+
+                            Button(
+                                onClick = { viewModel.findReader() },
+                            ) {
+                                Text("Find reader")
+                            }
                         }
 
                         if (!showAdvancedControls)
@@ -130,19 +167,13 @@ fun BuzzCardReaderConnectionScreen(
                         if (showAdvancedControls) {
                             HorizontalDivider()
                             Text("Connection status: $state")
-                            Text("Last BuzzCard tap: $buzzCardTaps")
+                            Text("Last BuzzCard tap: ${buzzCardTaps ?: "None"}")
                             HorizontalDivider()
                             Text("Firmware version: $firmwareVersion")
                             Text("Hardware version: $hardwareVersion")
                             Text("Software version: $softwareVersion")
                             Text("Bootloader version: $bootloaderVersion")
                             Text("Application version: $applicationVersion")
-                            HorizontalDivider()
-
-                            Button(onClick = { viewModel.mrd5Manager.sendCommands(listOf(Mrd5Command.Version)) }) {
-                                Text("Get version")
-                            }
-
                             HorizontalDivider()
 
                             Row(
@@ -169,11 +200,18 @@ fun BuzzCardReaderConnectionScreen(
                                 label = { Text("LED duration") }
                             )
                             Button(onClick = {
-                                viewModel.mrd5Manager.sendCommands(
-                                    listOf(
-                                        Mrd5Command.LED(ledColor, ledDuration.toInt().toDuration(DurationUnit.MILLISECONDS))
+                                try {
+                                    viewModel.mrd5Manager.sendCommands(
+                                        listOf(
+                                            Mrd5Command.LED(ledColor,
+                                                ledDuration.toInt()
+                                                    .toDuration(DurationUnit.MILLISECONDS)
+                                            )
+                                        )
                                     )
-                                )
+                                } catch (e: NumberFormatException) {
+                                    Timber.d(e, "Invalid LED duration: $ledDuration")
+                                }
                             }) {
                                 Text("Set LED")
                             }

@@ -7,7 +7,6 @@ import android.bluetooth.le.ScanSettings.MATCH_MODE_STICKY
 import android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY
 import androidx.annotation.RequiresPermission
 import com.juul.kable.Advertisement
-import com.juul.kable.GattStatusException
 import com.juul.kable.ObsoleteKableApi
 import com.juul.kable.Peripheral
 import com.juul.kable.PlatformAdvertisement
@@ -198,9 +197,9 @@ class Mrd5Manager @Inject constructor(
     }
 
     private suspend fun initialize() {
-        _connectionState.value = ConnectionState.Initializing
-        deviceInfoUUIDs.forEach {
-            try {
+        try {
+            _connectionState.value = ConnectionState.Initializing
+            deviceInfoUUIDs.forEach {
                 val value = peripheral.read(
                     characteristic = characteristicOf(
                         service = DEVICE_INFO_SERVICE_UUID,
@@ -208,18 +207,30 @@ class Mrd5Manager @Inject constructor(
                     )
                 )
                 when (it) {
-                    MODEL_NUMBER_CHAR_UUID -> _deviceModel.value = String(value, Charsets.US_ASCII)
-                    SERIAL_NUMBER_CHAR_UUID -> _deviceSerialNumber.value = String(value, Charsets.US_ASCII)
-                    FIRMWARE_REVISION_CHAR_UUID -> _deviceFirmwareVersion.value = String(value, Charsets.US_ASCII)
-                    HARDWARE_REVISION_CHAR_UUID -> _deviceHardwareVersion.value = String(value, Charsets.US_ASCII)
-                    SOFTWARE_REVISION_CHAR_UUID -> _deviceSoftwareVersion.value = String(value, Charsets.US_ASCII)
-                    MANUFACTURER_CHAR_UUID -> _deviceManufacturer.value = String(value, Charsets.US_ASCII)
+                    MODEL_NUMBER_CHAR_UUID -> _deviceModel.value =
+                        String(value, Charsets.US_ASCII)
+
+                    SERIAL_NUMBER_CHAR_UUID -> _deviceSerialNumber.value =
+                        String(value, Charsets.US_ASCII)
+
+                    FIRMWARE_REVISION_CHAR_UUID -> _deviceFirmwareVersion.value =
+                        String(value, Charsets.US_ASCII)
+
+                    HARDWARE_REVISION_CHAR_UUID -> _deviceHardwareVersion.value =
+                        String(value, Charsets.US_ASCII)
+
+                    SOFTWARE_REVISION_CHAR_UUID -> _deviceSoftwareVersion.value =
+                        String(value, Charsets.US_ASCII)
+
+                    MANUFACTURER_CHAR_UUID -> _deviceManufacturer.value =
+                        String(value, Charsets.US_ASCII)
                 }
-            } catch (e: GattStatusException) {
-                peripheral.disconnect()
-                _error.value = "Reader connection failed"
-                Timber.e(e, "Failed reading device info")
+
             }
+        } catch (e: Exception) {
+            peripheral.disconnect()
+            _error.value = "Reader connection failed"
+            Timber.e(e, "Failed initializing device")
         }
     }
 
@@ -264,9 +275,8 @@ class Mrd5Manager @Inject constructor(
 
         advertisement?.let {
             _deviceName.value = it.name
-            globalSettings.mrd5DeviceMac = it.identifier // FIXME: this is in the wrong spot probably
+            globalSettings.mrd5DeviceMac = it.identifier
             peripheral = Peripheral(it) {
-
                 logging {
                     level = Logging.Level.Data
                     data = Logging.DataProcessor { bytes, _, _, _, _ ->
@@ -276,36 +286,53 @@ class Mrd5Manager @Inject constructor(
                 onServicesDiscovered {
                     initialize()
                 }
+                observationExceptionHandler { e ->
+                    Timber.e(e, "Error in peripheral observation")
+                }
             }
-            connectionScope = peripheral.connect()
+            try {
+                connectionScope = peripheral.connect()
+            } catch (e: Exception) {
+                Timber.e(e, "Error connecting to reader")
+                _error.value = "Reader connection failed"
+                peripheral.disconnect()
+                return
+            }
+
             connectionScope?.launch {
-                var attempts = 0
-                val maxAttempts = 15
-                while (_batteryLevel.value == null && ++attempts <= maxAttempts) {
-                    Timber.d("Wait for battery level - attempt $attempts/$maxAttempts")
-                    delay(1.seconds)
-                }
-                if (attempts <= maxAttempts) {
-                    Timber.d("Got battery level")
-                } else {
-                    Timber.w("Timed out getting battery status")
-                    _error.value = "Reader connection failed"
-                    peripheral.disconnect()
-                }
-                _connectionState.value = ConnectionState.WaitingForPairing
+                try {
+                    var attempts = 0
+                    val maxAttempts = 15
+                    while (_batteryLevel.value == null && ++attempts <= maxAttempts) {
+                        Timber.d("Wait for battery level - attempt $attempts/$maxAttempts")
+                        delay(1.seconds)
+                    }
+                    if (attempts <= maxAttempts) {
+                        Timber.d("Got battery level")
+                    } else {
+                        Timber.w("Timed out getting battery status")
+                        _error.value = "Reader connection failed"
+                        peripheral.disconnect()
+                    }
+                    _connectionState.value = ConnectionState.WaitingForPairing
 
-                attempts = 0
-                while ((_applicationVersion.value == null || _bootloaderVersion.value == null) && ++attempts <= maxAttempts) {
-                    sendCommands(listOf(Mrd5Command.Version))
-                    Timber.d("Wait for version - attempt $attempts/$maxAttempts")
-                    delay(1.seconds)
-                }
+                    attempts = 0
+                    while ((_applicationVersion.value == null || _bootloaderVersion.value == null) && ++attempts <= maxAttempts) {
+                        sendCommands(listOf(Mrd5Command.Version))
+                        Timber.d("Wait for version - attempt $attempts/$maxAttempts")
+                        delay(1.seconds)
+                    }
 
-                if (attempts <= maxAttempts) {
-                    _connectionState.value = ConnectionState.Connected
-                    storeDevice()
-                } else {
-                    Timber.w("Timed out getting battery status")
+                    if (attempts <= maxAttempts) {
+                        _connectionState.value = ConnectionState.Connected
+                        storeDevice()
+                    } else {
+                        Timber.w("Timed out getting battery status")
+                        _error.value = "Reader connection failed"
+                        peripheral.disconnect()
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e, "Error connecting to reader")
                     _error.value = "Reader connection failed"
                     peripheral.disconnect()
                 }
@@ -342,14 +369,18 @@ class Mrd5Manager @Inject constructor(
 
     fun sendCommands(commands: List<Mrd5Command>) {
         connectionScope?.launch {
-            val response = peripheral.write(
-                characteristicOf(
-                service = MLDP_SERVICE_UUID,
-                characteristic = MLDP_DATA_UUID,
-            ),
-                data = Mrd5Command.combined(commands).toByteArray(), WriteType.WithResponse
-            )
-            Timber.d("Command response: $response")
+            try {
+                val response = peripheral.write(
+                    characteristicOf(
+                        service = MLDP_SERVICE_UUID,
+                        characteristic = MLDP_DATA_UUID,
+                    ),
+                    data = Mrd5Command.combined(commands).toByteArray(), WriteType.WithResponse
+                )
+                Timber.d("Command response: $response")
+            } catch (e: Exception) {
+                Timber.e(e, "Error sending command")
+            }
         }
     }
 
@@ -369,6 +400,25 @@ class Mrd5Manager @Inject constructor(
         )
     )
 
+
+    fun doFindReader() {
+        try {
+            connectionScope?.launch {
+                repeat(3) {
+                    sendCommands(
+                        listOf(
+                            Mrd5Command.Tone(Mrd5Tone.Warble),
+                            Mrd5Command.LED("777", 1500.milliseconds),
+                        )
+                    )
+                    delay(1500.milliseconds)
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error sending find reader command")
+        }
+    }
+
     private val rxBuffer = StringBuilder()
     private var debounceJob: Job? = null
 
@@ -385,23 +435,26 @@ class Mrd5Manager @Inject constructor(
                 return@launch
             }
 
-//            Timber.d("handleRx - raw is $raw")
             val transmissions = Mrd5Transmission.fromString(raw)
             transmissions.forEach { transmission ->
                 when (transmission) {
                     is Mrd5Transmission.BuzzCard -> {
                         _buzzCardTaps.emit(transmission.tap)
                     }
+
                     is Mrd5Transmission.BatteryLevel -> {
                         _batteryLevel.value = transmission.level
                     }
+
                     is Mrd5Transmission.DeviceInfo -> {
                         _bootloaderVersion.value = transmission.bootloaderVersion
                         _applicationVersion.value = transmission.applicationVersion
                     }
+
                     is Mrd5Transmission.GenericResponse -> {
                         Timber.d("handleRx - generic response: $transmission")
                     }
+
                     is Mrd5Transmission.Unknown -> {
                         // This is a slightly hacky way to only play the error chirp for transmissions related to a
                         // clobbered BuzzCard read, since there can be other unknown transmissions

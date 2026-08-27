@@ -57,4 +57,6 @@ class BuzzCardReaderViewModel @Inject constructor(
     }
 
     fun disconnect() = mrd5Manager.disconnect()
+
+    fun findReader() = mrd5Manager.doFindReader()
 }
