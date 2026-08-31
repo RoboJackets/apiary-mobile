@@ -39,6 +39,41 @@ fun ApparelIcon(
 }
 
 @Composable
+fun DynamicBatteryIcon(
+    modifier: Modifier = Modifier,
+    normalTint: Color = MaterialTheme.colorScheme.onSurface,
+    lowTint: Color = MaterialTheme.colorScheme.error,
+    batteryLevel: Int,
+    isCharging: Boolean,
+    contentDescription: String? = null,
+    lowBatteryThreshold: Int = 15,
+) {
+    var iconId = R.drawable.ic_outline_battery_android_full_24dp
+
+    when (isCharging) {
+        true -> iconId = R.drawable.ic_outline_battery_android_frame_bolt_24dp
+        false -> when (batteryLevel) {
+            in 96..100 -> iconId = R.drawable.ic_outline_battery_android_full_24dp
+            in 86..95 -> iconId = R.drawable.ic_outline_battery_android_6_24dp
+            in 71..85 -> iconId = R.drawable.ic_outline_battery_android_5_24dp
+            in 51..70 -> iconId = R.drawable.ic_outline_battery_android_4_24dp
+            in 36..50 -> iconId = R.drawable.ic_outline_battery_android_3_24dp
+            in 16..30 -> iconId = R.drawable.ic_outline_battery_android_2_24dp
+            in 6..15 -> iconId = R.drawable.ic_outline_battery_android_1_24dp
+            in 0..5 -> iconId = R.drawable.ic_outline_battery_android_0_24dp
+        }
+    }
+
+    Icon(
+        painter = painterResource(id = iconId),
+        tint = if (batteryLevel <= lowBatteryThreshold) lowTint else normalTint,
+        modifier = modifier,
+        contentDescription = contentDescription,
+    )
+}
+
+
+@Composable
 fun BluetoothIcon(
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.onSurface,

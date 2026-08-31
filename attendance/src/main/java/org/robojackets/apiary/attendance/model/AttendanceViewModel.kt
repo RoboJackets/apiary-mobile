@@ -182,6 +182,10 @@ class AttendanceViewModel @Inject constructor(
         navManager.navigate(NavigationActions.Attendance.attendanceToAttendableTypeSelect())
     }
 
+    fun navigateToBuzzCardReaderSettings() {
+        navManager.navigate(NavigationActions.Settings.anyScreenToBuzzCardReaderConnection())
+    }
+
     fun onAttendableSelected(attendable: Attendable) {
         navManager.navigate(
             NavigationActions.Attendance.attendableSelectionToAttendance(

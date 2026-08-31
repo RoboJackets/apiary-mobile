@@ -56,6 +56,9 @@ fun MerchandiseDistributionScreen(
                 onNavigateToMerchandiseIndex = {
                     viewModel.navigateToMerchandiseIndex()
                                                },
+                onNavigateToBuzzCardReaderSettings = {
+                    viewModel.navigateToBuzzCardReaderSettings()
+                }
             )
         }
     }

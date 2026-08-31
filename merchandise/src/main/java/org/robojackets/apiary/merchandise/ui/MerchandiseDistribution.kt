@@ -39,6 +39,7 @@ fun MerchandiseDistribution(
     onConfirmPickup: () -> Unit,
     onDismissPickupDialog: () -> Unit,
     onNavigateToMerchandiseIndex: () -> Unit,
+    onNavigateToBuzzCardReaderSettings: () -> Unit,
 ) {
     MerchandiseDialog(
         state = state,
@@ -89,7 +90,8 @@ fun MerchandiseDistribution(
                     onBuzzcardTap(it)
                 },
                 mrd5Manager = mrd5Manager,
-                externalError = null
+                externalError = null,
+                onNavigateToBuzzCardReaderSettings = { onNavigateToBuzzCardReaderSettings() }
             )
 
             when (state.screenState) {

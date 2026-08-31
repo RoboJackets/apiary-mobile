@@ -81,6 +81,10 @@ class Mrd5Manager @Inject constructor(
     private val _batteryLevel = MutableStateFlow<Int?>(null)
     val batteryLevel = _batteryLevel.asStateFlow()
 
+    private val _isCharging = MutableStateFlow<Boolean?>(null)
+    val isCharging = _isCharging.asStateFlow()
+
+
     private val _deviceName = MutableStateFlow<String?>(null)
     val deviceName = _deviceName.asStateFlow()
 
@@ -123,6 +127,7 @@ class Mrd5Manager @Inject constructor(
     private lateinit var peripheral: Peripheral
     private var connectionScope: CoroutineScope? = null
     private val managerScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private var userDisconnectRequested: Boolean = false
 
     private val deviceInfoUUIDs = listOf(
         MODEL_NUMBER_CHAR_UUID,
@@ -228,8 +233,7 @@ class Mrd5Manager @Inject constructor(
 
             }
         } catch (e: Exception) {
-            peripheral.disconnect()
-            _error.value = "Reader connection failed"
+            disconnect("Reader connection failed")
             Timber.e(e, "Failed initializing device")
         }
     }
@@ -265,6 +269,7 @@ class Mrd5Manager @Inject constructor(
     @OptIn(ObsoleteKableApi::class)
     @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
     suspend fun connect(advertisement: Advertisement?) {
+        userDisconnectRequested = false
         if (advertisement == null) {
             _error.value = "Reader connection failed"
             Timber.w("peripheral was null, ignoring")
@@ -294,8 +299,7 @@ class Mrd5Manager @Inject constructor(
                 connectionScope = peripheral.connect()
             } catch (e: Exception) {
                 Timber.e(e, "Error connecting to reader")
-                _error.value = "Reader connection failed"
-                peripheral.disconnect()
+                disconnect("Reader connection failed")
                 return
             }
 
@@ -311,8 +315,7 @@ class Mrd5Manager @Inject constructor(
                         Timber.d("Got battery level")
                     } else {
                         Timber.w("Timed out getting battery status")
-                        _error.value = "Reader connection failed"
-                        peripheral.disconnect()
+                        disconnect("Reader connection failed")
                     }
                     _connectionState.value = ConnectionState.WaitingForPairing
 
@@ -328,13 +331,11 @@ class Mrd5Manager @Inject constructor(
                         storeDevice()
                     } else {
                         Timber.w("Timed out getting battery status")
-                        _error.value = "Reader connection failed"
-                        peripheral.disconnect()
+                        disconnect("Reader connection failed")
                     }
                 } catch (e: Exception) {
                     Timber.e(e, "Error connecting to reader")
-                    _error.value = "Reader connection failed"
-                    peripheral.disconnect()
+                    disconnect("Reader connection failed")
                 }
             }
 
@@ -361,9 +362,17 @@ class Mrd5Manager @Inject constructor(
         }
     }
 
-    fun disconnect() {
+    fun disconnect(error: String? = null, isUserDisconnect: Boolean = false) {
         managerScope.launch {
+            if (isUserDisconnect) {
+                userDisconnectRequested = true
+            }
+
             peripheral.disconnect()
+            if (error != null && !userDisconnectRequested) {
+                _error.value = error
+            }
+            _connectionState.value = ConnectionState.Disconnected
         }
     }
 
@@ -444,6 +453,7 @@ class Mrd5Manager @Inject constructor(
 
                     is Mrd5Transmission.BatteryLevel -> {
                         _batteryLevel.value = transmission.level
+                        _isCharging.value = transmission.isCharging
                     }
 
                     is Mrd5Transmission.DeviceInfo -> {

@@ -111,7 +111,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun navigateToBuzzCardReaderConnection() {
-        navigationManager.navigate(NavigationActions.Settings.settingsIndexToBuzzCardReaderConnection())
+        navigationManager.navigate(NavigationActions.Settings.anyScreenToBuzzCardReaderConnection())
     }
 
     fun getCustomTabsIntent(toolbarColor: Int = webNavBarBackground.toArgb()): CustomTabsIntent {

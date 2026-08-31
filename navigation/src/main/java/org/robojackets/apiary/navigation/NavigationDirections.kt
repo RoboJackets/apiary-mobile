@@ -112,7 +112,7 @@ object NavigationActions {
     }
 
     object Settings {
-        fun settingsIndexToBuzzCardReaderConnection() = object : NavigationAction {
+        fun anyScreenToBuzzCardReaderConnection() = object : NavigationAction {
             override val destination = NavigationDestinations.settingsBuzzCardReaderConnection
         }
     }

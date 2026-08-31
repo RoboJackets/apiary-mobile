@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,20 +43,20 @@ fun ConnectingToReader() {
 }
 
 @Composable
-fun ConnectReaderInfo(modifier: Modifier = Modifier) {
+fun ConnectReaderInfo(modifier: Modifier = Modifier, showIcon: Boolean = true) {
     ListItem(modifier) {
         Row {
-            InfoIcon(modifier = Modifier.padding(end = 8.dp))
+            InfoIcon(modifier = Modifier.padding(end = 8.dp).alpha(if (showIcon) 1f else 0f))
             Text("MyRJ can read plastic and digital BuzzCards using an external reader")
         }
     }
 }
 
 @Composable
-fun TurnOnReaderInstructions(modifier: Modifier = Modifier) {
+fun TurnOnReaderInstructions(modifier: Modifier = Modifier, showIcon: Boolean = true) {
     ListItem(modifier) {
         Row {
-            InfoIcon(modifier = Modifier.padding(end = 8.dp))
+            InfoIcon(modifier = Modifier.padding(end = 8.dp).alpha(if (showIcon) 1f else 0f))
             Text("Turn on the reader by pressing and holding the power button until the light is green and a sound plays")
         }
     }
@@ -100,7 +101,7 @@ fun BuzzCardReaderConnectionScreen(
                             ScanningState.Idle -> {
                                 Text(text = "Connect BuzzCard reader", style = MaterialTheme.typography.headlineSmall)
                                 ConnectReaderInfo(modifier = Modifier.padding(top = 8.dp))
-                                TurnOnReaderInstructions(modifier = Modifier.padding(top = 8.dp))
+                                TurnOnReaderInstructions(modifier = Modifier.padding(top = 8.dp), showIcon = false)
                                 Button(
                                     onClick = { viewModel.startScan() },
                                     modifier = Modifier.padding(top = 8.dp)
@@ -129,13 +130,18 @@ fun BuzzCardReaderConnectionScreen(
                             }
                         }
                     }
-                    ConnectionState.Connecting -> {
+                    ConnectionState.Connecting, ConnectionState.Initializing, ConnectionState.WaitingForPairing -> {
                         ConnectingToReader()
-                        LoadingSpinner()
-                    }
-                    ConnectionState.Initializing, ConnectionState.WaitingForPairing -> {
-                        ConnectingToReader()
-                        LoadingSpinner { Text("Press Pair & Connect in the system notification if prompted", textAlign = TextAlign.Center) }
+                        LoadingSpinner {
+                            Text("Press Pair & Connect in the system notification if prompted", textAlign = TextAlign.Center)
+                            Button(
+                                onClick = { viewModel.disconnect(isUserDisconnect = true) },
+                                modifier = Modifier.padding(top = 8.dp),
+                            ) {
+                                Text("Cancel")
+                            }
+                        }
+
                     }
                     ConnectionState.Connected -> {
                         Text(text = "Reader connected", style = MaterialTheme.typography.headlineSmall)
@@ -144,7 +150,7 @@ fun BuzzCardReaderConnectionScreen(
 
                         Row {
                             Button(
-                                onClick = { viewModel.disconnect() },
+                                onClick = { viewModel.disconnect(isUserDisconnect = true) },
                                 modifier = Modifier.padding(end = 4.dp),
                             ) {
                                 Text("Disconnect")

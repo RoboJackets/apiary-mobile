@@ -67,6 +67,7 @@ private fun Attendance(
     mrd5Manager: Mrd5Manager,
     onBuzzcardTap: (buzzcardTap: BuzzCardTap) -> Unit,
     onNavigateToAttendableSelection: () -> Unit,
+    onNavigateToBuzzCardReaderSettings: () -> Unit,
 ) {
 
     if (viewState.selectedAttendable == null) {
@@ -100,7 +101,8 @@ private fun Attendance(
             nfcLib = nfcLib,
             mrd5Manager = mrd5Manager,
             onBuzzCardTap = onBuzzcardTap,
-            externalError = getExternalError(viewState.error)
+            externalError = getExternalError(viewState.error),
+            onNavigateToBuzzCardReaderSettings = { onNavigateToBuzzCardReaderSettings() }
         )
 
         if (viewState.screenState == Loading) {
@@ -163,6 +165,9 @@ fun AttendanceScreen(
                 },
                 onNavigateToAttendableSelection = {
                     viewModel.navigateToAttendableSelection()
+                },
+                onNavigateToBuzzCardReaderSettings = {
+                    viewModel.navigateToBuzzCardReaderSettings()
                 }
             )
         }

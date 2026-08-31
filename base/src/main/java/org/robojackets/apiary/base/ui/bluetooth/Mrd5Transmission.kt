@@ -4,11 +4,14 @@ import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource
 import timber.log.Timber
 
-private fun parseBatteryLevel(str: String): Int? {
-    val regex = Regex("""BATT:(?<batteryLevel>\d{1,3})/-?\d+""")
+private fun parseBatteryLevel(str: String): Mrd5Transmission.BatteryLevel? {
+    val regex = Regex("""BATT:(?<batteryLevel>\d{1,3})/(?<isCharging>-?)\d+""")
     regex.matchEntire(str)?.let { matchResult ->
-        matchResult.groups["batteryLevel"]?.let {
-            return it.value.toInt()
+        val batteryLevel = matchResult.groups["batteryLevel"]?.value
+        val isCharging = matchResult.groups["isCharging"]?.value == "-"
+
+        if (batteryLevel != null) {
+            return Mrd5Transmission.BatteryLevel(batteryLevel.toInt(), isCharging)
         }
     }
     return null
@@ -67,7 +70,7 @@ private fun parseGenericResponse(str: String): Mrd5Transmission.GenericResponse?
 
 sealed interface Mrd5Transmission {
     data class BuzzCard(val tap: BuzzCardTap) : Mrd5Transmission
-    data class BatteryLevel(val level: Int) : Mrd5Transmission
+    data class BatteryLevel(val level: Int, val isCharging: Boolean) : Mrd5Transmission
 
     data class GenericResponse(val str: String) : Mrd5Transmission
     data class DeviceInfo(
@@ -98,7 +101,7 @@ sealed interface Mrd5Transmission {
 
                     val batteryLevel = parseBatteryLevel(chunk)
                     if (batteryLevel != null) {
-                        result.add(BatteryLevel(batteryLevel))
+                        result.add(batteryLevel)
                         continue
                     }
 

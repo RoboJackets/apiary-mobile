@@ -74,6 +74,7 @@ fun BuzzCardPrompt(
     nfcLib: NxpNfcLib,
     mrd5Manager: Mrd5Manager,
     onBuzzCardTap: (buzzCardTap: BuzzCardTap) -> Unit,
+    onNavigateToBuzzCardReaderSettings: () -> Unit,
     externalError: BuzzCardPromptExternalError?,
 ) {
     var error by remember { mutableStateOf<BuzzCardPromptError?>(null) }
@@ -84,6 +85,9 @@ fun BuzzCardPrompt(
     // tapping many BuzzCards as quickly as possible
 
     val mrd5ConnectionState by mrd5Manager.connectionState.collectAsStateWithLifecycle()
+    val mrd5BatteryLevel by mrd5Manager.batteryLevel.collectAsStateWithLifecycle()
+    val mrd5BatteryIsCharging by mrd5Manager.isCharging.collectAsStateWithLifecycle()
+
 
     acceptMrd5Taps = true
     nfcLib.enableReaderMode(
@@ -203,7 +207,13 @@ fun BuzzCardPrompt(
             }
             when (mrd5ConnectionState) {
                 ConnectionState.Connected -> {
-                    Mrd5ConnectedChip()
+                    Mrd5ConnectedChip(
+                        batteryLevel = mrd5BatteryLevel,
+                        isBatteryCharging = mrd5BatteryIsCharging,
+                        onNavigateToBuzzCardReaderSettings = {
+                            onNavigateToBuzzCardReaderSettings()
+                        }
+                    )
                 }
                 ConnectionState.Connecting, ConnectionState.Initializing, ConnectionState.WaitingForPairing -> {
                     Mrd5ConnectingChip()
