@@ -7,26 +7,34 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.keepScreenOn
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.nxp.nfclib.NxpNfcLib
-import org.robojackets.apiary.attendance.model.AttendanceScreenState.*
+import org.robojackets.apiary.attendance.model.AttendanceScreenState.Loading
+import org.robojackets.apiary.attendance.model.AttendanceScreenState.ReadyForTap
 import org.robojackets.apiary.attendance.model.AttendanceState
 import org.robojackets.apiary.attendance.model.AttendanceViewModel
+import org.robojackets.apiary.attendance.ui.AttendeeCountCelebration
 import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.ui.ActionPrompt
+import org.robojackets.apiary.base.ui.CurrentlySelectedItem
 import org.robojackets.apiary.base.ui.IconWithText
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5Manager
+import org.robojackets.apiary.base.ui.icons.AccountCircleIcon
+import org.robojackets.apiary.base.ui.icons.EventIcon
+import org.robojackets.apiary.base.ui.icons.GroupsIcon
 import org.robojackets.apiary.base.ui.icons.PendingIcon
 import org.robojackets.apiary.base.ui.icons.WarningIcon
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPrompt
@@ -34,6 +42,7 @@ import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptExternalError
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
 import org.robojackets.apiary.base.ui.theme.danger
 import org.robojackets.apiary.base.ui.util.ContentPadding
+import org.robojackets.apiary.base.ui.util.IconRow
 import org.robojackets.apiary.base.ui.util.LoadingSpinner
 
 private fun getExternalError(error: String?): BuzzCardPromptExternalError? {
@@ -44,11 +53,19 @@ private fun getExternalError(error: String?): BuzzCardPromptExternalError? {
     return null
 }
 
+private fun getAttendableIcon(attendableType: AttendableType): @Composable () -> Unit = {
+    when (attendableType) {
+        AttendableType.Team -> { GroupsIcon() }
+        AttendableType.Event -> { EventIcon() }
+    }
+}
+
 @Suppress("LongMethod", "MagicNumber")
 @Composable
 private fun Attendance(
     viewState: AttendanceState,
     nfcLib: NxpNfcLib,
+    mrd5Manager: Mrd5Manager,
     onBuzzcardTap: (buzzcardTap: BuzzCardTap) -> Unit,
     onNavigateToAttendableSelection: () -> Unit,
 ) {
@@ -64,36 +81,27 @@ private fun Attendance(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Column(Modifier.fillMaxWidth()) {
-            Text("Recording attendance for ${viewState.selectedAttendable.name}")
-            Text("Last attendee: ${viewState.lastAttendee?.name ?: "None"}")
-
-            Button(
-                onClick = {
-                    onNavigateToAttendableSelection()
-                },
-                Modifier
-                    .align(CenterHorizontally)
-                    .padding(top = 8.dp)
-            ) {
-                Text("Change team or event")
-            }
-
-            when (viewState.totalAttendees) {
-                5 -> Text("🔥 5 attendees recorded. You're on a roll!")
-                10 -> Text("👑 10 attendees. You're awesome!")
-                25 -> Text("🎸 25 attendees! You're a rockstar!")
-                42 -> Text("4️⃣2️⃣ The meaning of life.")
-                50 -> Text("🎉 50 attendees! Is this GI?")
-                100 -> Text("💯 100 ATTENDEES! Go give yourself a prize!")
-            }
+        Column(Modifier.fillMaxWidth().keepScreenOn()) {
+            Text("Record attendance", style = MaterialTheme.typography.headlineSmall)
+            CurrentlySelectedItem(
+                name = viewState.selectedAttendable.name,
+                icon = getAttendableIcon(viewState.selectedAttendable.type),
+                onChangeItem = onNavigateToAttendableSelection
+            )
+            IconRow(
+                icon = { AccountCircleIcon() },
+                text = "Last attendee: ${viewState.lastAttendee?.name ?: "None"}",
+                button = {}
+            )
+            AttendeeCountCelebration(viewState.totalAttendees)
         }
 
         BuzzCardPrompt(
             hidePrompt = viewState.screenState != ReadyForTap,
             nfcLib = nfcLib,
+            mrd5Manager = mrd5Manager,
             onBuzzCardTap = onBuzzcardTap,
-            externalError = getExternalError(viewState.error)
+            externalError = getExternalError(viewState.error),
         )
 
         if (viewState.screenState == Loading) {
@@ -117,6 +125,7 @@ private fun Attendance(
 fun AttendanceScreen(
     viewModel: AttendanceViewModel,
     nfcLib: NxpNfcLib,
+    mrd5Manager: Mrd5Manager,
     attendableType: AttendableType,
     attendableId: Int,
 ) {
@@ -149,12 +158,13 @@ fun AttendanceScreen(
             Attendance(
                 state,
                 nfcLib,
+                mrd5Manager,
                 onBuzzcardTap = {
                     viewModel.recordScan(it)
                 },
                 onNavigateToAttendableSelection = {
                     viewModel.navigateToAttendableSelection()
-                }
+                },
             )
         }
     }

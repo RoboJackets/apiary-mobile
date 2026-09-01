@@ -5,6 +5,7 @@ import android.nfc.NfcManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.StringRes
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -28,7 +29,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -54,6 +54,7 @@ import org.robojackets.apiary.auth.oauth2.AuthManager
 import org.robojackets.apiary.auth.ui.AuthenticationScreen
 import org.robojackets.apiary.base.GlobalSettings
 import org.robojackets.apiary.base.model.AttendableType
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5Manager
 import org.robojackets.apiary.base.ui.icons.ContactlessIcon
 import org.robojackets.apiary.base.ui.icons.SettingsIcon
 import org.robojackets.apiary.base.ui.icons.StorefrontIcon
@@ -67,6 +68,7 @@ import org.robojackets.apiary.navigation.NavigationDestinations
 import org.robojackets.apiary.navigation.NavigationManager
 import org.robojackets.apiary.ui.global.AppTopBar
 import org.robojackets.apiary.ui.settings.SettingsScreen
+import org.robojackets.apiary.ui.settings.buzzCardReader.BuzzCardReaderConnectionScreen
 import org.robojackets.apiary.ui.update.OptionalUpdatePrompt
 import org.robojackets.apiary.ui.update.RequiredUpdatePrompt
 import org.robojackets.apiary.ui.update.UpdateGate
@@ -127,6 +129,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var nfcLib: NxpNfcLib
 
+    @Inject
+    lateinit var mrd5Manager: Mrd5Manager
+
     // Based on https://stackoverflow.com/a/66838316
     @Composable
     fun currentRoute(navController: NavHostController): String? {
@@ -143,6 +148,8 @@ class MainActivity : ComponentActivity() {
     @Suppress("LongMethod")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        enableEdgeToEdge()
 
         val navItems = listOf(
             Screen.Attendance,
@@ -161,7 +168,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Apiary_MobileTheme {
-                window.statusBarColor = MaterialTheme.colorScheme.secondary.toArgb()
                 val navController = rememberNavController()
                 val bottomSheetNavigator = rememberBottomSheetNavigator()
                 navController.navigatorProvider += bottomSheetNavigator
@@ -316,6 +322,7 @@ class MainActivity : ComponentActivity() {
                     AttendanceScreen(
                         hiltViewModel(),
                         nfcLib,
+                        mrd5Manager,
                         AttendableType.valueOf(attendableType as String),
                         attendableId as Int
                     )
@@ -341,6 +348,7 @@ class MainActivity : ComponentActivity() {
                     MerchandiseDistributionScreen(
                         hiltViewModel(),
                         nfcLib,
+                        mrd5Manager,
                         merchandiseItemId as Int
                     )
                 }
@@ -352,6 +360,10 @@ class MainActivity : ComponentActivity() {
             ) {
                 composable(NavigationDestinations.settings) {
                     SettingsScreen(hiltViewModel())
+                }
+
+                composable(NavigationDestinations.settingsBuzzCardReaderConnection) {
+                    BuzzCardReaderConnectionScreen(hiltViewModel())
                 }
             }
 

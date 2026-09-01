@@ -110,6 +110,10 @@ class SettingsViewModel @Inject constructor(
         navigationManager.navigate(NavigationActions.UpdatePrompts.anyScreenToUpdateInProgress())
     }
 
+    fun navigateToBuzzCardReaderConnection() {
+        navigationManager.navigate(NavigationActions.Settings.anyScreenToBuzzCardReaderConnection())
+    }
+
     fun getCustomTabsIntent(toolbarColor: Int = webNavBarBackground.toArgb()): CustomTabsIntent {
         val customTabsBuilder = CustomTabsIntent.Builder()
 

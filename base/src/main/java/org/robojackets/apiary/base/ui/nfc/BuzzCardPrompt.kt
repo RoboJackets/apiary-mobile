@@ -24,6 +24,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nxp.nfclib.CardType
 import com.nxp.nfclib.NxpNfcLib
 import com.nxp.nfclib.desfire.DESFireFactory
@@ -31,9 +32,13 @@ import com.nxp.nfclib.exceptions.NxpNfcLibException
 import kotlinx.coroutines.android.awaitFrame
 import org.robojackets.apiary.base.ui.ActionPrompt
 import org.robojackets.apiary.base.ui.IconWithText
+import org.robojackets.apiary.base.ui.bluetooth.ConnectionState
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5ConnectedChip
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5ConnectingChip
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5Manager
 import org.robojackets.apiary.base.ui.icons.ContactlessIcon
-import org.robojackets.apiary.base.ui.icons.CreditCardIcon
 import org.robojackets.apiary.base.ui.icons.ErrorIcon
+import org.robojackets.apiary.base.ui.icons.IdCardIcon
 import org.robojackets.apiary.base.ui.icons.WarningIcon
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.InvalidBuzzCardData
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPromptError.NotABuzzCard
@@ -55,6 +60,9 @@ import java.nio.charset.StandardCharsets
  *
  * As an alternative, you can use the hidePrompt parameter to hide the displayed UI elements from
  * this composable, making it hidden whilst also not allowing it to be disposed.
+ *
+ * If an MRD5 BuzzCard reader is connected to the device over Bluetooth, then any readings it sends
+ * will also be accepted.
  */
 val GTID_REGEX = Regex("90[0-9]{7}")
 const val GTID_LENGTH = 9
@@ -64,14 +72,22 @@ const val GTID_LENGTH = 9
 fun BuzzCardPrompt(
     hidePrompt: Boolean,
     nfcLib: NxpNfcLib,
+    mrd5Manager: Mrd5Manager,
     onBuzzCardTap: (buzzCardTap: BuzzCardTap) -> Unit,
     externalError: BuzzCardPromptExternalError?,
 ) {
     var error by remember { mutableStateOf<BuzzCardPromptError?>(null) }
     var lastTap by remember { mutableStateOf<BuzzCardTap?>(null) }
+    var acceptMrd5Taps by remember { mutableStateOf(false) }
     val nfcPresenceDelayCheckMs = 50 // the minimum number of ms allowed between successive NFC
     // tag reads. Lower is better, but too low seems to cause an increase in NFC read errors when
     // tapping many BuzzCards as quickly as possible
+
+    val mrd5ConnectionState by mrd5Manager.connectionState.collectAsStateWithLifecycle()
+    val mrd5BatteryLevel by mrd5Manager.batteryLevel.collectAsStateWithLifecycle()
+    val mrd5BatteryIsCharging by mrd5Manager.isCharging.collectAsStateWithLifecycle()
+
+    acceptMrd5Taps = true
     nfcLib.enableReaderMode(
         nfcPresenceDelayCheckMs,
         {
@@ -145,17 +161,26 @@ fun BuzzCardPrompt(
         NfcAdapter.FLAG_READER_NFC_A // NFC adapter flags, BuzzCards are Type A according to TagInfo
     )
 
+    LaunchedEffect(acceptMrd5Taps) {
+        if (acceptMrd5Taps) {
+            mrd5Manager.buzzCardTaps.collect { buzzCardTap -> onBuzzCardTap(buzzCardTap) }
+        }
+    }
+
     // Make sure we stop responding to card taps when this Composable is disposed (no longer on
     // screen)
     DisposableEffect(Unit) {
         onDispose {
             nfcLib.disableReaderMode()
+            acceptMrd5Taps = false
         }
     }
 
     var showGtidPrompt by remember { mutableStateOf(false) }
     if (!hidePrompt) {
-        Column {
+        Column(
+            horizontalAlignment = CenterHorizontally,
+        ) {
             if (externalError != null) {
                 ExternalError(externalError)
             } else {
@@ -172,6 +197,18 @@ fun BuzzCardPrompt(
                 Modifier.align(CenterHorizontally)
             ) {
                 Text("Enter GTID manually")
+            }
+            when (mrd5ConnectionState) {
+                ConnectionState.Connected -> {
+                    Mrd5ConnectedChip(
+                        batteryLevel = mrd5BatteryLevel,
+                        isBatteryCharging = mrd5BatteryIsCharging,
+                    )
+                }
+                ConnectionState.Connecting, ConnectionState.Initializing, ConnectionState.WaitingForPairing -> {
+                    Mrd5ConnectingChip()
+                }
+                else -> {}
             }
         }
     }
@@ -247,7 +284,7 @@ fun ManualGtidEntryPrompt(
                         .focusRequester(focusRequester), // Focuses this field and shows the keyboard
                     // when this text field is visible on screen. See https://stackoverflow.com/a/76321706
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    leadingIcon = { CreditCardIcon() }
+                    leadingIcon = { IdCardIcon() }
                 )
             }
         }

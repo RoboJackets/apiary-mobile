@@ -22,7 +22,9 @@ import org.robojackets.apiary.base.model.AttendableType
 import org.robojackets.apiary.base.model.Event
 import org.robojackets.apiary.base.model.Team
 import org.robojackets.apiary.base.repository.MeetingsRepository
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5Manager
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
+import org.robojackets.apiary.base.ui.nfc.BuzzCardTapSource
 import org.robojackets.apiary.navigation.NavigationActions
 import org.robojackets.apiary.navigation.NavigationManager
 import timber.log.Timber
@@ -34,7 +36,8 @@ class AttendanceViewModel @Inject constructor(
     @Suppress("UnusedPrivateMember") private val savedStateHandle: SavedStateHandle,
     val meetingsRepository: MeetingsRepository,
     val attendanceRepository: AttendanceRepository,
-    val navManager: NavigationManager
+    val navManager: NavigationManager,
+    val mrd5Manager: Mrd5Manager,
 ) : ViewModel() {
     private val _state = MutableStateFlow(AttendanceState())
 
@@ -101,7 +104,8 @@ class AttendanceViewModel @Inject constructor(
                 selectedAttendable.value!!.type.toString().toLowerCase(Locale.current),
                 selectedAttendable.value!!.id,
                 tap.gtid,
-                "MyRoboJackets Android - ${tap.source}"
+                "MyRoboJackets Android - ${tap.source}",
+                mrd5Manager.connectedDeviceState.value,
             ).onSuccess {
                 if (lastAttendee.value?.tap?.gtid != tap.gtid) {
                     totalAttendees.value += 1
@@ -110,18 +114,27 @@ class AttendanceViewModel @Inject constructor(
                     tap = tap,
                     name = this.data.attendance.attendee?.name ?: "Non-member"
                 )
+                if (tap.source is BuzzCardTapSource.Mrd5) {
+                    mrd5Manager.doSuccessChirp()
+                }
                 screenState.value = ReadyForTap
             }
             .onError {
                 Timber.e(this.toString(), "Error occurred while recording attendance")
                 error.value = "The last tap was successful, but we couldn't save the data. " +
                         "Check your internet connection and try again."
+                if (tap.source is BuzzCardTapSource.Mrd5) {
+                    mrd5Manager.doErrorChirp()
+                }
                 screenState.value = ReadyForTap
             }
             .onException {
                 Timber.e(this.message, "Exception occurred while recording attendance")
                 error.value = "The last tap was successful, but we couldn't save the data. " +
                         "Check your internet connection and try again."
+                if (tap.source is BuzzCardTapSource.Mrd5) {
+                    mrd5Manager.doErrorChirp()
+                }
                 screenState.value = ReadyForTap
             }
         }

@@ -21,6 +21,8 @@ dependencies {
     coreLibraryDesugaring(AndroidToolDependencies.android_tools_desugar_jdk)
     implementation(AndroidToolDependencies.gson) // For Sentry
     implementation(AndroidToolDependencies.in_app_update_compose)
+    implementation(AndroidToolDependencies.kable)
+    implementation(AndroidToolDependencies.kotlinx_datetime) // the in-app update library we use doesn't support kotlinx.datetime post-deprecation of kotlinx.datetime.Instance in favor of kotlin.time.Instant, so explicitly adding the kotlinx-datetime compatibility release here
     implementation(AndroidToolDependencies.open_source_licenses)
     implementation(AndroidToolDependencies.sentry)
     implementation(AndroidToolDependencies.sentry_timber_tree)
@@ -40,6 +42,7 @@ dependencies {
     implementation(ComposeDependencies.compose_foundation)
     implementation(ComposeDependencies.compose_material3)
     implementation(ComposeDependencies.compose_settings)
+    implementation(ComposeDependencies.compose_accompanist_permissions)
 
     implementation(HiltDependencies.hilt)
     ksp(HiltDependencies.hilt_android_compiler)

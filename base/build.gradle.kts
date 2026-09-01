@@ -23,12 +23,15 @@ dependencies {
     implementation(ComposeDependencies.compose_ui)
     implementation(ComposeDependencies.compose_ui_tooling)
     implementation(ComposeDependencies.compose_material_navigation)
+    implementation(ComposeDependencies.compose_accompanist_permissions)
 
     implementation(HiltDependencies.hilt)
     ksp(HiltDependencies.hilt_android_compiler)
 
     implementation(MaterialDependencies.material_android)
 
+    implementation(AndroidToolDependencies.kable)
+    implementation(AndroidToolDependencies.kotlinx_datetime) // the in-app update library we use doesn't support kotlinx.datetime post-deprecation of kotlinx.datetime.Instance in favor of kotlin.time.Instant, so explicitly adding the kotlinx-datetime compatibility release here
     implementation(NetworkDependencies.kotlinx_serialization_json)
     implementation(NetworkDependencies.moshi)
     ksp(NetworkDependencies.moshi_kotlin_codegen)

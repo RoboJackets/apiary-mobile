@@ -17,6 +17,7 @@ object NavigationDestinations {
     const val merchandiseSubgraph = "merchandiseSubgraph"
     const val merchandiseIndex = "merchandiseIndex"
     const val merchandiseDistribution = "$merchandiseIndex/distribution"
+    const val settingsBuzzCardReaderConnection = "settingsBuzzCardReaderConnection"
 }
 
 object NavigationActions {
@@ -73,14 +74,16 @@ object NavigationActions {
         fun attendableTypeSelectToAttendableSelect(
             attendableType: String
         ) = object : NavigationAction {
-            override val destination = "${NavigationDestinations.attendableSelection}/$attendableType"
+            override val destination =
+                "${NavigationDestinations.attendableSelection}/$attendableType"
         }
 
         fun attendableSelectionToAttendance(
             attendableType: String,
             attendableId: Int,
         ) = object : NavigationAction {
-            override val destination = "${NavigationDestinations.attendance}/$attendableType/$attendableId"
+            override val destination =
+                "${NavigationDestinations.attendance}/$attendableType/$attendableId"
         }
 
         fun attendanceToAttendableTypeSelect() = object : NavigationAction {
@@ -105,6 +108,12 @@ object NavigationActions {
                 get() = NavOptions.Builder()
                     .setPopUpTo(NavigationDestinations.merchandiseIndex, inclusive = true)
                     .build()
+        }
+    }
+
+    object Settings {
+        fun anyScreenToBuzzCardReaderConnection() = object : NavigationAction {
+            override val destination = NavigationDestinations.settingsBuzzCardReaderConnection
         }
     }
 }

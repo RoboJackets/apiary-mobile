@@ -8,18 +8,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.keepScreenOn
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.nxp.nfclib.NxpNfcLib
 import org.robojackets.apiary.base.ui.ActionPrompt
+import org.robojackets.apiary.base.ui.CurrentlySelectedItem
 import org.robojackets.apiary.base.ui.IconWithText
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5Manager
 import org.robojackets.apiary.base.ui.icons.PendingIcon
+import org.robojackets.apiary.base.ui.icons.StorefrontIcon
 import org.robojackets.apiary.base.ui.icons.WarningIcon
 import org.robojackets.apiary.base.ui.nfc.BuzzCardPrompt
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
@@ -32,6 +35,7 @@ import org.robojackets.apiary.merchandise.model.MerchandiseState
 fun MerchandiseDistribution(
     state: MerchandiseState,
     nfcLib: NxpNfcLib,
+    mrd5Manager: Mrd5Manager,
     onBuzzcardTap: (buzzcardTap: BuzzCardTap) -> Unit,
     onConfirmPickup: () -> Unit,
     onDismissPickupDialog: () -> Unit,
@@ -67,18 +71,15 @@ fun MerchandiseDistribution(
 
     Column {
         Text("Record merchandise distribution", style = MaterialTheme.typography.headlineSmall)
-        when (state.selectedItem) {
-            null -> Text("No merchandise item selected")
-            else -> CurrentlySelectedItem(
-                item = state.selectedItem,
-                onChangeItem = onNavigateToMerchandiseIndex
-            )
-        }
-        HorizontalDivider()
+        CurrentlySelectedItem(
+            name = state.selectedItem.name,
+            icon = { StorefrontIcon() },
+            onChangeItem = onNavigateToMerchandiseIndex
+        )
 
         Column(
             verticalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().keepScreenOn(),
         ) {
 
             BuzzCardPrompt(
@@ -88,7 +89,8 @@ fun MerchandiseDistribution(
                 onBuzzCardTap = {
                     onBuzzcardTap(it)
                 },
-                externalError = null
+                mrd5Manager = mrd5Manager,
+                externalError = null,
             )
 
             when (state.screenState) {

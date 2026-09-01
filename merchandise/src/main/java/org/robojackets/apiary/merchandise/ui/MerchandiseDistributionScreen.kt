@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.nxp.nfclib.NxpNfcLib
+import org.robojackets.apiary.base.ui.bluetooth.Mrd5Manager
 import org.robojackets.apiary.base.ui.error.ErrorMessageWithRetry
 import org.robojackets.apiary.base.ui.util.ContentPadding
 import org.robojackets.apiary.base.ui.util.LoadingSpinner
@@ -16,6 +17,7 @@ import timber.log.Timber
 fun MerchandiseDistributionScreen(
     viewModel: MerchandiseViewModel,
     nfcLib: NxpNfcLib,
+    mrd5Manager: Mrd5Manager,
     merchandiseItemId: Int,
 ) {
     LaunchedEffect(merchandiseItemId) {
@@ -45,6 +47,7 @@ fun MerchandiseDistributionScreen(
             else -> MerchandiseDistribution(
                 state = state,
                 nfcLib = nfcLib,
+                mrd5Manager = mrd5Manager,
                 onBuzzcardTap = {
                     viewModel.onBuzzCardTap(it)
                 },
@@ -52,7 +55,7 @@ fun MerchandiseDistributionScreen(
                 onDismissPickupDialog = { viewModel.dismissPickupDialog() },
                 onNavigateToMerchandiseIndex = {
                     viewModel.navigateToMerchandiseIndex()
-                                               },
+                                               }
             )
         }
     }

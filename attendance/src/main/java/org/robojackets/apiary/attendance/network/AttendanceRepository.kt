@@ -1,6 +1,7 @@
 package org.robojackets.apiary.attendance.network
 
 import dagger.hilt.android.scopes.ActivityRetainedScoped
+import org.robojackets.apiary.base.model.Device
 import javax.inject.Inject
 
 @ActivityRetainedScoped
@@ -11,11 +12,15 @@ class AttendanceRepository @Inject constructor(
         attendableType: String,
         attendableId: Int,
         gtid: Int,
-        source: String = "MyRoboJackets Android"
+        source: String = "MyRoboJackets Android",
+        reader: Device?
     ) = attendanceApiService.recordAttendance(
-        attendableType,
-        attendableId,
-        gtid,
-        source
+        AttendanceApiService.RecordAttendanceRequest(
+            attendableType,
+            attendableId,
+            gtid,
+            source,
+            reader
+        )
     )
 }

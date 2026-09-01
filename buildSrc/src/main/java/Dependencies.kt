@@ -1,10 +1,12 @@
+@file:Suppress("MaxLineLength")
 object ComposeDependencies {
     object Versions {
         const val compose_settings_version = "3.1.0"
         const val compose_version = "1.11.4"
         const val lifecycle_viewmodel_compose_version = "2.11.0"
-        const val compose_material3_version = "1.4.0"
+        const val compose_material3_version = "1.5.0-alpha26"
         const val compose_material_navigation_version = "1.11.4"
+        const val compose_accompanist_version = "0.37.3"
     }
 
     const val compose_foundation =
@@ -24,6 +26,8 @@ object ComposeDependencies {
 
     const val lifecycle_viewmodel_compose =
         "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle_viewmodel_compose_version}"
+
+    const val compose_accompanist_permissions = "com.google.accompanist:accompanist-permissions:${Versions.compose_accompanist_version}"
 }
 
 object MaterialDependencies {
@@ -102,6 +106,8 @@ object AndroidToolDependencies {
         const val open_source_licenses_version = "17.5.1"
         const val sentry_version = "8.49.0"
         const val timber_version = "5.0.1"
+        const val kable_version = "0.44.3"
+        const val kotlinx_datetime_version = "0.8.0-0.6.x-compat"
     }
 
     const val android_tools_desugar_jdk =
@@ -109,12 +115,14 @@ object AndroidToolDependencies {
     const val gson = "com.google.code.gson:gson:${Versions.gson_version}"
     const val in_app_update_compose =
         "se.warting.in-app-update:in-app-update-compose-mui:${Versions.in_app_update_compose_version}"
+    const val kable = "com.juul.kable:kable-core:${Versions.kable_version}"
     const val krate = "hu.autsoft:krate:${Versions.krate_version}"
     const val open_source_licenses =
         "com.google.android.gms:play-services-oss-licenses:${Versions.open_source_licenses_version}"
     const val sentry = "io.sentry:sentry-android:${Versions.sentry_version}"
     const val sentry_timber_tree = "io.sentry:sentry-android-timber:${Versions.sentry_version}"
     const val timber = "com.jakewharton.timber:timber:${Versions.timber_version}"
+    const val kotlinx_datetime = "org.jetbrains.kotlinx:kotlinx-datetime:${Versions.kotlinx_datetime_version}"
 }
 
 object NetworkDependencies {
