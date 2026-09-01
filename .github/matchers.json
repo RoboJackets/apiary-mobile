@@ -4,7 +4,7 @@
             "owner": "lint",
             "pattern": [
                 {
-                    "regexp": "^\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z-\\\\.]+):(\\d+):\\s+([a-zA-Z]+):\\s+(.+)\\s+(\\[[a-zA-Z]+\\])$",
+                    "regexp": "^\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z0-9-\\\\.]+):(\\d+):\\s+([a-zA-Z]+):\\s+(.+)\\s+(\\[[a-zA-Z]+\\])$",
                     "file": 1,
                     "line": 2,
                     "severity": 3,
@@ -17,7 +17,7 @@
             "owner": "manifest",
             "pattern": [
                 {
-                    "regexp": "^\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z\\\\.]+):(\\d+):(\\d+)-\\d+:\\d+\\s+([a-zA-Z]+):$",
+                    "regexp": "^\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z0-9-\\\\.]+):(\\d+):(\\d+)-\\d+:\\d+\\s+([a-zA-Z]+):$",
                     "file": 1,
                     "line": 2,
                     "column": 3,
@@ -34,7 +34,7 @@
             "severity": "warning",
             "pattern": [
                 {
-                    "regexp": "^w:\\s+\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z\\\\.]+):\\s+\\((\\d+),\\s+(\\d+)\\):\\s+(.+)$",
+                    "regexp": "^w:\\s+\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z0-9-\\\\.]+):\\s+\\((\\d+),\\s+(\\d+)\\):\\s+(.+)$",
                     "file": 1,
                     "line": 2,
                     "column": 3,
@@ -47,11 +47,25 @@
             "severity": "warning",
             "pattern": [
                 {
-                    "regexp": "^w:\\s+file:\\/\\/\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z-\\\\.]+):(\\d+):(\\d+)\\s+(.+)",
+                    "regexp": "^w:\\s+file:\\/\\/\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z0-9-\\\\.]+):(\\d+):(\\d+)\\s+(.+)",
                     "file": 1,
                     "line": 2,
                     "column": 3,
                     "message": 4
+                }
+            ]
+        },
+        {
+            "owner": "detekt-new",
+            "severity": "error",
+            "pattern": [
+                {
+                    "regexp": "^\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z0-9-\\\\.]+):(\\d+):(\\d+):\\s+(.+)\\s+\\[([a-zA-Z]+)\\]$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "message": 4,
+                    "code": 5
                 }
             ]
         }
