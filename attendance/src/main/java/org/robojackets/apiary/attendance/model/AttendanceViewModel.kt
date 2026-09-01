@@ -104,7 +104,8 @@ class AttendanceViewModel @Inject constructor(
                 selectedAttendable.value!!.type.toString().toLowerCase(Locale.current),
                 selectedAttendable.value!!.id,
                 tap.gtid,
-                "MyRoboJackets Android - ${tap.source}"
+                "MyRoboJackets Android - ${tap.source}",
+                mrd5Manager.connectedDeviceState.value,
             ).onSuccess {
                 if (lastAttendee.value?.tap?.gtid != tap.gtid) {
                     totalAttendees.value += 1
@@ -122,12 +123,18 @@ class AttendanceViewModel @Inject constructor(
                 Timber.e(this.toString(), "Error occurred while recording attendance")
                 error.value = "The last tap was successful, but we couldn't save the data. " +
                         "Check your internet connection and try again."
+                if (tap.source is BuzzCardTapSource.Mrd5) {
+                    mrd5Manager.doErrorChirp()
+                }
                 screenState.value = ReadyForTap
             }
             .onException {
                 Timber.e(this.message, "Exception occurred while recording attendance")
                 error.value = "The last tap was successful, but we couldn't save the data. " +
                         "Check your internet connection and try again."
+                if (tap.source is BuzzCardTapSource.Mrd5) {
+                    mrd5Manager.doErrorChirp()
+                }
                 screenState.value = ReadyForTap
             }
         }
@@ -180,10 +187,6 @@ class AttendanceViewModel @Inject constructor(
 
     fun navigateToAttendableSelection() {
         navManager.navigate(NavigationActions.Attendance.attendanceToAttendableTypeSelect())
-    }
-
-    fun navigateToBuzzCardReaderSettings() {
-        navManager.navigate(NavigationActions.Settings.anyScreenToBuzzCardReaderConnection())
     }
 
     fun onAttendableSelected(attendable: Attendable) {

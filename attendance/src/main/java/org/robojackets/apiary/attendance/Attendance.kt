@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.keepScreenOn
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -67,7 +68,6 @@ private fun Attendance(
     mrd5Manager: Mrd5Manager,
     onBuzzcardTap: (buzzcardTap: BuzzCardTap) -> Unit,
     onNavigateToAttendableSelection: () -> Unit,
-    onNavigateToBuzzCardReaderSettings: () -> Unit,
 ) {
 
     if (viewState.selectedAttendable == null) {
@@ -81,7 +81,7 @@ private fun Attendance(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Column(Modifier.fillMaxWidth()) {
+        Column(Modifier.fillMaxWidth().keepScreenOn()) {
             Text("Record attendance", style = MaterialTheme.typography.headlineSmall)
             CurrentlySelectedItem(
                 name = viewState.selectedAttendable.name,
@@ -102,7 +102,6 @@ private fun Attendance(
             mrd5Manager = mrd5Manager,
             onBuzzCardTap = onBuzzcardTap,
             externalError = getExternalError(viewState.error),
-            onNavigateToBuzzCardReaderSettings = { onNavigateToBuzzCardReaderSettings() }
         )
 
         if (viewState.screenState == Loading) {
@@ -166,9 +165,6 @@ fun AttendanceScreen(
                 onNavigateToAttendableSelection = {
                     viewModel.navigateToAttendableSelection()
                 },
-                onNavigateToBuzzCardReaderSettings = {
-                    viewModel.navigateToBuzzCardReaderSettings()
-                }
             )
         }
     }

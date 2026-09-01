@@ -55,10 +55,7 @@ fun MerchandiseDistributionScreen(
                 onDismissPickupDialog = { viewModel.dismissPickupDialog() },
                 onNavigateToMerchandiseIndex = {
                     viewModel.navigateToMerchandiseIndex()
-                                               },
-                onNavigateToBuzzCardReaderSettings = {
-                    viewModel.navigateToBuzzCardReaderSettings()
-                }
+                                               }
             )
         }
     }

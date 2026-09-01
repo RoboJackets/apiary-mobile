@@ -1,18 +1,27 @@
 package org.robojackets.apiary.attendance.network
 
 import com.skydoves.sandwich.ApiResponse
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import org.robojackets.apiary.base.model.AttendanceHolder
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
+import org.robojackets.apiary.base.model.Device
+import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface AttendanceApiService {
-    @FormUrlEncoded
+    @JsonClass(generateAdapter = true)
+    data class RecordAttendanceRequest(
+        @Json(name = "attendable_type")
+        val attendableType: String,
+        @Json(name = "attendable_id")
+        val attendableId: Int,
+        val gtid: Int,
+        val source: String,
+        val reader: Device?,
+    )
+
     @POST("/api/v1/attendance?include=attendee")
     suspend fun recordAttendance(
-        @Field("attendable_type") attendableType: String,
-        @Field("attendable_id") attendableId: Int,
-        @Field("gtid") gtid: Int,
-        @Field("source") source: String
+        @Body body: RecordAttendanceRequest
     ): ApiResponse<AttendanceHolder>
 }

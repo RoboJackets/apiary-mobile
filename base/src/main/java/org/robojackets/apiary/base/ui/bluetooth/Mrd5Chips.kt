@@ -27,27 +27,25 @@ fun Mrd5ConnectingChip() {
 fun Mrd5ConnectedChip(
     batteryLevel: Int? = null,
     isBatteryCharging: Boolean? = false,
-    onNavigateToBuzzCardReaderSettings: () -> Unit,
 ) {
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
         AssistChip(
-            onClick = { onNavigateToBuzzCardReaderSettings() },
+            onClick = {},
             label = { Text("Reader connected") },
             leadingIcon = { BluetoothConnectedIcon() },
         )
         if (batteryLevel != null) {
             AssistChip(
                 modifier = Modifier.padding(start = 8.dp),
-                onClick = { onNavigateToBuzzCardReaderSettings() },
+                onClick = {},
                 label = { Text("$batteryLevel%") },
                 leadingIcon = { DynamicBatteryIcon(batteryLevel = batteryLevel, isCharging = isBatteryCharging == true) },
             )
         }
     }
-
 }
 
 @Preview(showBackground = true)
@@ -56,6 +54,5 @@ fun Mrd5ConnectedChipPreview() {
     Mrd5ConnectedChip(
         batteryLevel = 50,
         isBatteryCharging = false,
-        onNavigateToBuzzCardReaderSettings = {},
     )
 }

@@ -31,15 +31,12 @@ class BuzzCardReaderViewModel @Inject constructor(
     val connection = mrd5Manager.connectionState
         .stateIn(viewModelScope, SharingStarted.Lazily, ConnectionState.Disconnected)
 
-    val batteryLevel = mrd5Manager.batteryLevel
-        .stateIn(viewModelScope, SharingStarted.Lazily, null)
-
     val buzzCardTaps = mrd5Manager.buzzCardTaps
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     init {
         viewModelScope.launch {
-            mrd5Manager.connectedDevice.collect {
+            mrd5Manager.connectedDeviceState.collect {
                 it?.let {
                     deviceRepository.inventoryDevice(it)
                 }

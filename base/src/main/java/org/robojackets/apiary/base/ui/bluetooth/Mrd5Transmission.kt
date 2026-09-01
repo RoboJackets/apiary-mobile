@@ -1,3 +1,4 @@
+@file:Suppress("LoopWithTooManyJumpStatements")
 package org.robojackets.apiary.base.ui.bluetooth
 
 import org.robojackets.apiary.base.ui.nfc.BuzzCardTap
@@ -37,7 +38,8 @@ private fun parseBuzzCardTap(str: String): BuzzCardTap? {
 
 @Suppress("MagicNumber")
 private fun parseDeviceInfo(str: String): Mrd5Transmission.DeviceInfo? {
-    val regex = Regex("""Blackboard MRD5\r\n\s*SN: (?<sn>\d+)\r\n\s*Boot: (?<boot>.+)\r\n\s*Application: (?<application>.+)""")
+    val regex =
+        Regex("""Blackboard MRD5\r\n\s*SN: (?<sn>\d+)\r\n\s*Boot: (?<boot>.+)\r\n\s*Application: (?<application>.+)""")
     regex.matchEntire(str)?.let { matchResult ->
         if (matchResult.groups.size == 4) {
             val serialNumber = matchResult.groups["sn"]?.value

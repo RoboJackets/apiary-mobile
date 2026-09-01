@@ -12,16 +12,6 @@ class DeviceRepository @Inject constructor(
     val deviceService: DeviceService
 ) {
     suspend fun inventoryDevice(device: Device): ApiResponse<DeviceHolder> {
-        return deviceService.inventoryDevice(
-            model = device.model,
-            serialNumber = device.serialNumber,
-            hardwareVersion = device.hardwareVersion,
-            firmwareVersion = device.firmwareVersion,
-            softwareVersion = device.softwareVersion,
-            batteryPercentage = device.batteryPercentage,
-            bootloaderVersion = device.bootloaderVersion,
-            applicationVersion = device.applicationVersion,
-            manufacturer = device.manufacturer,
-        )
+        return deviceService.inventoryDevice(device)
     }
 }

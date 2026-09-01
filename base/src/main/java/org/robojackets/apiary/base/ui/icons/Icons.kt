@@ -58,7 +58,7 @@ fun DynamicBatteryIcon(
             in 71..85 -> iconId = R.drawable.ic_outline_battery_android_5_24dp
             in 51..70 -> iconId = R.drawable.ic_outline_battery_android_4_24dp
             in 36..50 -> iconId = R.drawable.ic_outline_battery_android_3_24dp
-            in 16..30 -> iconId = R.drawable.ic_outline_battery_android_2_24dp
+            in 16..35 -> iconId = R.drawable.ic_outline_battery_android_2_24dp
             in 6..15 -> iconId = R.drawable.ic_outline_battery_android_1_24dp
             in 0..5 -> iconId = R.drawable.ic_outline_battery_android_0_24dp
         }
@@ -71,7 +71,6 @@ fun DynamicBatteryIcon(
         contentDescription = contentDescription,
     )
 }
-
 
 @Composable
 fun BluetoothIcon(

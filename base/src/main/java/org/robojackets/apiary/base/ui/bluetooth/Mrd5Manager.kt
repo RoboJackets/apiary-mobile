@@ -23,8 +23,11 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.robojackets.apiary.base.GlobalSettings
@@ -66,10 +69,6 @@ private val MANUFACTURER_CHAR_UUID = Uuid.parse("00002a29-0000-1000-8000-00805f9
 class Mrd5Manager @Inject constructor(
     val globalSettings: GlobalSettings,
 ) {
-    init {
-        Timber.d("Mrd5Manager was initialized!")
-    }
-
     private var scanner: Job? = null
 
     private val _scanResults = MutableStateFlow<List<PlatformAdvertisement>>(emptyList())
@@ -83,7 +82,6 @@ class Mrd5Manager @Inject constructor(
 
     private val _isCharging = MutableStateFlow<Boolean?>(null)
     val isCharging = _isCharging.asStateFlow()
-
 
     private val _deviceName = MutableStateFlow<String?>(null)
     val deviceName = _deviceName.asStateFlow()
@@ -106,9 +104,6 @@ class Mrd5Manager @Inject constructor(
     private val _deviceManufacturer = MutableStateFlow<String?>(null)
     val deviceManufacturer = _deviceManufacturer.asStateFlow()
 
-    private val _connectedDevice = MutableSharedFlow<Device?>()
-    val connectedDevice = _connectedDevice.asSharedFlow()
-
     private val _bootloaderVersion = MutableStateFlow<String?>(null)
     val bootloaderVersion = _bootloaderVersion.asStateFlow()
 
@@ -129,6 +124,52 @@ class Mrd5Manager @Inject constructor(
     private val managerScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var userDisconnectRequested: Boolean = false
 
+    private val _connectedDeviceState = MutableStateFlow<Device?>(null)
+    val connectedDeviceState: StateFlow<Device?>
+        get() = _connectedDeviceState
+
+    init {
+        managerScope.launch {
+            combine<Any?, Device?>(
+                listOf(
+                    _deviceModel,
+                    _deviceSerialNumber,
+                    _deviceFirmwareVersion,
+                    _deviceHardwareVersion,
+                    _deviceSoftwareVersion,
+                    _deviceManufacturer,
+                    _bootloaderVersion,
+                    _applicationVersion,
+                    _batteryLevel,
+                )
+            ) { flows ->
+                if (flows.all { it != null }) {
+                    Device(
+                        model = flows[0] as String,
+                        serialNumber = (flows[1] as String).toInt(),
+                        firmwareVersion = flows[2] as String,
+                        hardwareVersion = flows[3] as String,
+                        softwareVersion = flows[4] as String,
+                        manufacturer = flows[5] as String,
+                        bootloaderVersion = flows[6] as String,
+                        applicationVersion = flows[7] as String,
+                        batteryPercentage = flows[8] as Int,
+                    )
+                } else {
+                    null
+                }
+            }
+                .catch { throwable ->
+                    if (throwable is NumberFormatException) {
+                        Timber.e(throwable, "Device serial number was unexpectedly unable to be parsed as an int")
+                    } else {
+                        throw throwable
+                    }
+                }
+                .collect { _connectedDeviceState.value = it }
+        }
+    }
+
     private val deviceInfoUUIDs = listOf(
         MODEL_NUMBER_CHAR_UUID,
         SERIAL_NUMBER_CHAR_UUID,
@@ -141,34 +182,6 @@ class Mrd5Manager @Inject constructor(
     fun resetError() {
         _error.value = null
     }
-
-//    private val reattemptConnectionMutex = Mutex()
-//
-//    @OptIn(FlowPreview::class)
-//    @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
-//    fun attemptConnectionToSavedDevice() {
-//        managerScope.launch {
-//            reattemptConnectionMutex.withLock {
-//                if (globalSettings.mrd5DeviceMac == null) {
-//                    Timber.d("No saved device to connect to")
-//                    return@launch
-//                }
-//
-//                if (_connectionState.value != ConnectionState.Disconnected) {
-//                    Timber.d("Connection state is not disconnected, ignoring")
-//                    return@launch
-//                }
-//                stopScanning()
-//                startScanning(managerScope)
-//                scanResults.collect { result ->
-//                    result.find { it.address == globalSettings.mrd5DeviceMac }?.let {
-//                        Timber.d("Saved device MAC located")
-//                        connect(it)
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     @OptIn(ObsoleteKableApi::class)
     fun startScanning(scope: CoroutineScope) {
@@ -212,56 +225,34 @@ class Mrd5Manager @Inject constructor(
                     )
                 )
                 when (it) {
-                    MODEL_NUMBER_CHAR_UUID -> _deviceModel.value =
+                    MODEL_NUMBER_CHAR_UUID ->
+                        _deviceModel.value =
                         String(value, Charsets.US_ASCII)
 
-                    SERIAL_NUMBER_CHAR_UUID -> _deviceSerialNumber.value =
+                    SERIAL_NUMBER_CHAR_UUID ->
+                        _deviceSerialNumber.value =
                         String(value, Charsets.US_ASCII)
 
-                    FIRMWARE_REVISION_CHAR_UUID -> _deviceFirmwareVersion.value =
+                    FIRMWARE_REVISION_CHAR_UUID ->
+                        _deviceFirmwareVersion.value =
                         String(value, Charsets.US_ASCII)
 
-                    HARDWARE_REVISION_CHAR_UUID -> _deviceHardwareVersion.value =
+                    HARDWARE_REVISION_CHAR_UUID ->
+                        _deviceHardwareVersion.value =
                         String(value, Charsets.US_ASCII)
 
-                    SOFTWARE_REVISION_CHAR_UUID -> _deviceSoftwareVersion.value =
+                    SOFTWARE_REVISION_CHAR_UUID ->
+                        _deviceSoftwareVersion.value =
                         String(value, Charsets.US_ASCII)
 
-                    MANUFACTURER_CHAR_UUID -> _deviceManufacturer.value =
+                    MANUFACTURER_CHAR_UUID ->
+                        _deviceManufacturer.value =
                         String(value, Charsets.US_ASCII)
                 }
-
             }
         } catch (e: Exception) {
             disconnect("Reader connection failed")
             Timber.e(e, "Failed initializing device")
-        }
-    }
-
-    suspend fun storeDevice() {
-        if (_deviceModel.value != null &&
-            _deviceSerialNumber.value != null &&
-            _deviceFirmwareVersion.value != null &&
-            _deviceHardwareVersion.value != null &&
-            _deviceSoftwareVersion.value != null &&
-            _batteryLevel.value != null &&
-            _deviceManufacturer.value != null &&
-            _bootloaderVersion.value != null &&
-            _applicationVersion.value != null
-        ) {
-            _connectedDevice.emit(
-                Device(
-                    model = _deviceModel.value!!,
-                    serialNumber = _deviceSerialNumber.value!!.toInt(),
-                    firmwareVersion = _deviceFirmwareVersion.value!!,
-                    hardwareVersion = _deviceHardwareVersion.value!!,
-                    softwareVersion = _deviceSoftwareVersion.value!!,
-                    bootloaderVersion = _bootloaderVersion.value!!,
-                    applicationVersion = _applicationVersion.value!!,
-                    batteryPercentage = _batteryLevel.value!!,
-                    manufacturer = _deviceManufacturer.value!!,
-                )
-            )
         }
     }
 
@@ -328,7 +319,6 @@ class Mrd5Manager @Inject constructor(
 
                     if (attempts <= maxAttempts) {
                         _connectionState.value = ConnectionState.Connected
-                        storeDevice()
                     } else {
                         Timber.w("Timed out getting battery status")
                         disconnect("Reader connection failed")
@@ -364,6 +354,7 @@ class Mrd5Manager @Inject constructor(
 
     fun disconnect(error: String? = null, isUserDisconnect: Boolean = false) {
         managerScope.launch {
+            _connectedDeviceState.value = null
             if (isUserDisconnect) {
                 userDisconnectRequested = true
             }
@@ -408,7 +399,6 @@ class Mrd5Manager @Inject constructor(
             Mrd5Command.LED("700", 400.milliseconds)
         )
     )
-
 
     fun doFindReader() {
         try {
@@ -469,7 +459,10 @@ class Mrd5Manager @Inject constructor(
                         // This is a slightly hacky way to only play the error chirp for transmissions related to a
                         // clobbered BuzzCard read, since there can be other unknown transmissions
                         // shortly after the device connects
-                        if (transmission.str.contains("DESFire") || transmission.str.contains("Mobile")) {
+                        if (transmission.str.contains("DESFire") || transmission.str.contains("Mobile") || transmission.str.contains(
+                                "MAG"
+                            )
+                        ) {
                             doErrorChirp()
                         }
                     }

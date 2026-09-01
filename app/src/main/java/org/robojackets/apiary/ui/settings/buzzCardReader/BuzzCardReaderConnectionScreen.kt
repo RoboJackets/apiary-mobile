@@ -19,6 +19,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -46,8 +49,12 @@ fun ConnectingToReader() {
 fun ConnectReaderInfo(modifier: Modifier = Modifier, showIcon: Boolean = true) {
     ListItem(modifier) {
         Row {
-            InfoIcon(modifier = Modifier.padding(end = 8.dp).alpha(if (showIcon) 1f else 0f))
-            Text("MyRJ can read plastic and digital BuzzCards using an external reader")
+            InfoIcon(
+                modifier = Modifier
+                .padding(end = 8.dp)
+                .alpha(if (showIcon) 1f else 0f)
+            )
+            Text("MyRoboJackets can read plastic and digital BuzzCards using an external reader")
         }
     }
 }
@@ -56,8 +63,26 @@ fun ConnectReaderInfo(modifier: Modifier = Modifier, showIcon: Boolean = true) {
 fun TurnOnReaderInstructions(modifier: Modifier = Modifier, showIcon: Boolean = true) {
     ListItem(modifier) {
         Row {
-            InfoIcon(modifier = Modifier.padding(end = 8.dp).alpha(if (showIcon) 1f else 0f))
+            InfoIcon(
+                modifier = Modifier
+                .padding(end = 8.dp)
+                .alpha(if (showIcon) 1f else 0f)
+            )
             Text("Turn on the reader by pressing and holding the power button until the light is green and a sound plays")
+        }
+    }
+}
+
+@Composable
+fun ResetPairingInstructions(modifier: Modifier = Modifier, showIcon: Boolean = true) {
+    ListItem(modifier) {
+        Row {
+            InfoIcon(
+                modifier = Modifier
+                .padding(end = 8.dp)
+                .alpha(if (showIcon) 1f else 0f)
+            )
+            Text("If the reader isn't showing up, try resetting the pairing: With the reader on, quickly press the power button 3 times")
         }
     }
 }
@@ -71,15 +96,10 @@ fun BuzzCardReaderConnectionScreen(
     val state by viewModel.connection.collectAsStateWithLifecycle()
     val scanState by viewModel.mrd5Manager.scanState.collectAsStateWithLifecycle()
     val deviceName by viewModel.mrd5Manager.deviceName.collectAsStateWithLifecycle()
-    val batteryLevel by viewModel.batteryLevel.collectAsStateWithLifecycle()
     val buzzCardTaps by viewModel.buzzCardTaps.collectAsStateWithLifecycle()
     val serialNumber by viewModel.mrd5Manager.deviceSerialNumber.collectAsStateWithLifecycle()
-    val firmwareVersion by viewModel.mrd5Manager.deviceFirmwareVersion.collectAsStateWithLifecycle()
-    val hardwareVersion by viewModel.mrd5Manager.deviceHardwareVersion.collectAsStateWithLifecycle()
-    val softwareVersion by viewModel.mrd5Manager.deviceSoftwareVersion.collectAsStateWithLifecycle()
-    val bootloaderVersion by viewModel.mrd5Manager.bootloaderVersion.collectAsStateWithLifecycle()
-    val applicationVersion by viewModel.mrd5Manager.applicationVersion.collectAsStateWithLifecycle()
     val mrd5Error by viewModel.mrd5Manager.error.collectAsStateWithLifecycle()
+    val connectedDeviceState by viewModel.mrd5Manager.connectedDeviceState.collectAsStateWithLifecycle()
     var showAdvancedControls by remember { mutableStateOf(BuildConfig.DEBUG) }
 
     ContentPadding {
@@ -110,6 +130,7 @@ fun BuzzCardReaderConnectionScreen(
                             ScanningState.Active -> {
                                 Text(text = "Searching for readers", style = MaterialTheme.typography.headlineSmall)
                                 TurnOnReaderInstructions(modifier = Modifier.padding(top = 8.dp))
+                                ResetPairingInstructions(modifier = Modifier.padding(top = 8.dp), showIcon = false)
                                 ItemList(
                                     items = devices,
                                     onItemSelected = { viewModel.connect(it) },
@@ -133,7 +154,17 @@ fun BuzzCardReaderConnectionScreen(
                     ConnectionState.Connecting, ConnectionState.Initializing, ConnectionState.WaitingForPairing -> {
                         ConnectingToReader()
                         LoadingSpinner {
-                            Text("Press Pair & Connect in the system notification if prompted", textAlign = TextAlign.Center)
+                            Text(
+                                with(AnnotatedString.Builder()) {
+                                append("Press ")
+                                pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                                append("Pair & Connect")
+                                pop()
+                                append(" in the system notification if prompted")
+                                toAnnotatedString()
+                            },
+                                textAlign = TextAlign.Center
+                            )
                             Button(
                                 onClick = { viewModel.disconnect(isUserDisconnect = true) },
                                 modifier = Modifier.padding(top = 8.dp),
@@ -141,12 +172,11 @@ fun BuzzCardReaderConnectionScreen(
                                 Text("Cancel")
                             }
                         }
-
                     }
                     ConnectionState.Connected -> {
                         Text(text = "Reader connected", style = MaterialTheme.typography.headlineSmall)
                         Text("Device: $deviceName ($serialNumber)")
-                        Text("Battery level: ${batteryLevel ?: "Unknown"}%")
+                        Text("Battery level: ${connectedDeviceState?.batteryPercentage ?: "Unknown"}%")
 
                         Row {
                             Button(
@@ -163,11 +193,12 @@ fun BuzzCardReaderConnectionScreen(
                             }
                         }
 
-                        if (!showAdvancedControls)
-                        Button(
+                        if (!showAdvancedControls) {
+                            Button(
                             onClick = { showAdvancedControls = true },
                         ) {
                             Text("Show advanced controls")
+                        }
                         }
 
                         if (showAdvancedControls) {
@@ -175,11 +206,11 @@ fun BuzzCardReaderConnectionScreen(
                             Text("Connection status: $state")
                             Text("Last BuzzCard tap: ${buzzCardTaps ?: "None"}")
                             HorizontalDivider()
-                            Text("Firmware version: $firmwareVersion")
-                            Text("Hardware version: $hardwareVersion")
-                            Text("Software version: $softwareVersion")
-                            Text("Bootloader version: $bootloaderVersion")
-                            Text("Application version: $applicationVersion")
+                            Text("Firmware version: ${connectedDeviceState?.firmwareVersion ?: "Unknown"}")
+                            Text("Hardware version: ${connectedDeviceState?.hardwareVersion ?: "Unknown"}")
+                            Text("Software version: ${connectedDeviceState?.softwareVersion ?: "Unknown"}")
+                            Text("Bootloader version: ${connectedDeviceState?.bootloaderVersion ?: "Unknown"}")
+                            Text("Application version: ${connectedDeviceState?.applicationVersion ?: "Unknown"}")
                             HorizontalDivider()
 
                             Row(
@@ -209,7 +240,8 @@ fun BuzzCardReaderConnectionScreen(
                                 try {
                                     viewModel.mrd5Manager.sendCommands(
                                         listOf(
-                                            Mrd5Command.LED(ledColor,
+                                            Mrd5Command.LED(
+                                                ledColor,
                                                 ledDuration.toInt()
                                                     .toDuration(DurationUnit.MILLISECONDS)
                                             )

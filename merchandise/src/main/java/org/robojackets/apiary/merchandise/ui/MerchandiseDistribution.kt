@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.keepScreenOn
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.nxp.nfclib.NxpNfcLib
@@ -39,7 +40,6 @@ fun MerchandiseDistribution(
     onConfirmPickup: () -> Unit,
     onDismissPickupDialog: () -> Unit,
     onNavigateToMerchandiseIndex: () -> Unit,
-    onNavigateToBuzzCardReaderSettings: () -> Unit,
 ) {
     MerchandiseDialog(
         state = state,
@@ -79,7 +79,7 @@ fun MerchandiseDistribution(
 
         Column(
             verticalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().keepScreenOn(),
         ) {
 
             BuzzCardPrompt(
@@ -91,7 +91,6 @@ fun MerchandiseDistribution(
                 },
                 mrd5Manager = mrd5Manager,
                 externalError = null,
-                onNavigateToBuzzCardReaderSettings = { onNavigateToBuzzCardReaderSettings() }
             )
 
             when (state.screenState) {

@@ -74,7 +74,6 @@ fun BuzzCardPrompt(
     nfcLib: NxpNfcLib,
     mrd5Manager: Mrd5Manager,
     onBuzzCardTap: (buzzCardTap: BuzzCardTap) -> Unit,
-    onNavigateToBuzzCardReaderSettings: () -> Unit,
     externalError: BuzzCardPromptExternalError?,
 ) {
     var error by remember { mutableStateOf<BuzzCardPromptError?>(null) }
@@ -87,7 +86,6 @@ fun BuzzCardPrompt(
     val mrd5ConnectionState by mrd5Manager.connectionState.collectAsStateWithLifecycle()
     val mrd5BatteryLevel by mrd5Manager.batteryLevel.collectAsStateWithLifecycle()
     val mrd5BatteryIsCharging by mrd5Manager.isCharging.collectAsStateWithLifecycle()
-
 
     acceptMrd5Taps = true
     nfcLib.enableReaderMode(
@@ -164,11 +162,6 @@ fun BuzzCardPrompt(
     )
 
     LaunchedEffect(acceptMrd5Taps) {
-        try {
-//            mrd5Manager.attemptConnectionToSavedDevice() // FIXME
-        } catch (e: IllegalStateException) {
-            Timber.d("MRD5 attempt connection - mutex taken")
-        }
         if (acceptMrd5Taps) {
             mrd5Manager.buzzCardTaps.collect { buzzCardTap -> onBuzzCardTap(buzzCardTap) }
         }
@@ -210,9 +203,6 @@ fun BuzzCardPrompt(
                     Mrd5ConnectedChip(
                         batteryLevel = mrd5BatteryLevel,
                         isBatteryCharging = mrd5BatteryIsCharging,
-                        onNavigateToBuzzCardReaderSettings = {
-                            onNavigateToBuzzCardReaderSettings()
-                        }
                     )
                 }
                 ConnectionState.Connecting, ConnectionState.Initializing, ConnectionState.WaitingForPairing -> {

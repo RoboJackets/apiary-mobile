@@ -205,11 +205,6 @@ class MerchandiseViewModel @Inject constructor(
         navManager.navigate(NavigationActions.Merchandise.merchandiseDistributionToIndex())
     }
 
-    fun navigateToBuzzCardReaderSettings() {
-        navManager.navigate(NavigationActions.Settings.anyScreenToBuzzCardReaderConnection())
-    }
-
-
     @Suppress("TooGenericExceptionCaught")
     fun onBuzzCardTap(buzzCardTap: BuzzCardTap) {
         if (screenState.value != MerchandiseDistributionScreenState.ReadyForTap) {
