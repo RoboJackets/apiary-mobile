@@ -39,7 +39,13 @@
                     "line": 2,
                     "column": 3,
                     "message": 4
-                },
+                }
+            ]
+        },
+        {
+            "owner": "compiler-new",
+            "severity": "warning",
+            "pattern": [
                 {
                     "regexp": "^w:\\s+file:\\/\\/\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z-\\\\.]+):(\\d+):(\\d+)\\s+(.+)",
                     "file": 1,
