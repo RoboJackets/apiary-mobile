@@ -105,7 +105,7 @@ class AttendanceViewModel @Inject constructor(
                 selectedAttendable.value!!.id,
                 tap.gtid,
                 "MyRoboJackets Android - ${tap.source}",
-                mrd5Manager.connectedDeviceState.value,
+                if (tap.source is BuzzCardTapSource.Mrd5) mrd5Manager.connectedDeviceState.value else null,
             ).onSuccess {
                 if (lastAttendee.value?.tap?.gtid != tap.gtid) {
                     totalAttendees.value += 1

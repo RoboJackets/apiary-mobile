@@ -396,7 +396,7 @@ class Mrd5Manager @Inject constructor(
     fun doErrorChirp() = sendCommands(
         listOf(
             Mrd5Command.Tone(Mrd5Tone.Warble),
-            Mrd5Command.LED("700", 400.milliseconds)
+            Mrd5Command.LED("700", 1500.milliseconds)
         )
     )
 
