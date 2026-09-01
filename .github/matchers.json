@@ -34,7 +34,14 @@
             "severity": "warning",
             "pattern": [
                 {
-                    "regexp": "^w: \\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z\\\\.]+): \\((\\d+), (\\d+)\\): (.+)$",
+                    "regexp": "^w:\\s+\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z\\\\.]+):\\s+\\((\\d+),\\s+(\\d+)\\):\\s+(.+)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "message": 4
+                },
+                {
+                    "regexp": "^w:\\s+file:\\/\\/\\/home\\/runner\\/work\\/apiary-mobile\\/apiary-mobile\\/([\\/a-zA-Z-\\\\.]+):(\\d+):(\\d+)\\s+(.+)",
                     "file": 1,
                     "line": 2,
                     "column": 3,
